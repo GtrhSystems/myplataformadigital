@@ -41,11 +41,10 @@ def IndexView(request):
 def ProductCreateView(request):
 
     form = ProductForm(request.POST or None)
-    products = Product.objects.filter(active=True, owner=request.user.id)
+    products = Product.objects.filter(active=True)
     if request.method == 'POST':
         if form.is_valid():
             product = form.save(commit=False)
-            product.owner = request.user.id
             product.save()
             return redirect('add-product')
 
@@ -76,11 +75,11 @@ def RegisterStaffView(request):
 
 @usertype_in_view
 @login_required
-def ActivateStaffView(request, pk):
+def ActivateStaffView(request, authorized, pk):
 
-    staff =  User.objects.filter(is_active = 0, id = pk).filter(groups__name = "staff").first()
+    staff =  User.objects.filter(is_active = authorized, id = pk).filter(groups__name = "staff").first()
     user_data = UserData.objects.filter(user = staff).first()
-    return render(request, 'users/activate-staff.html', { 'staff':staff, 'user_data':user_data })
+    return render(request, 'users/activate-staff.html', { 'staff':staff, 'user_data':user_data , 'authorized':authorized})
 
 
 @usertype_in_view
@@ -88,7 +87,7 @@ def ActivateStaffView(request, pk):
 def StaffListView(request, authorized):
 
     staffs = User.objects.filter(is_active=authorized).filter(groups__name = "staff")
-    return render(request, 'users/staffs_not_authorized.html', {'staffs': staffs})
+    return render(request, 'users/staffs_not_authorized.html', {'staffs': staffs, 'authorized':authorized})
 
 
 @usertype_in_view

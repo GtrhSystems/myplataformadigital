@@ -24,7 +24,7 @@
 			</div>
 			<div class="card-block table-border-style">
 				<div class="table-responsive">
-					<table class="table table-hover">
+					<table class="table table-hover table-normal">
 						<thead>
 							<tr>
 								<th>#</th>
@@ -38,12 +38,11 @@
 						   {% for staff in staffs %}
 								<tr class="gradeA odd" role="row">
 									<td>{{forloop.counter}}</td>
-									<td>{{ staff.saler.date_joined }}</td>
-									<td>{{ staff.saler.username }}</td>
-									<td>{{ staff.saler.first_name }} {{ staff.last_name }}</td>
+									<td>{{ staff.date_joined }}</td>
+									<td>{{ staff.username }}</td>
+									<td>{{ staff.first_name }} {{ staff.last_name }}</td>
 									<td class="center">
-										<a href="{% url 'activate-staff' staff.id %}"><i class="fa fa-fw" aria-hidden="true" title="Activar"></i></a>
-
+										<a href="{% url 'activate-staff'  authorized staff.id %}"><i class="fa fa-fw" aria-hidden="true" title="Ver"></i></a>
 									</td>
 								</tr>
 							{% endfor %}
