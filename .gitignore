@@ -1,0 +1,15 @@
+*.dat
+.project
+multiplataforma/__pycache__/*
+multiplataforma_project/__pycache__/*
+multiplataforma_project/settings.py.save
+multiplataforma_project/__init__.py
+multiplataforma/migrations/
+!multiplataforma/migrations/__init__.py
+__pycache__/*
+db.sqlite3
+multiplataforma_project/__pycache__
+env/
+start.sh
+static/
+

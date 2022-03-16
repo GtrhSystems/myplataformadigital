@@ -1,0 +1,5 @@
+asgiref==3.5.0
+Django==4.0.3
+django-widget-tweaks==1.4.12
+mysqlclient==2.1.0
+sqlparse==0.4.2

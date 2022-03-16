@@ -1,0 +1,65 @@
+{% extends 'layout.html' %}
+{% load widget_tweaks %}
+{% load humanize %}
+{% block header %}
+
+ <div class="page-header">
+	  <div class="page-block">
+		  <div class="row align-items-center">
+			  <div class="col-md-8">
+				  <div class="page-header-title">
+					  <h5 class="m-b-10">Proveeedores pendientes de activación</h5>
+				  </div>
+			  </div>
+
+		  </div>
+	  </div>
+  </div>
+{% endblock %}
+{% block content %}
+<div class="row">
+	<div class="col-lg-12">
+		<div class="card">
+			<div class="card-header">
+				<h5>Listado de Proveeedores no activos</h5>
+			</div>
+			<div class="card-block table-border-style">
+				<div class="table-responsive">
+					<table id="salers-table" class="table table-hover">
+						<thead>
+							<tr>
+								<th>#</th>
+								<th>Fecha</th>
+								<th>Username</th>
+								<th>Nombres</th>
+								<th>Ver</th>
+							</tr>
+						</thead>
+					   <tbody>
+						   {% for saler in salers %}
+								<tr class="gradeA odd" role="row">
+									<td>{{forloop.counter}}</td>
+									<td>{{ saler.saler.date_joined }}</td>
+									<td>{{ saler.saler.username }}</td>
+									<td>{{ saler.saler.first_name }} {{ saler.saler.last_name }}</td>
+									<td class="center">
+										<a href="{% url 'saler-edit' saler.saler.id %}"><i class="fa fa-fw" aria-hidden="true" title="Activar"></i></a>
+										<a href="{% url 'add-money-saler' saler.saler.id %}"><i class="fa fa-fw" aria-hidden="true" title="Agregar Saldo"><i class="ti-money"></i></i></a>
+										<a class="delete-user" id="{{ saler.saler.id }}" href="#"><i class="fa fa-fw " aria-hidden="true" title="Desactivar Vendedor"><i class="ti-trash"></i></i></a>
+									</td>
+								</tr>
+							{% endfor %}
+					</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+	</div>
+	<!-- /.col-lg-12 -->
+</div>
+<script type="text/javascript">
+delete_saler()
+
+</script>
+{% endblock %}

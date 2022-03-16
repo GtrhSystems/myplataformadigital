@@ -1,0 +1,105 @@
+{% extends 'layout.html' %} 
+{% block menu %} 
+	{% include 'menu.html' %}
+{% endblock %} 
+{% load widget_tweaks %}
+{% block header %}
+ <div class="page-header">
+	  <div class="page-block">
+		  <div class="row align-items-center">
+			  <div class="col-md-8">
+				  <div class="page-header-title">
+					  <h5 class="m-b-10">Añadir Multiplataforma</h5>
+					  <p class="m-b-0">Ingrese los datos en el formulario</p>
+				  </div>
+			  </div>
+
+		  </div>
+	  </div>
+  </div>
+{% endblock %}
+{% block content %}
+<div class="row">
+	<div class="col-md-12">
+		<div class="card">
+			<div class="card-header">
+				<h5>Nueva Plataforma</h5>
+				<span>Digite el nombre para la nueva plataforma</span>
+			</div>
+			<div class="card-block">
+				<form class="form-material" method="post">
+					{% csrf_token %}
+					<div class="form-group form-default">
+						{{ form.name|add_class:'form-control' }}
+						<span class="form-bar"></span>
+						<label class="float-label">Nombre</label>
+					</div>
+					<input class="btn btn-primary btn-md btn-block waves-effect text-center m-b-20" type="submit" value="Crear Plataforma"/>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<div class="col-lg-12">
+		<div class="card">
+			<div class="card-header">
+				<h5>Listado de Plataformas activas</h5>
+
+			</div>
+			<div class="card-block table-border-style">
+				<div class="table-responsive">
+					<table class="table table-hover">
+						<thead>
+							<tr>
+								<th>#</th>
+								<th>Nombre</th>
+								<th>Acciones</th>
+							</tr>
+						</thead>
+					   <tbody>
+						   {% for product in products %}
+								<tr class="gradeA odd" role="row">
+									<td>{{forloop.counter}}</td>
+									<td>{{ product.name }}</td>
+									<td class="center">
+										<a href="#" class="delete"  id="{{ product.id }}"><i class="fa fa-fw  aria-hidden="true" title="Borrar"></i></a>
+									</td>
+								</tr>
+							{% endfor %}
+					</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+	</div>
+	<!-- /.col-lg-12 -->
+</div>
+
+
+
+
+<script>
+$(document).ready( function () {
+    $('#packages-table').DataTable();
+} );
+
+$( ".delete" ).each(function(index) {
+    $(this).on("click", function(event){
+    	event.preventDefault()     	
+     	var id = $(this).attr('id');
+     	var mensaje = confirm("Desea desactivar este producto?");		
+		if (mensaje) {
+			$.get('/delete/Product/'+id ,function(data){    		
+	    		alert(data)	    		
+	    		location.reload();
+	    	})   	
+		}
+    });
+});
+
+
+</script>
+
+{% endblock %}

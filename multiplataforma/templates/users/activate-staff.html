@@ -1,0 +1,70 @@
+{% extends 'layout.html' %}
+
+{% load widget_tweaks %}
+{% load humanize %}
+{% block header %}
+
+ <div class="page-header">
+	  <div class="page-block">
+		  <div class="row align-items-center">
+			  <div class="col-md-8">
+				  <div class="page-header-title">
+					  <h5 class="m-b-10">Activar proveedor</h5>
+
+				  </div>
+			  </div>
+
+		  </div>
+	  </div>
+  </div>
+{% endblock %}
+{% block content %}
+<div class="row">
+	<div class="col-md-12">
+		<div class="card">
+			<div class="card-header">
+				<h5>Autorizar proveedor</h5>
+				<span>De click en el botón activar para autorizar a este proveedor</span>
+			</div>
+			<div class="card-block">
+					<div class="form-group form-default">
+						<label class="float-label username"><strong>Username</strong></label>:
+						{{ staff.username }}
+					</div>
+				<div class="form-group form-default">
+						<label class="float-label username"><strong>Nombres</strong></label>:
+						{{ staff.first_name }}
+					</div>
+				<div class="form-group form-default">
+						<label class="float-label username"><strong>Apellidos</strong></label>:
+						{{ staff.last_name }}
+					</div>
+				<div class="form-group form-default">
+						<label class="float-label username"><strong>Correo</strong></label>:
+						{{ staff.email }}
+					</div>
+				<div class="form-group form-default">
+						<label class="float-label username"><strong>Dirección</strong></label>:
+						{{ user_data.address }}
+					</div>
+				<div class="form-group form-default">
+						<label class="float-label username"><strong>Telefonos</strong></label>:
+						{{ user_data.phones }}
+					</div>
+
+				<div class="form-group form-default">
+						<label class="float-label username"><strong>Observaciones</strong></label>:
+						{{ user_data.observations }}
+					</div>
+
+				<button class="btn btn-primary btn-md btn-block waves-effect text-center m-b-20 activate_staff" type="button" >Activar Proveedor</button>
+
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+activate_staff()
+check_username()
+</script>
+{% endblock %}

@@ -1,0 +1,27 @@
+  <div class="">
+          <div class="main-menu-header">
+              <div class="user-details">
+                  <span id="more-details">{{ user.username }} <i class="fa fa-caret-down"></i></span>
+              </div>
+          </div>
+
+          <div class="main-menu-content">
+              <ul>
+                  <li class="more-details">
+                      <!--<a href="user-profile.html"><i class="ti-user"></i>View Profile</a>
+                      <a href="#!"><i class="ti-settings"></i>Settings</a>-->
+                      <a href="javascript:logout()"><i class="ti-layout-sidebar-left"></i>Cerrar sesion</a>
+                  </li>
+              </ul>
+          </div>
+      </div>
+
+ <script>
+function logout(){
+$.get( "/accounts/logout?next={% url 'index' %}", function( data ) {
+	  	window.location = '/'
+	});
+}
+
+
+</script>

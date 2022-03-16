@@ -1,0 +1,64 @@
+{% extends 'layout.html' %}
+{% load widget_tweaks %}
+{% load humanize %}
+{% block header %}
+
+ <div class="page-header">
+	  <div class="page-block">
+		  <div class="row align-items-center">
+			  <div class="col-md-8">
+				  <div class="page-header-title">
+					  <h5 class="m-b-10">Histórico de Saldos agregados</h5>
+				  </div>
+			  </div>
+
+		  </div>
+	  </div>
+  </div>
+{% endblock %}
+{% block content %}
+<div class="row">
+	<div class="col-lg-12">
+		<div class="card">
+			<div class="card-header">
+				<h5>Listado de saldos agregados</h5>
+			</div>
+			<div class="card-block table-border-style">
+				<div class="table-responsive">
+					<table id="salers-table" class="table table-hover">
+						<thead>
+							<tr>
+								<th>#</th>
+								<th>Fecha</th>
+								<th>Detalle</th>
+								<th>Recarga</th>
+								<th>Vendedor</th>
+							</tr>
+						</thead>
+					   <tbody>
+						   {% for money in money_saler %}
+								<tr class="gradeA odd" role="row">
+									<td>{{forloop.counter}}</td>
+									<td>{{ money.date }}</td>
+									<td>{{ money.detail }}</td>
+									<td>${{ money.transaction_money|intcomma }}</td>
+									<td>{{ money.saler.first_name }} {{ money.saler.last_name }} ({{ money.saler.username }})</td>
+								</tr>
+							{% endfor %}
+					</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+	</div>
+	<!-- /.col-lg-12 -->
+</div>
+<script type="text/javascript">
+delete_saler()
+$(document).ready( function () {
+
+
+} );
+</script>
+{% endblock %}

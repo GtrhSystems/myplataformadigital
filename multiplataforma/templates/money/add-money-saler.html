@@ -1,0 +1,48 @@
+{% extends 'layout.html' %}
+{% load widget_tweaks %}
+{% load humanize %}
+{% block header %}
+ <div class="page-header">
+	  <div class="page-block">
+		  <div class="row align-items-center">
+			  <div class="col-md-8">
+				  <div class="page-header-title">
+					  <h5 class="m-b-10">Agregar saldo a vendedor</h5>
+					  <p class="m-b-0">Ingrese el valor del saldo a agregar</p>
+				  </div>
+			  </div>
+
+		  </div>
+	  </div>
+  </div>
+{% endblock %}
+{% block content %}
+<div class="row">
+	<div class="col-md-12">
+		<div class="card">
+			<div class="card-header">
+				<h5>Agregar saldo a {{ saler.first_name }} {{ saler.last_name }} ({{ saler.username }})</h5> <strong style="background-color:#00ffff;">Saldo Actual : ${{ money|intcomma }}</strong>
+				<span>Digite la información requerida</span>
+			</div>
+			<div class="card-block">
+				<form class="form-material staff_register" method="post">
+					{% csrf_token %}
+
+					<div class="form-group form-default">
+						{{ form.money|add_class:'form-control' }}
+						<span class="form-bar"></span>
+						<label class="float-label">Dinero a agregar</label>
+					</div>
+
+					<input class="btn btn-primary btn-md btn-block waves-effect text-center m-b-20 send-register" type="submit" value="Agregar Saldo"/>
+				</form>
+				{{ form.errors }}
+
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+checkusername()
+</script>
+{% endblock %}

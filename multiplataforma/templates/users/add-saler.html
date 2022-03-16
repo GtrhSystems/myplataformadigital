@@ -1,0 +1,98 @@
+{% extends 'layout.html' %}
+{% load widget_tweaks %}
+{% load humanize %}
+{% block header %}
+ <div class="page-header">
+	  <div class="page-block">
+		  <div class="row align-items-center">
+			  <div class="col-md-8">
+				  <div class="page-header-title">
+					  <h5 class="m-b-10">Crear nuevo vendedor</h5>
+					  <p class="m-b-0">Ingrese los datos en el formulario</p>
+				  </div>
+			  </div>
+
+		  </div>
+	  </div>
+  </div>
+{% endblock %}
+{% block content %}
+<div class="row">
+	<div class="col-md-12">
+		<div class="card">
+			<div class="card-header">
+				<h5>Nuevo vendedor</h5>
+				<span>Digite la información requerida</span>
+			</div>
+			<div class="card-block">
+				<form class="form-material staff_register" method="post">
+					{% csrf_token %}
+						<div class="form-group form-default">
+						{{ form.username|add_class:'form-control' }}
+						<span class="form-bar"></span>
+						<label class="float-label username">Username</label>
+					</div>
+					<div class="form-group form-default">
+						{{ form.first_name|add_class:'form-control' }}
+						<span class="form-bar"></span>
+						<label class="float-label">Nombres</label>
+					</div>
+					<div class="form-group form-default">
+						{{ form.last_name|add_class:'form-control' }}
+						<span class="form-bar"></span>
+						<label class="float-label">Apellidos</label>
+					</div>
+					<div class="form-group form-default">
+						{{ form.email|add_class:'form-control' }}
+						<span class="form-bar"></span>
+						<label class="float-label">Correo</label>
+					</div>
+					<div class="form-group form-default">
+						{{ form2.address|add_class:'form-control' }}
+						<span class="form-bar"></span>
+						<label class="float-label">Dirección</label>
+					</div>
+					<div class="form-group form-default">
+						<label class="float-label">Ciudad</label>
+						{{ form2.city|add_class:'form-control js-example-basic-single' }}
+						<span class="form-bar"></span>
+
+					</div>
+					<div class="form-group form-default">
+						{{ form2.phones|add_class:'form-control' }}
+						<span class="form-bar"></span>
+						<label class="float-label">Telefonos</label>
+					</div>
+					<div class="form-group form-default">
+						{{ form.password1|add_class:'form-control' }}
+						<span class="form-bar"></span>
+						<label class="float-label">Contraseña</label>
+					</div>
+					<div class="form-group form-default">
+						{{ form.password2|add_class:'form-control' }}
+						<span class="form-bar"></span>
+						<label class="float-label">Confirm la contraseña</label>
+					</div>
+					<div class="form-group form-default">
+						{{ form2.observations|add_class:'form-control' }}
+						<span class="form-bar"></span>
+						<label class="float-label">Observaciones</label>
+					</div>
+					<div class="form-group form-default">
+						{{ form.is_active }}
+						<span class="form-bar"></span>
+						<label class="float-label">Activar?</label>
+					</div>
+
+					<input class="btn btn-primary btn-md btn-block waves-effect text-center m-b-20 send-register" type="submit" value="Crear Vendedor"/>
+				</form>
+				{{ form.errors }}
+				{{ form2.errors }}
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+checkusername()
+</script>
+{% endblock %}
