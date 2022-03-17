@@ -5,6 +5,7 @@ from django.http import HttpResponse, JsonResponse
 from .decorators import usertype_in_view
 from .forms import  *
 from .models import *
+import datetime
 
 
 @login_required
@@ -21,12 +22,14 @@ def check_user_type(request):
 def context_app(request):
     #messages = MessagesUser.get_messages_actives()
     user_type = check_user_type(request)
-    #money = 0
-    #if user_type != 'superuser':
-    #    money = MoneyPoint.getMyMoney(request.user.id)
+    money = 0
+    if user_type == 'vendedor':
+        money = MoneysSaler.Get_money_saler(request.user.id)
+    products = Product.objects.filter(active=True)
     context = {
         'user_type': user_type,
-    #    'money': money,
+        'products': products,
+        'money': money,
     }
     return context
 
@@ -111,7 +114,7 @@ def ActivateStaffAjaxView(request, pk):
     except:
         return HttpResponse("False")
 
-    #************************* vendedores ***************************************
+
 
 @usertype_in_view
 @login_required
@@ -279,6 +282,51 @@ def PlanPlatformCreateView(request, id):
             return redirect('add-plan-subproduct', id)
 
     return render(request, 'platforms/add_plan.html', {'form': form,'subproduct': subproduct, 'plans': plans })
+
+
+#************************* vendedores ***************************************
+
+@usertype_in_view
+@login_required
+def PlatformsView(request, name):
+
+    product = Product.objects.filter(name=name).first()
+    data = []
+    subproducts_my_staff = SubProduct.my_subproducts_authorized(request.user , product)
+    for subproduct in subproducts_my_staff:
+        plansaler = PriceSubproductSaler.objects.filter(saler=request.user, subproduct=subproduct).first()
+        plancount = len(PlansPlatform.objects.filter(subproduct=subproduct))
+        if plansaler:
+            plan_saler_product = {'id': subproduct.id, 'name': subproduct.name, 'price': plansaler.price,  "conteo": plancount}
+            data.append(plan_saler_product)
+
+    return render(request, 'platforms/plans_product.html', {'subproducts': data, 'product': product})
+
+
+@login_required
+def SalePlatforms(request, id):
+
+    plan = PlansPlatform.objects.filter(id=id).first()
+    my_staff = SalerStaff.My_staff(request.user)
+    subproduct = SubProduct.objects.filter(owner=my_staff.staff, id=plan.subproduct_id, active=True).select_related('product').first()
+    if plan:
+        money_user = MoneysSaler.Get_money_saler(request.user)
+        if money_user:
+            plansalerprice = PriceSubproductSaler.objects.filter(subproduct=subproduct, saler=request.user).first()
+            if plansalerprice.price > money_user.money:
+                return HttpResponse("No tienes suficiente saldo para esta transacción")
+            else:
+                remains = money_user.Subtract_money(plansalerprice.price , "Producto: " + str(subproduct.product.name) + " Subproducto: " + str( subproduct.name) + " Correo: " + plan.email)
+                date_limit = datetime.datetime.now() + datetime.timedelta(days=30)
+                PlanMultiplatformSales.objects.create(saler=request.user, subproduct=subproduct, price=plansalerprice.price,
+                                                      email=plan.email, password=plan.password,
+                                                      profile=plan.profile, pin=str(plan.pin),
+                                                      date_limit=date_limit)
+                plan.delete()
+                return render(request, 'platforms/sale_plan.html',  {'plan': plan, 'subproduct': subproduct, 'product': subproduct.product})
+        return HttpResponse("No tienes suficiente saldo para esta transacción")
+    else:
+        return HttpResponse("Este plan no está disponible en este momento")
 
 
 #delete

@@ -24,7 +24,9 @@ urlpatterns = [
     path('add-subproduct/<int:id>', views.SubProductCreateView, name='add-subproduct'),
     path('edit-subproduct/<int:id>', views.SubProductEditView, name='edit-subproduct'),
     path('add-plan-subproduct/<int:id>', views.PlanPlatformCreateView, name='add-plan-subproduct'),
-
+    #multiplataformas-vendedor
+    path('platform/<str:name>', views.PlatformsView, name='platforms'),
+    path('platform/sale/<int:id>', views.SalePlatforms, name='sale-platform'),
 
     #Borrado de registros
     path('delete/<str:model>/<str:id>', views.DeleteRegister, name='delete-table-id'),

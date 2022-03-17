@@ -56,6 +56,13 @@ class SubProduct(models.Model):
     def __str__(self):
         return str(self.name)
 
+    @classmethod
+    def my_subproducts_authorized(self, saler, product):
+
+        my_staff = SalerStaff.My_staff(saler)
+        subproducts_my_staff = self.objects.filter(owner = my_staff.staff, product=product)
+        return subproducts_my_staff
+
 
 class PlansPlatform(models.Model):
 
@@ -83,7 +90,7 @@ class SalerStaff(models.Model):
     @classmethod
     def My_staff(self, saler):
 
-        my_staff = self.objects.filter(saler=saler).filter(user__is_active=True).first()
+        my_staff = self.objects.filter(saler=saler).filter(staff__is_active=True).first()
         return my_staff
 
     @classmethod
@@ -136,7 +143,7 @@ class MoneysSaler(models.Model):
         if money >= money_to_discount:
             remains = money - money_to_discount
             if remains >= 0:
-                MoneysUser.objects.create(money=remains, saler_id=cls.user_id, detail=detail,
+                MoneysSaler.objects.create(money=remains, saler=cls.saler, detail=detail,
                                           transaction_money=money_to_discount)
                 return remains
         return False
@@ -170,9 +177,29 @@ class MoneysSaler(models.Model):
         return money_saler
 
     def __str__(self):
-        return str(self.saler)
+        return str(self.money)
 
-    #class PlanPriceBySaler(models.Model):
+class PlanMultiplatformSales(models.Model):
+
+    saler = models.ForeignKey(User, on_delete=models.CASCADE)
+    subproduct = models.ForeignKey(SubProduct, on_delete=models.CASCADE, default="")
+    price = models.IntegerField(default=0)
+    email = models.CharField(max_length=150, default="")
+    password = models.CharField(max_length=30, default="")
+    profile = models.CharField(max_length=30, default="")
+    pin = models.CharField(max_length=5, default="")
+    date = models.DateTimeField(auto_now_add=True)
+    update = models.BooleanField(default=1, verbose_name="Resuelto?:")
+    date_limit = models.DateTimeField(verbose_name="Fecha de vencimiento", blank=True, null=True, auto_now_add=False)
+    message_saler = models.CharField(max_length=150, default="")
+    message_admin = models.CharField(max_length=150, default="")
+    months = models.IntegerField(default=0)
+    is_renovation = models.BooleanField(default=0, verbose_name="Es renovacion?:")
+    accepted = models.BooleanField(default=1, blank=True, null=True, verbose_name="Aceptada?:")
+    revised = models.BooleanField(default=0, verbose_name="Revisada?:")
+
+
+        #class PlanPriceBySaler(models.Model):
 
 #    saler = models.ForeignKey(User, default=1, verbose_name="Vendedor", on_delete=models.CASCADE)
 #    plan = models.ForeignKey(Plan, default=1, verbose_name="Plan", on_delete=models.CASCADE)

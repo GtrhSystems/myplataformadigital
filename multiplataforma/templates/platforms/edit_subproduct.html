@@ -80,7 +80,7 @@
 									  
 									</div>
 								</div>
-								<input class="btn btn-lg btn-success btn-block" type="submit" value="Editar Producto"/> 
+								<input class="btn btn-primary btn-md btn-block waves-effect text-center m-b-20" type="submit" value="Editar Producto"/>
 					
 							</form>
 							{{  form.errors }}
@@ -91,19 +91,5 @@
 </div>
 
 
-<script>
-$(document).ready( function () {
-    $('#packages-table').DataTable();
-    $('#salers-table').DataTable({
-    	paging: false
-    });
-    $('#id_price').keyup(function(){
-    	price = $(this).val()    	
-    	$('.price').val(price)
-    })
-} );
-
-
-</script>
 
 {% endblock %}

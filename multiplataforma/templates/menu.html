@@ -86,39 +86,12 @@
               </li>
           </ul>
       </li>
-      <li class="user-profile header-notification">
-          <a href="#!" class="waves-effect waves-light">
-              <img src="assets/images/avatar-4.jpg" class="img-radius" alt="User-Profile-Image">
-              <span>John Doe</span>
-              <i class="ti-angle-down"></i>
-          </a>
-          <ul class="show-notification profile-notification">
-              <li class="waves-effect waves-light">
-                  <a href="#!">
-                      <i class="ti-settings"></i> Settings
-                  </a>
-              </li>
-              <li class="waves-effect waves-light">
-                  <a href="user-profile.html">
-                      <i class="ti-user"></i> Profile
-                  </a>
-              </li>
-              <li class="waves-effect waves-light">
-                  <a href="email-inbox.html">
-                      <i class="ti-email"></i> My Messages
-                  </a>
-              </li>
-              <li class="waves-effect waves-light">
-                  <a href="auth-lock-screen.html">
-                      <i class="ti-lock"></i> Lock Screen
-                  </a>
-              </li>
-              <li class="waves-effect waves-light">
-                  <a href="auth-normal-sign-in.html">
-                      <i class="ti-layout-sidebar-left"></i> Logout
-                  </a>
-              </li>
-          </ul>
+      <li class="user-profile header-notification text-white">
+             {% load humanize %}
+              <span> {% if user_type == "vendedor" %}
+                        Saldo: <strong>${{ money|intcomma }}</strong>
+                     {% endif %}
+              </span>
       </li>
   </ul>
 </div>
@@ -267,6 +240,31 @@
                           <span class="pcoded-mcaret"></span>
                       </a>
                   </li>
+
+
+              </ul>
+          </li>
+      </ul>
+      {% endif %}
+      {% if user_type == "vendedor" %}
+      <div class="pcoded-navigation-label" data-i18n="nav.category.navigation">Gestion</div>
+      <ul class="pcoded-item pcoded-left-item">
+         <li class="pcoded-hasmenu">
+              <a href="javascript:void(0)" class="waves-effect waves-dark">
+                  <span class="pcoded-micon"><i class="ti-layout-grid2-alt"></i></span>
+                  <span class="pcoded-mtext"  data-i18n="nav.basic-components.main">Plataformas</span>
+                  <span class="pcoded-mcaret"></span>
+              </a>
+              <ul class="pcoded-submenu">
+                  {% for product in products  %}
+                      <li class=" ">
+                          <a href="{% url 'platforms' product.name %}" class="waves-effect waves-dark">
+                              <span class="pcoded-micon"><i class="ti-angle-right"></i></span>
+                              <span class="pcoded-mtext" data-i18n="nav.basic-components.alert">{{ product.name }}</span>
+                              <span class="pcoded-mcaret"></span>
+                          </a>
+                      </li>
+                  {% endfor %}
 
 
               </ul>

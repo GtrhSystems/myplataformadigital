@@ -29,7 +29,10 @@ def usertype_in_view(function):
                  'edit-subproduct',
                  'add-plan-subproduct'
                  ]
-        vendedor = []
+        vendedor = ['platforms',
+                    'sale-platform',
+
+                    ]
         superuser = ['add-product',
                      'staff-list',
                      'activate-staff',
