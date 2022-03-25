@@ -1,0 +1,15 @@
+<div class="modal-header">
+    <h2>¿Desea vender una cuenta del paquete {{ subproduct.name }}?</h2>
+    <button type="button" class="close" data-dismiss="modal"><i class="ti-close"></i></button>
+</div>
+<div class="modal-body">
+    <form method="post" action="{% url 'sale-count-package' id %}">
+	{% csrf_token %}
+        <div class="form-group form-default">
+						<input type="number" name="price" maxlength="10" class="form-control" required>
+						<span class="form-bar"></span>
+						<label class="float-label">Precio de venta</label>
+					</div>
+    <button type="submit" id="sale" class="btn btn-primary btn-md btn-block waves-effect text-center m-b-20">Aceptar</button>
+    </form>
+</div>

@@ -52,7 +52,7 @@
 							<td>{{ form.pin|add_class:'form-control' }}</td>
 							<p class="help-block">Introduce el pin.</p>
 						</div>
-						<input class="btn  btn btn-primary waves-effect waves-light btn-lg btn-block create_plan" type="submit" value="Crear Plan"/>
+						<input class="btn  btn btn-primary waves-effect waves-light btn-lg btn-block create_plan" type="submit" value="Crear cuenta para este paquete"/>
 					</fieldset>
 				</form>
 				{{ errors }}
@@ -69,8 +69,13 @@
 <div class="row">
 	<div class="col-lg-12">
 		<div class="card">
-			<div class="card-header">
+			<div class="card-header row align-items-center">
 				<h5>Listado de Proveeedores no activos</h5>
+				{% if plans|length > 0 %}
+				 <div class="col-12 text-right ">
+					<button id="add-marketplace" id_package="{{ id }}" class="btn btn-info btn-round waves-effect waves-light">Publicar en tienda</button>
+				 </div>
+				{% endif %}
 			</div>
 			<div class="card-block table-border-style">
 				<div class="table-responsive">

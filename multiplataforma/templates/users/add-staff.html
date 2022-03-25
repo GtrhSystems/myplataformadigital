@@ -19,7 +19,7 @@
 		  <div class="row align-items-center">
 			  <div class="col-md-8">
 				  <div class="page-header-title">
-					  <h5 class="m-b-10">REGISTRO COMO PROVEEDOR</h5>
+					  <h5 class="m-b-10">REGISTRO DE STAFFS</h5>
 					  <p class="m-b-0">Ingrese los datos en el formulario</p>
 				  </div>
 			  </div>
@@ -33,13 +33,24 @@
 	<div class="col-md-12">
 		<div class="card">
 			<div class="card-header">
-				<h5>Nuevo proveedor</h5>
+				<h5>Nuevo Colaborador</h5>
 				<span>Digite la información requerida</span>
 			</div>
 			<div class="card-block">
-				<form class="form-material staff_register" method="post">
+				<form class="form-material staff_register" method="post"  enctype="multipart/form-data">
 					{% csrf_token %}
-						<div class="form-group form-default">
+					<div class="form-group form-default">
+						{{ form.group|add_class:'form-control' }}
+						<span class="form-bar"></span>
+						<label class="float-label username">Tipo de usuario</label>
+					</div>
+					<div class="form-group">
+						<label>Fotografia:</label>
+						{{ form2.image }}
+						<span class="form-bar"></span>
+
+					</div>
+					<div class="form-group form-default">
 						{{ form.username|add_class:'form-control' }}
 						<span class="form-bar"></span>
 						<label class="float-label username">Username</label>
@@ -62,14 +73,14 @@
 					<div class="form-group form-default">
 						{{ form2.address|add_class:'form-control' }}
 						<span class="form-bar"></span>
-						<label class="float-label">Dirección</label>
+						<label class="float-label">Dirección y ciudad</label>
 					</div>
 					<div class="form-group form-default">
-						<label class="float-label">Ciudad</label>
-						{{ form2.city|add_class:'form-control js-example-basic-single' }}
+						<label class="float-label">Pais</label>
+						{{ form2.country|add_class:'form-control js-example-basic-single' }}
 						<span class="form-bar"></span>
-
 					</div>
+
 					<div class="form-group form-default">
 						{{ form2.phones|add_class:'form-control' }}
 						<span class="form-bar"></span>
@@ -90,9 +101,12 @@
 						<span class="form-bar"></span>
 						<label class="float-label">Observaciones</label>
 					</div>
-
-					<input class="btn btn-primary btn-md btn-block waves-effect text-center m-b-20 send-register" type="submit" value="Crear Plataforma"/>
+					<input class="btn btn-primary btn-md btn-block waves-effect text-center m-b-20 send-register" type="submit" value="Registrase"/>
 				</form>
+				{% if img_obj %}
+				  	<h3>Succesfully uploaded : {{img_obj.title}}</h3>
+					<img src="{{ img_obj.image.url}}" alt="connect" style="max-height:300px">
+				{% endif %}
 				{{ form.errors }}
 				{{ form2.errors }}
 			</div>

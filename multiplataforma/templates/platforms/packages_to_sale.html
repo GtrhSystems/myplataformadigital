@@ -1,0 +1,70 @@
+{% extends 'layout.html' %}
+{% load humanize %}
+{% block menu %}
+	 {% include 'menu.html' %}
+{% endblock %} 
+{% block header %}
+
+ <div class="page-header">
+	  <div class="page-block">
+		  <div class="row align-items-center">
+			  <div class="col-md-8">
+				  <div class="page-header-title">
+					  <h5 class="m-b-10">Paquetes disponiblesde {{ product.name }}</h5>
+                      <span>Seleccione el paquete a comprar</span>
+				  </div>
+			  </div>
+
+		  </div>
+	  </div>
+  </div>
+{% endblock %}
+{% block content %}
+<div class="row">
+    {% for package in packages %}
+        <div class="col-xl-4 col-md-7">
+            <div class="card">
+                <div class="card-block">
+                    <div class="row align-items-center">
+                        <div class="col-8">
+                            <h4 class="text-c-purple">{{ package.name|upper }}</h4>
+                            <h6 class="text-muted m-b-0">Precio de compra por cuenta  ${{ package.price_unity|intcomma }}</h6>
+                        </div>
+                        <div class="col-4 text-right">
+                            <img src="/static/logos/{{ package.product_name }}.jpg" alt="{{ subproduct.name }}" width="80" height="80">
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-c-purple">
+                    <div class="row align-items-center">
+                            <div class="col-7">
+                                <p class="text-white m-b-0">Cuentas disponibles: {{  package.coun_packages }}</p>
+                            </div>
+                            <div class="col-5 text-right ">
+                                <a href="#" class="sale" id = "{{ package.id }}" name_product="{{ package.name }}" >
+                                    <p class="text-white m-b-0">Vender  <i class="ti-angle-right text-white"></i></p>
+                                </a>
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor  %}
+</div>
+<!-- /.container-fluid -->
+ <!-- Modal -->
+<div id="myModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+		 	 
+	</div>
+</div>
+<script>
+ sale_package()
+
+</script>                     
+
+
+	            
+{% endblock %}

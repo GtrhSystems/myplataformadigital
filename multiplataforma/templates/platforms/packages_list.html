@@ -1,0 +1,103 @@
+{% extends 'layout.html' %}
+{% load humanize %}
+{% block menu %}
+	 {% include 'menu.html' %}
+{% endblock %} 
+{% block header %}
+<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css">
+<link rel="stylesheet" href="/static/css/fontawesome-stars.css">
+ <div class="page-header">
+	  <div class="page-block">
+		  <div class="row align-items-center">
+			  <div class="col-md-8">
+				  <div class="page-header-title">
+					  <h5 class="m-b-10">Paquetes disponibles</h5>
+                      <span>Seleccione el paquete a comprar</span>
+				  </div>
+			  </div>
+
+		  </div>
+	  </div>
+  </div>
+{% endblock %}
+{% block content %}
+<div class="row">
+    {% for package in packages %}
+        <div class="col-xl-4 col-md-7">
+            <div class="card">
+                  <div class="card-header bg-c-purple">
+                    <div class="row align-items-center">
+                        <div class="col-9">
+                           Vendedor: {{ package.owner|upper }}
+
+                                        <select class="starts" id="{{ package.owner_id }}">
+                                          <option value="1">1</option>
+                                          <option value="2">2</option>
+                                          <option value="3">3</option>
+                                          <option value="4">4</option>
+                                          <option value="5">5</option>
+                                        </select>
+
+                                <script type="text/javascript">
+                                    $('#{{ package.owner_id }}').val('{{ package.stars }}')
+                                </script>
+
+                        </div>
+                        <div class="col-9">
+                            Cuentas registradas: {{ package.counts  }}
+                        </div>
+                    </div>
+                </div>
+                <div class="card-block">
+                    <div class="row align-items-center">
+
+                        <div class="col-8">
+                            <h4 class="text-c-purple">{{ package.name|upper }}</h4>
+                            <h6 class="text-muted m-b-0">${{ package.price|intcomma }}</h6>
+                        </div>
+                        <div class="col-4 text-right">
+                            <img src="/static/logos/{{ package.product.name }}.jpg" alt="{{ subproduct.name }}" width="80" height="80">
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-c-purple">
+                    <div class="row align-items-center">
+                            <div class="col-9">
+                                <a href="#" class="sale" id="{{ package.id }}" name_product="{{ package.name }}" >
+                                    <p class="text-white m-b-0">Comprar</p>
+                                 </a>
+                            </div>
+                            <div class="col-3 text-right ">
+                                <a href="#" class="sale" id = "{{ package.id }}" name_product="{{ package.name }}" >
+                                    <i class="ti-angle-right text-white"></i>
+                                </a>
+                            </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor  %}
+</div>
+<!-- /.container-fluid -->
+ <!-- Modal -->
+<div id="myModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+		 	 
+	</div>
+</div>
+              <script src="/static/js/barrating.js"></script>
+<script type="text/javascript">
+
+
+
+ buy_package()
+
+</script>                     
+
+
+	            
+{% endblock %}

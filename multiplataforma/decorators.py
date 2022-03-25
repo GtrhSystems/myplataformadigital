@@ -20,25 +20,37 @@ def usertype_in_view(function):
     def wrap(request, *args, **kwargs):
         staff = ['saler-add',
                  'saler-list',
-                 'saler-edit',
-                 'add-money-saler',
                  'delete-table-id',
-                 'money-saler-list',
                  'platforms-list',
                  'add-subproduct',
-                 'edit-subproduct',
-                 'add-plan-subproduct'
+                 'edit-package',
+                 'add-count-package',
+                 'multiplatforms-sales',
+                 'reported-issue',
+                 'send-package-to-markeplace',
+                 'market-place',
+                 'my-packages-in-market-place'
                  ]
         vendedor = ['platforms',
-                    'sale-platform',
-
+                    'sale-count-package',
+                    'buy-platform',
+                    'multiplatforms-sales',
+                    'report-issue-platform',
+                    'delete-table-id',
+                    'market-place',
+                    'qualify-saler-list',
+                    'qualify-saler'
                     ]
         superuser = ['add-product',
                      'staff-list',
                      'activate-staff',
                      'check-username',
                      'activate-ajax-staff',
-                     'delete-table-id'
+                     'delete-table-id',
+                     'reported-issue',
+                     'add-money-saler',
+                     'money-saler-list',
+                     'market-place'
                      ]
         request_url = request.__dict__['path_info'] #captura todo el request en un dict      
         match = resolve(request_url) #devuelve el name de la vista

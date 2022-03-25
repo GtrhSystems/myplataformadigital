@@ -1,0 +1,85 @@
+{% extends 'layout.html' %} 
+{% block menu %} 
+	{% include 'menu.html' %}
+{% endblock %} 
+{% load widget_tweaks %} 
+{% block header %}
+ <div class="page-header">
+	  <div class="page-block">
+		  <div class="row align-items-center">
+			  <div class="col-md-8">
+				  <div class="page-header-title">
+					  <h5 class="m-b-10">REGISTRO COMO PROVEEDOR</h5>
+					  <p class="m-b-0">Ingrese los datos en el formulario</p>
+				  </div>
+			  </div>
+
+		  </div>
+	  </div>
+  </div>
+{% endblock %}
+{% block content %}
+<div class="row">
+	<div class="col-md-12">
+		<div class="card">
+			<div class="card-header">
+				<h5>Nuevo proveedor</h5>
+				<span>Digite la información requerida</span>
+			</div>
+			<div class="card-block">
+				<form method="post">
+					{% csrf_token %}
+					<fieldset>
+					<div class="form-group">
+						<label>Solucionado?:</label>
+						<td>{{ form.state }}</td>
+					</div>
+					<div class="form-group">
+						<label>Respuesta:</label>
+						<td>{{ form.response|add_class:'form-control' }}</td>
+						<p class="help-block">Digite la respuesta al vendedor</p>
+					</div>
+
+					<input class="btn btn-primary btn-md btn-block waves-effect text-center m-b-20 " type="submit" value="Enviar respuesta"/>
+
+					{% if errors %}
+							{{ errors }}
+						{% endif %}
+					 </fieldset>
+				</form>
+			</div>
+			<!-- /.col-lg-6 (nested) -->
+		</div>
+		<!-- /.row (nested) -->
+	</div>
+	<!-- /.panel-body -->
+</div>
+
+
+<script type="text/javascript">
+$(document).ready( function () {
+    $('#planes-table').DataTable({
+    	paging: false
+	});
+} );
+
+$( ".check" ).each(function(index) {
+    $(this).on("change", function(){     	
+     	var id_plan = $(this).attr('id');   	      	
+    	check_value = $(this).prop("checked")
+    	if (check_value == true){
+    		action = "add"
+    	}else{
+    		action = "delete"
+    	}	
+    	$.get('/plan/'+action+'/{{ id }}/'+id_plan,function(data){    		
+    		$('.modal-content').html(data)
+    		$("#myModal").modal({show: true})
+   		})  	
+	     	
+    });
+});
+
+</script>
+
+{% endblock %}

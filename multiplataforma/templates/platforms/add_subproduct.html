@@ -10,8 +10,8 @@
 		  <div class="row align-items-center">
 			  <div class="col-md-8">
 				  <div class="page-header-title">
-					  <h5 class="m-b-10">Tus subproductos de {{  product.name }}</h5>
-					  <p class="m-b-0">Crear nuevos subproductos y editar los existentes</p>
+					  <h5 class="m-b-10">Tus paquetes de {{  product.name }}</h5>
+					  <p class="m-b-0">Crear nuevo paquete y editar los existentes</p>
 				  </div>
 			  </div>
 
@@ -26,87 +26,38 @@
 <div class="row">
 	<div class="col-md-12">
 		<div class="card">
-			<div class=" accordion-block">
-				<div id="accordion" role="tablist" >
-					<div class="accordion-panel">
-						<div class="accordion-heading" role="tab" id="headingOne">
-							<h3 class="card-title accordion-title">
-								<a class="accordion-msg waves-effect waves-dark scale_active collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-								Crear nuevo plan para {{  product.name }}
-								</a>
-							</h3>
-						</div>
-						<div id="collapseOne" class="panel-collapse in collapse" role="tabpanel" aria-labelledby="headingOne" style="">
-							<div class="accordion-content accordion-desc">
-
-								<form class="form-material" method="post">
-										<div class="card">
-											<div class="card-header">
-												<h5>Nuevo producto para {{ product.name }}</h5>
-												<span>Digite el nombre para el nuevo subproducto</span>
-											</div>
-												<div class="card-block">
-													{% csrf_token %}
-													<div class="form-group form-default">
-														{{ form.name|add_class:'form-control' }}
-														<span class="form-bar"></span>
-														<label class="float-label">Nombre</label>
-													</div>
-													<div class="form-group form-default">
-														{{ form.price|add_class:'form-control' }}
-														<span class="form-bar"></span>
-														<label class="float-label">Precio</label>
-													</div>
-													<div class="form-group">
-														<label>{{ form.renewable.label_tag }}</label>
-															<td>{{ form.renewable }}</td>
-															<p class="help-block">Es renovable?.</p>
-													</div>
-													<div class="form-group form-default">
-														{{ form.instructions|add_class:'form-control' }}
-														<span class="form-bar"></span>
-														<label class="float-label">Instrucciones</label>
-													</div>
-											{{  form.errors }}
-											</div>
-										</div>
-
-										<div class="card">
-											<div class="card-header">
-												<h5>Pecio para vendedores</h5>
-												<span>Editar precio individual que tendrá cada  vendedor</span>
-											</div>
-											<div class="card-block">
-												<table class="table table-no-pagin table-hover">
-													<thead>
-														<tr>
-															<th>#</th>
-															<th>Vendedor</th>
-															<th>Precio</th>
-														</tr>
-													</thead>
-													<tbody>
-													   {% for saler in salers %}
-														<tr class="gradeA odd" role="row">
-															<td>{{forloop.counter}}</td>
-															<td>{{ saler.saler.first_name }} {{ saler.saler.last_name }} ({{ saler.saler.username }})</td>
-															<td><input name="{{ saler.saler.id }}" type="text" class="form-control input-sm price" placeholder="Precio exclusivo" aria-controls="salers-table"></td>
-														</tr>
-													{% endfor %}
-													</tbody>
-												</table>
-												<input class="btn btn-primary btn-md btn-block waves-effect text-center m-b-20" type="submit" value="Crear plan para {{ product.name }}"/>
-											</div>
-										</div>
-								</form>
-								<!-- /.panel-body -->
-							</div>
-							<!-- /.panel -->
-						</div>
-
-					</div>
-				</div>
+			<div class="card-header">
+				<h5>Crear nuevo plan para {{  product.name }}</h5>
 			</div>
+			<div class="card-block">
+				<form class="form-material" method="post">
+						<div class="card">
+								<div class="card-block">
+									{% csrf_token %}
+									<div class="form-group form-default">
+										{{ form.name|add_class:'form-control' }}
+										<span class="form-bar"></span>
+										<label class="float-label">Nombre</label>
+									</div>
+									<div class="form-group form-default">
+										{{ form.price|add_class:'form-control' }}
+										<span class="form-bar"></span>
+										<label class="float-label">Precio</label>
+									</div>
+									<div class="form-group form-default">
+										{{ form.instructions|add_class:'form-control' }}
+										<span class="form-bar"></span>
+										<label class="float-label">Instrucciones</label>
+									</div>
+							{{  form.errors }}
+							</div>
+						</div>
+						<input class="btn btn-primary btn-md btn-block waves-effect text-center m-b-20" type="submit" value="Crear nuevo paquete para {{ product.name }}"/>
+				</form>
+				<!-- /.panel-body -->
+			</div>
+							<!-- /.panel -->
+
 		</div>
 	</div>
 </div>
@@ -114,7 +65,7 @@
 	<div class="col-lg-12">
 		<div class="card">
 			<div class="card-header">
-				<h5>Listado de planes {{  product.name }} activos</h5>
+				<h5>Listado de paquetes {{  product.name }} activos</h5>
 			</div>
 			<div class="card-block table-border-style">
 				<div class="table-responsive">
@@ -134,8 +85,8 @@
 								<td>{{ subproduct.name }}</td>
 								<td>${{ subproduct.price|intcomma }}</td>
 								<td class="center">
-									<a href="{% url 'add-plan-subproduct' subproduct.id %}"><i class="fa fa-fw" aria-hidden="true" title="Agregar cuenta"></i></a>
-									<a href="{% url 'edit-subproduct' subproduct.id %}"><i class="fa fa-fw" aria-hidden="true" title="Edit"></i></a>
+									<a href="{% url 'add-count-package' subproduct.id %}"><i class="fa fa-fw" aria-hidden="true" title="Agregar cuenta"></i></a>
+									<a href="{% url 'edit-package' subproduct.id %}"><i class="fa fa-fw" aria-hidden="true" title="Edit"></i></a>
 									<a href="#" class="delete"  id="{{ subproduct.id }}"><i class="fa fa-fw  aria-hidden="true" title="Borrar"></i></a>
 								</td>
 							</tr>

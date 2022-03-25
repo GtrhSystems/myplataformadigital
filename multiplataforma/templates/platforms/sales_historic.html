@@ -1,0 +1,129 @@
+{% extends 'layout.html' %} 
+{% block menu %} 
+	{% include 'menu.html' %}
+{% endblock %} 
+{% load widget_tweaks %} 
+{% block content %}
+{% load humanize %}
+
+<div id="page-wrapper">
+	<div class="container-fluid">
+	{{ first_day }}
+	<div class="row">
+         <div class="col-lg-12">
+             <h1 class="page-header">Listado de ventas en plataformas</h1>
+         </div>
+         <!-- /.col-lg-12 -->
+     </div>
+		<!-- /.row -->	
+			<div class="panel-body">				
+				<div class="row">
+					<div class="col-lg-12">
+						<div class="panel panel-default">
+							<div class="panel-heading">Ventas registradas de plataformas</div>
+							<!-- /.panel-heading -->
+							<div class="panel-body">
+								<div >
+									<div id="dataTables-example_wrapper" class="dataTables_wrapper form-inline dt-bootstrap no-footer">										
+										<div class="row">
+											<div class="col-sm-12">									
+												<table  id="sales-table" class="table ">
+												    <thead>
+												        <tr>												        										           							            
+												            <th>Fecha</th>												           
+												            <th>Subproducto</th>
+												            <th>Precio</th>
+												            <th>Email</th>
+												            <th>Vendedor</th>
+												            												            
+												            <th>Contraseña</th>
+												            <th>Perfil</th>
+												            <th>Pin</th>												          
+												            <th>Vence</th>											         						          
+												            <th>Accion</th>												            												          						            
+												        </tr>
+												    </thead>
+												    <tbody>
+												     
+												    </tbody>
+												</table>								
+											  
+											</div>
+										</div>
+										
+									</div>
+								</div>
+								<!-- /.table-responsive -->
+								
+							</div>
+							<!-- /.panel-body -->
+						</div>
+						<!-- /.panel -->
+					</div>
+					<!-- /.col-lg-12 -->
+				</div>
+						<!-- /.row (nested) -->
+						
+		</div>	
+	</div>
+</div>
+
+<!-- Modal -->
+<div id="myModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    
+    <!-- Modal content-->
+    <div class="modal-content">
+    
+  </div>
+ 
+</div>
+
+
+<script>
+$(document).ready(function() {
+	
+    $('#sales-table').dataTable({
+        order: [[ 0, "desc" ]],
+        columnDefs: [
+			 {
+                name: 'name',
+                orderable: true,
+                searchable: true,
+                targets: [0]
+            },
+            {
+                name: 'description',
+                orderable: true,
+                searchable: true,
+                targets: [1]
+            }
+         
+        ],
+        searching: true,
+        processing: true,
+        serverSide: true,
+        stateSave: true,
+        ajax: "{% url 'multiplatforms-historic_sales_list' %}"
+    });
+   
+});
+    
+    
+
+$('#sales-table tbody').on("click", ".report" , function(event){       
+	event.preventDefault()
+	id = $(this).attr('id')	
+	$("#myModal").modal({show: true})
+	$.get('/report-issue/Multiplataforma/'+ id ,function(data){    		
+  		$('.modal-content').html(data)
+  		
+ 	}) 
+})  
+
+
+
+ 	
+</script>
+
+{% endblock %}

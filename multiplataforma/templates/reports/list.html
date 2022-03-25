@@ -1,0 +1,104 @@
+{% extends 'layout.html' %}
+{% load humanize %}
+{% load widget_tweaks %}
+{% block menu %}
+	{% include 'menu.html' %}
+{% endblock %}
+{% block header %}
+ <div class="page-header">
+	  <div class="page-block">
+		  <div class="row align-items-center">
+			  <div class="col-md-8">
+				  <div class="page-header-title">
+					  <h5 class="m-b-10">Reporte de errores</h5>
+				  </div>
+			  </div>
+		  </div>
+	  </div>
+  </div>
+{% endblock %}
+{% block content %}
+
+<div class="row">
+	<div class="col-lg-12">
+		<div class="card">
+			<div class="card-header">
+				<h5>Listado de reportes hechos</h5>
+			</div>
+			<div class="card-block table-border-style">
+				<div class="table-responsive">
+					<table id="sales-report-table" class="table">
+						<thead>
+							<tr>
+								<th>#</th>
+								<th>Usuario</th>
+								<th>Email</th>
+								<th>Plataforma</th>
+								<th>Estado</th>
+								<th>Fecha</th>
+								<th>Reporte</th>
+								<th>Respuesta</th>
+								<th>Accion</th>
+							</tr>
+						</thead>
+						<tbody>
+						   {% for report in reports %}
+
+							<tr class="gradeA odd" role="row">
+								<td >{{forloop.counter}}</td>
+								<td >{{ report.user.username }}</td>
+								<td>{{ report.email }}</td>
+								<td>{{ report.platform }}</td>
+								<td>
+								{% if report.state == True %}
+									Respondido
+								{% else %}
+									Pendiente
+								{% endif %}
+								</td>
+								<td>{{ report.date|date:"Y/M/d P" }}</td>
+								<td>{{ report.issue }}</td>
+								<td>{{ report.response }}</td>
+								{% if user_type == "superuser" or  user_type == "staff" %}
+								<td>
+									<a  href="{% url 'reported-issue' report.id %}"><i class="ti-comment-alt"></i></a>
+								</td>
+								{% else %}
+								<td>
+									<a href="#" class="delete"  id="{{ report.id }}"><i class="fa fa-fw"  aria-hidden="true" title="Delete"></i></a>
+								</td>
+								{% endif %}
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+
+		</div>
+	</div>
+	<!-- /.table-responsive -->
+
+</div>
+
+<script type="text/javascript">
+$(document).ready( function () {
+    $('#sales-report-table').DataTable( {
+        responsive: true
+    });
+
+} );
+
+$('body').on("click", ".delete" , function(event){
+    	event.preventDefault()
+     	var id = $(this).attr('id');
+     	var mensaje = confirm("Desea eliminar este reporte?");
+		if (mensaje) {
+			$.get('/delete/IssuesReport/'+id ,function(data){
+	    		alert(data)
+	    		location.reload();
+	    	})
+		}
+});
+</script>
+{% endblock %}

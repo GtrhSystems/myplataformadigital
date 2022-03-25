@@ -1,0 +1,91 @@
+{% extends 'layout.html' %}
+{% load humanize %}
+{% block menu %}
+	 {% include 'menu.html' %}
+{% endblock %}
+{% block header %}
+{% load static %}
+<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css">
+<link rel="stylesheet" href="/static/css/fontawesome-stars.css">
+ <div class="page-header">
+	  <div class="page-block">
+		  <div class="row align-items-center">
+			  <div class="col-md-8">
+				  <div class="page-header-title">
+					  <h5 class="m-b-10">Tus vendedores</h5>
+                      <span>Seleccione el vendedor a calificar</span>
+				  </div>
+			  </div>
+
+		  </div>
+	  </div>
+  </div>
+{% endblock %}
+{% block content %}
+<div class="row">
+    {% for my_saler in my_salers %}
+        <div class="col-xl-4 col-md-7">
+            <div class="card">
+                <div class="card-block">
+                    <div class="row align-items-center">
+                        <div class="col-8">
+                            <h4 class="text-c-purple">{{ my_saler.first_name|upper }}</h4>
+                            <h6 class="text-muted m-b-0">{{ my_saler.last_name|upper }}</h6>
+                        </div>
+                        <div class="col-4 text-right">
+                            {% if my_saler.image != "" %}
+                            <img src="{{ my_saler.image }}" alt="{{ subproduct.name }}" width="80" height="80">
+                             {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-c-purple">
+                    <div class="row align-items-center">
+                        <div class="col-9">
+                            <select class="starts" id="{{ my_saler.id }}">
+                              <option value="1">1</option>
+                              <option value="2">2</option>
+                              <option value="3">3</option>
+                              <option value="4">4</option>
+                              <option value="5">5</option>
+                            </select>
+                        </div>
+                    </div>
+                    <script type="text/javascript">
+                        $('#{{ my_saler.id }}').val('{{ my_saler.stars }}')
+                    </script>
+                </div>
+            </div>
+        </div>
+    {% endfor  %}
+</div>
+<!-- /.container-fluid -->
+ <!-- Modal -->
+<div id="myModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+
+	</div>
+</div>
+
+<script src="/static/js/barrating.js"></script>
+<script type="text/javascript">
+   $(function() {
+      $('.starts').barrating({
+        theme: 'fontawesome-stars'
+      });
+   });
+
+    $('.starts').change(function(){
+        user_id =  $(this).attr('id')
+        starts  = $(this).val()
+        $.get('/user/qualify-saler/'+user_id+'/'+starts ,function(data){
+              alert(data)
+        })
+    })
+</script>
+
+
+
+{% endblock %}

@@ -20,15 +20,17 @@ def check_user_type(request):
 
 
 def context_app(request):
-    #messages = MessagesUser.get_messages_actives()
+
     user_type = check_user_type(request)
     money = 0
+    products_actives = None
     if user_type == 'vendedor':
-        money = MoneysSaler.Get_money_saler(request.user.id)
-    products = Product.objects.filter(active=True)
+        money = request.user.get_my_money()
+        products_actives = request.user.get_mys_products_actives()
+
     context = {
         'user_type': user_type,
-        'products': products,
+        'products_actives': products_actives,
         'money': money,
     }
     return context
@@ -61,36 +63,50 @@ def ProductCreateView(request):
 def RegisterStaffView(request):
 
     form = SignUpForm(request.POST or None)
-    form2 = UserDataForm(request.POST or None)
+    form2 = UserDataForm(request.POST, request.FILES or None)
     if request.method == 'POST':
-        if form.is_valid():
+        if form.is_valid() and form2.is_valid():
             user = form.save(commit=False)
             user.is_active = 0
             user.save()
             UserData = form2.save(commit=False)
             UserData.user = user
             UserData.save()
-            group = Group.objects.get(name='staff')
+            group = Group.objects.get(name=request.POST['group'])
             user.groups.add(group)
             return redirect('index')
 
     return render(request, 'users/add-staff.html', {'form': form , 'form2':form2 })
 
-@usertype_in_view
-@login_required
-def ActivateStaffView(request, authorized, pk):
 
-    staff =  User.objects.filter(is_active = authorized, id = pk).filter(groups__name = "staff").first()
-    user_data = UserData.objects.filter(user = staff).first()
-    return render(request, 'users/activate-staff.html', { 'staff':staff, 'user_data':user_data , 'authorized':authorized})
 
 
 @usertype_in_view
 @login_required
-def StaffListView(request, authorized):
+def ActivateStaffView(request, type,  pk):
 
-    staffs = User.objects.filter(is_active=authorized).filter(groups__name = "staff")
-    return render(request, 'users/staffs_not_authorized.html', {'staffs': staffs, 'authorized':authorized})
+    user =  User.objects.filter( id = pk)
+    user_data = UserData.objects.filter(user = user.first()).first()
+    products_actives = list(user.last().get_mys_products_actives().values_list('product_id', flat=True))
+    products = Product.get_all_products()
+    if request.method == 'POST':
+        if user.last().is_active == 0:
+            user.update(is_active=1)
+            ActionUser.objects.create(user=request.user, action='Activó  usuario id: ' + str(pk))
+        UserProduct.objects.filter(user=user_data.user).delete()
+        for product in products:
+            if str(product.id) in request.POST:
+                UserProduct.objects.create(user=user_data.user, product=product)
+        return redirect('staff-list', type, 1)
+    return render(request, 'users/activate-staff.html', { 'user':user.last(), 'user_data':user_data ,'products':products,  'type': type, 'products_actives':products_actives})
+
+
+@usertype_in_view
+@login_required
+def StaffListView(request, type, authorized):
+
+    users = User.objects.filter(is_active=authorized).filter(groups__name = type)
+    return render(request, 'users/list.html', {'users': users, 'authorized':authorized, 'type':type})
 
 
 @usertype_in_view
@@ -103,16 +119,6 @@ def CheckUsernameAjaxView(request, username):
     else:
         return HttpResponse("not_exist")
 
-@usertype_in_view
-@login_required
-def ActivateStaffAjaxView(request, pk):
-
-    try:
-        user = User.objects.filter(id=pk)
-        user.update(is_active = 1 )
-        return HttpResponse("True")
-    except:
-        return HttpResponse("False")
 
 
 
@@ -136,14 +142,12 @@ def CreateSalerView(request):
     return render(request, 'users/add-saler.html', {'form': form , 'form2':form2 })
 
 
+
+
 @usertype_in_view
 @login_required
 def EditSalerView(request, pk):
 
-    from .models import UserData
-    is_my_saler = SalerStaff.Is_my_saler(request.user.id, pk)
-    if not is_my_saler:
-        return redirect('index')
     user = get_object_or_404(User, pk=pk)
     form = EditUserForm(instance=user)
     user_data = UserData.objects.filter( user_id=pk).first()
@@ -168,7 +172,7 @@ def EditSalerView(request, pk):
 @login_required
 def SalerListView(request):
 
-    salers = SalerStaff.objects.select_related('staff').filter(saler__is_active=1).filter(staff__id=request.user.id)
+    salers = User.objects.filter(is_active=1).filter(groups__name = 'vendedor')
     return render(request, 'users/saler_list.html', {'salers': salers})
 
 
@@ -176,23 +180,17 @@ def SalerListView(request):
 @login_required
 def AddMoneySalerView(request, pk):
 
-    is_my_saler = SalerStaff.Is_my_saler(request.user.id, pk)
-    if not is_my_saler:
-        return redirect('index')
     form = AddMoneyForm(request.POST or None)
-    saler = User.objects.get(id = pk)
-    money_saler = MoneysSaler.Get_money_saler(saler)
+    saler = User.objects.filter(id = pk).filter(groups__name = 'vendedor').first()
+    money_saler = saler.get_my_money()
     if money_saler == 0:
         money = money_saler
     else:
         money = money_saler.money
     if request.method == 'POST':
         if form.is_valid():
-            if money_saler == 0:
-                MoneysSaler.objects.create(money=money, saler=saler, detail="Recarga de saldo", transaction_money=money)
-            else:
-                money_saler.Add_money_user(request.POST['money'], "Recarga de saldo")
-            return redirect('saler-list')
+            saler.add_money_user(money, request.POST['money'], "Recarga de saldo")
+            return redirect('staff-list','vendedor', 1)
 
     return render(request, 'money/add-money-saler.html', {'form': form, 'saler': saler, 'money':money })
 
@@ -200,7 +198,7 @@ def AddMoneySalerView(request, pk):
 @login_required
 def MoneySalerListView(request):
 
-    money_saler = MoneysSaler.Get_mys_money_saler(request.user)
+    money_saler = MoneysSaler.Get_mys_money_saler()
     return render(request, 'money/moneys-list.html', {'money_saler': money_saler})
 
 
@@ -210,8 +208,10 @@ def MoneySalerListView(request):
 @login_required
 def PlatformListView(request):
 
-    platforms = Product.objects.filter(active=True)
-    return render(request, 'platforms/platforms-list.html', {'platforms': platforms})
+    user = User.objects.get(id=request.user.id)
+    products_actives = user.get_mys_products_actives()
+
+    return render(request, 'platforms/platforms-list.html', {'products_actives': products_actives})
 
 
 @usertype_in_view
@@ -220,126 +220,282 @@ def SubProductCreateView(request, id):
 
     form = SubProductForm(request.POST or None)
     product = Product.objects.filter(id=id).first()
-    my_salers = SalerStaff.My_salers( request.user)
-    subproducts = SubProduct.objects.filter(product_id=id, active=True)
+    subproducts = SubProduct.objects.filter(product_id=id, owner=request.user,  active=True)
     if request.method == 'POST':
         if form.is_valid():
             subproduct = form.save(commit=False)
             subproduct.owner = request.user
+            subproduct.creater = request.user
             subproduct.product = product
             subproduct.save()
-            for item in request.POST:
-                if item.isnumeric():
-                    PriceSubproductSaler.objects.create(price=request.POST[item], saler_id=item, subproduct_id=subproduct.id)
+
             return redirect('add-subproduct', id)
 
-    return render(request, 'platforms/add_subproduct.html', {'form': form, 'product': product, 'subproducts': subproducts, 'salers': my_salers})
+    return render(request, 'platforms/add_subproduct.html', {'form': form, 'product': product, 'subproducts': subproducts })
 
 
 
 @usertype_in_view
 @login_required
-def SubProductEditView(request, id):
+def PackageEditView(request, id):
 
     subproduct = SubProduct.objects.filter(owner=request.user, id=id, active=True).select_related('product').first()
     if not subproduct:
         return redirect('index')
     form = SubProductForm(request.POST or None, instance=subproduct)
-    my_salers = SalerStaff.My_salers( request.user)
-    saler_price = PriceSubproductSaler.Prices_by_salers(my_salers, subproduct)
     if request.method == 'POST':
         if form.is_valid():
             form.save()
-            for item in request.POST:
-                if item.isnumeric():
-                    plan_saler_price = PriceSubproductSaler.objects.filter(saler_id=item, subproduct_id=id)
-                    if plan_saler_price:
-                        plan_saler_price.update(price=request.POST[item])
-                    else:
-                        PriceSubproductSaler.objects.create(price=request.POST[item], saler_id=item, subproduct_id=subproduct.id)
 
             ActionUser.objects.create(user=request.user, action="Edito subproducto: " + str(request.POST['name']))
             return redirect('add-subproduct', subproduct.product_id)
 
-    return render(request, 'platforms/edit_subproduct.html', {'form': form, 'subproduct': subproduct, 'salers': saler_price})
+    return render(request, 'platforms/edit_subproduct.html', {'form': form, 'subproduct': subproduct })
 
 
 @usertype_in_view
 @login_required
-def PlanPlatformCreateView(request, id):
+def AddCountToPackageView(request, id):
 
     subproduct = SubProduct.objects.filter(owner=request.user, id=id, active=True).select_related('product').first()
     if not subproduct:
         return redirect('index')
     form = PlanProductForm(request.POST or None)
-    plans = PlansPlatform.objects.filter(subproduct_id=id)
+    plans = CountsPackage.objects.filter(subproduct_id=id)
     if request.method == 'POST':
         if form.is_valid():
             plan = form.save(commit=False)
             plan.subproduct = subproduct
             plan.save()
             #ActionUser.objects.create(user=request.user, action="Creo plan para subproducto: " + str(subproduct.name))
-            return redirect('add-plan-subproduct', id)
+            return redirect('add-count-package', id)
 
-    return render(request, 'platforms/add_plan.html', {'form': form,'subproduct': subproduct, 'plans': plans })
+    return render(request, 'platforms/add_plan.html', {'form': form,'subproduct': subproduct, 'plans': plans, 'id':id })
 
+
+@usertype_in_view
+@login_required
+def SendPackageToMarketPlaceView(request, id):
+
+    subproduct = SubProduct.objects.filter(owner=request.user, id=id, active=True, for_sale=0).first()
+    if subproduct:
+        subproduct.for_sale = 1
+        subproduct.save()
+        return HttpResponse("Paquete enviado a la tienda")
+    else:
+        return HttpResponse("Hubo un error")
 
 #************************* vendedores ***************************************
 
 @usertype_in_view
 @login_required
-def PlatformsView(request, name):
+def MerketPlaceView(request):
+    context = context_app(request)
+    print(context['user_type'])
+    if context['user_type'] == "vendedor":
+        my_money = context_app(request)['money'].money
+        products_actives = list(request.user.get_mys_products_actives().values_list('product_id', flat=True))
+        staff_actives = list(User.objects.filter(groups__name = 'staff', is_active= True).values_list('id', flat=True))
+        packages_list = []
+        packages = SubProduct.objects.filter(active=True, price__lte=my_money, owner__in = staff_actives, for_sale=True).filter(product_id__in= products_actives ).order_by('-date')
+        for package in packages:
+            counts = CountsPackage.get_all_counts_package_no_sales(package)
+            stars = package.owner.get_general_stars_saler()
+            packages_list.append({ 'id': package.id, 'name': package.name, 'product': package.product ,'counts': len(counts) ,'price':package.price, 'owner_id':package.owner.id, 'owner': package.owner.first_name + " "+package.owner.last_name, 'stars':stars })
 
-    product = Product.objects.filter(name=name).first()
+        return render(request, 'platforms/packages_list.html', {'packages': packages_list})
+
+    else :
+        packages_list = []
+        packages = SubProduct.objects.filter(active=True, for_sale=True).filter(product__active=True).order_by('-date')
+        for package in packages:
+            counts = CountsPackage.get_all_counts_package_no_sales(package)
+            packages_list.append(
+                {'id': package.id, 'name': package.name, 'product': package.product, 'counts': len(counts),
+                 'price': package.price, 'owner': package.owner.first_name + " " + package.owner.last_name})
+
+        return render(request, 'platforms/packages_all_actives_list.html', {'packages': packages_list})
+
+@usertype_in_view
+@login_required
+def MyPackageMerketPlaceView(request):
+
+    products_actives = list(request.user.get_mys_products_actives().values_list('product_id', flat=True))
+    packages = SubProduct.objects.filter(active=True, owner=request.user,
+                                         for_sale=True).filter(product_id__in=products_actives).order_by('-date')
+    return render(request, 'platforms/packages_all_actives_list.html', {'packages': packages})
+
+
+
+@usertype_in_view
+@login_required
+def SalePlatformsView(request, name):
+
+    product = Product.objects.filter(name=name, active=True).first()
+    my_subproducts = request.user.get_my_buy_subproducts_actives_by_product(product)
     data = []
-    subproducts_my_staff = SubProduct.my_subproducts_authorized(request.user , product)
-    for subproduct in subproducts_my_staff:
-        plansaler = PriceSubproductSaler.objects.filter(saler=request.user, subproduct=subproduct).first()
-        plancount = len(PlansPlatform.objects.filter(subproduct=subproduct))
-        if plansaler:
-            plan_saler_product = {'id': subproduct.id, 'name': subproduct.name, 'price': plansaler.price,  "conteo": plancount}
+    for subproduct in my_subproducts:
+        packages = CountsPackage.get_all_counts_package_no_sales(subproduct)
+        if packages:
+            coun_packages = len(packages)
+            price_unity = subproduct.price / coun_packages
+            plan_saler_product = {'id': subproduct.id, 'name': subproduct.name, 'price_unity': price_unity,  "coun_packages": coun_packages, "product_name": subproduct.product.name}
             data.append(plan_saler_product)
 
-    return render(request, 'platforms/plans_product.html', {'subproducts': data, 'product': product})
+    return render(request, 'platforms/packages_to_sale.html', {'packages': data,'product':product})
 
 
+@usertype_in_view
 @login_required
-def SalePlatforms(request, id):
+def BuyPackageView(request, id):
 
-    plan = PlansPlatform.objects.filter(id=id).first()
-    my_staff = SalerStaff.My_staff(request.user)
-    subproduct = SubProduct.objects.filter(owner=my_staff.staff, id=plan.subproduct_id, active=True).select_related('product').first()
-    if plan:
-        money_user = MoneysSaler.Get_money_saler(request.user)
+    counts = CountsPackage.objects.filter(subproduct_id=id)
+    subproduct = SubProduct.objects.filter(id=id, active=True).select_related('product')
+    if subproduct and len(counts) > 0:
+        money_user = request.user.get_my_money().money
         if money_user:
-            plansalerprice = PriceSubproductSaler.objects.filter(subproduct=subproduct, saler=request.user).first()
-            if plansalerprice.price > money_user.money:
+            if subproduct.first().price > money_user:
                 return HttpResponse("No tienes suficiente saldo para esta transacción")
             else:
-                remains = money_user.Subtract_money(plansalerprice.price , "Producto: " + str(subproduct.product.name) + " Subproducto: " + str( subproduct.name) + " Correo: " + plan.email)
-                date_limit = datetime.datetime.now() + datetime.timedelta(days=30)
-                PlanMultiplatformSales.objects.create(saler=request.user, subproduct=subproduct, price=plansalerprice.price,
-                                                      email=plan.email, password=plan.password,
-                                                      profile=plan.profile, pin=str(plan.pin),
-                                                      date_limit=date_limit)
-                plan.delete()
-                return render(request, 'platforms/sale_plan.html',  {'plan': plan, 'subproduct': subproduct, 'product': subproduct.product})
+                remains = request.user.subtract_money(money_user, subproduct.first().price , "Compra: " + str(subproduct.first().name) + " a " + subproduct.first().owner.username)
+                subproduct.update(owner=request.user, for_sale=0)
+                return render(request, 'platforms/sale_plan.html',  { 'subproduct': subproduct.first() })
         return HttpResponse("No tienes suficiente saldo para esta transacción")
     else:
         return HttpResponse("Este plan no está disponible en este momento")
+
+@usertype_in_view
+@login_required
+def SaleCountView(request, id):
+
+    subproduct = SubProduct.objects.filter(id=id, active=True, owner=request.user).first()
+    if request.method == 'POST':
+        last_count_package = CountsPackage.get_all_counts_package_no_sales(subproduct).last()
+        last_count_package.sale_count(request.POST['price'])
+
+        CountPackageSale.objects.create(saler =request.user, counts_package = last_count_package, price = request.POST['price'] )
+        return redirect('platforms', subproduct.product.name)
+
+    return render(request, 'platforms/sale_count_box.html',{ 'id':id, 'subproduct':subproduct})
+
+@usertype_in_view
+@login_required
+def SalesPlatformsView(request, type):
+
+    context = context_app(request)
+    today = datetime.date.today()
+    first_day = today - datetime.timedelta(days=30)
+    if context['user_type'] == "staff":
+        adminuser = list(AdminUser.objects.filter(admin=request.user.id).values_list('user_id', flat=True))
+        admin_points = list(AdminUser.objects.filter(admin__in=adminuser).values_list('user_id', flat=True))
+        list_all = adminuser + admin_points
+        sales = PlanPlatformSales.objects.filter(saler_id__in=list_all).filter(date__gte=first_day,
+                                                                                    accepted=True).order_by('-date')
+    elif context['user_type'] == "vendedor":
+        if type == "month":
+            sales = PlanPlatformSales.objects.filter(saler_id=request.user.id, accepted=True).filter(
+                date__gte=first_day).select_related('subproduct').order_by('-date')
+        if type == "historic":
+            sales = PlanPlatformSales.objects.filter(saler_id=request.user.id, accepted=True).select_related('subproduct').order_by('-date')
+
+    return render(request, 'platforms/sales_month.html',
+                  {'sales': sales, 'user_type': context['user_type'], 'first_day': first_day})
+
+@usertype_in_view
+@login_required
+def ReportIssuePlatformView(request, platform, id):
+
+    sale = PlanPlatformSales.objects.filter(id=id).first()
+    if sale.saler_id == request.user.id:
+        form = ReportIssueForm()
+        if request.method == 'POST':
+            form = ReportIssueForm(request.POST)
+            report = form.save(commit=False)
+            report.user = request.user
+            report.email = sale.email
+            report.platform = platform
+            report.is_active = 1
+            report.save()
+            return redirect('reported-issues-platform')
+        return render(request, 'reports/plataform.html', {"form": form, 'sale': sale, 'platform': platform})
+    else:
+        return redirect('index')
+
+
+@usertype_in_view
+@login_required
+def QualifySalerListView(request):
+
+   my_salers = request.user.get_my_salers()
+   salers=[]
+   for my_saler in my_salers:
+       user_data = UserData.objects.filter(user = my_saler).first()
+       print(user_data.image.url)
+       stars = my_saler.get_stars_saler(request.user)
+       salers.append({'id': my_saler.id, 'image':user_data.image.url, 'first_name':my_saler.first_name ,'last_name':my_saler.last_name, 'stars': stars})
+   print(salers)
+   return render(request, 'users/qualify-saler-list.html', {'my_salers': salers })
+
+@usertype_in_view
+@login_required
+def QualifySalerView(request, id, stars):
+
+   saler_starts = UserStart.objects.filter(buyer=request.user, saler_id=id).first()
+   if saler_starts:
+       saler_starts.stars = stars
+       saler_starts.save()
+   else:
+       UserStart.objects.create(buyer=request.user, saler_id=id, stars=stars)
+   return HttpResponse("Tu calificación fue registrada")
+
+
+@login_required
+def ReportedIssuesView(request):
+
+    context = context_app(request)
+    if context['user_type']== "superuser":
+        reports = IssuesReport.objects.filter(state=0).order_by('state')
+    elif context['user_type']== "staff":
+        mys_salers_list = list(SalerStaff.My_salers(request.user)).values_list('saler', flat=True)
+        reports = IssuesReport.objects.filter(user_id__in=mys_salers_list, state=0).order_by('state')
+    elif context['user_type'] == "vendedor":
+        reports = IssuesReport.objects.filter(user=request.user).order_by('state')
+    return render(request, 'reports/list.html', {"reports": reports })
+
+@usertype_in_view
+@login_required
+def ReportedIssue(request, id):
+
+    context = context_app(request)
+    print('me rasca')
+    if context['user_type'] == "superuser" or context['user_type'] == "staff":
+        report = get_object_or_404(IssuesReport, pk=id)
+        form = ReportForm(instance=report)
+        if request.method == 'POST':
+            state = False
+            if 'state' in request.POST and request.POST['state'] == "on":
+                state = True
+            IssuesReport.objects.filter(id=id).update(state=state, response=request.POST['response'])
+            return redirect('reported-issues-platform')
+
+    else:
+        return redirect('reported-issues-platform')
+
+    return render(request, 'reports/edit.html', {"report": report, "form": form})
 
 
 #delete
 @usertype_in_view
 @login_required
 def DeleteRegister(request, model, id):
+
     user_type = check_user_type(request)
     if user_type == "superuser":
-        models = ["User", "Product", "SubProduct"]
+        models = ["User", "Product"]
     elif user_type == "staff":
-        models = ["User", "Product","PlansPlatform"]
-    elif user_type == "saler" or user_type == "resaler":
-        models = []
+        models = ["User", "PlansPlatform", "SubProduct"]
+    elif user_type == "vendedor" :
+        models = ['IssuesReport']
     else:
         return redirect('index')
     if model in models:
@@ -360,15 +516,14 @@ def DeleteRegister(request, model, id):
                     exist_id = eval(model + ".objects.filter(id=" + id + ").select_related('subproduct').first() ")
                     if exist_id.subproduct.owner_id != request.user.id:
                         exist_id = None
-                elif model == "PlanMultiplatformSales":
+                elif model == "PlanPlatformSales":
                     exist_id = eval(model + ".objects.filter(id=" + id + ", saler_id=request.user.id)")
                 else:
-                    exist_id = eval(
-                        model + ".objects.filter(id=" + id + ", admin=" + str(request.user.id) + ").first() ")
+                    exist_id = eval( model + ".objects.filter(id=" + id + ", user_id=" + str(request.user.id) + ").first() ")
                 if exist_id is None:
                     action = "Intento de borrado de " + model + " con id: " + str(id)
                     message = "No tienes acceso, esta acción será reportada"
-                if model == "PlansPlatform" or model == "IssuesReport" or model == "PlanMultiplatformSales":
+                if model == "PlansPlatform" or model == "IssuesReport" or model == "PlanPlatformSales":
                     eval(model + ".objects.filter(id=" + id + ").delete()")
                 else:
                     eval(model + ".objects.filter(id=" + id + ").update(active=0)")

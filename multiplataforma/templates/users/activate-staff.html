@@ -1,15 +1,13 @@
 {% extends 'layout.html' %}
-
 {% load widget_tweaks %}
 {% load humanize %}
 {% block header %}
-
  <div class="page-header">
 	  <div class="page-block">
 		  <div class="row align-items-center">
 			  <div class="col-md-8">
 				  <div class="page-header-title">
-					  <h5 class="m-b-10">Activar proveedor</h5>
+					  <h5 class="m-b-10">Activar Usuario</h5>
 
 				  </div>
 			  </div>
@@ -20,28 +18,27 @@
 {% endblock %}
 {% block content %}
 <div class="row">
-	<div class="col-md-12">
+	<div class="col-md-8">
 		<div class="card">
 			<div class="card-header">
-				<h5>Autorizar proveedor</h5>
-				<span>De click en el botón activar para autorizar a este proveedor</span>
+				<h5>Usuario {{ type }}</h5>
 			</div>
 			<div class="card-block">
 					<div class="form-group form-default">
 						<label class="float-label username"><strong>Username</strong></label>:
-						{{ staff.username }}
+						{{ user.username }}
 					</div>
 				<div class="form-group form-default">
 						<label class="float-label username"><strong>Nombres</strong></label>:
-						{{ staff.first_name }}
+						{{ user.first_name }}
 					</div>
 				<div class="form-group form-default">
 						<label class="float-label username"><strong>Apellidos</strong></label>:
-						{{ staff.last_name }}
+						{{ user.last_name }}
 					</div>
 				<div class="form-group form-default">
 						<label class="float-label username"><strong>Correo</strong></label>:
-						{{ staff.email }}
+						{{ user.email }}
 					</div>
 				<div class="form-group form-default">
 						<label class="float-label username"><strong>Dirección</strong></label>:
@@ -56,15 +53,52 @@
 						<label class="float-label username"><strong>Observaciones</strong></label>:
 						{{ user_data.observations }}
 					</div>
-				{% if authorized == 0 %}
-				<button class="btn btn-primary btn-md btn-block waves-effect text-center m-b-20 activate_staff" id="{{ staff.id }}" type="button" >Activar Proveedor</button>
-				{% endif %}
+			</div>
+			<div class="card-header">
+				<span>De click en las plataformas que desee activar para este usuario</span>
+			</div>
+			<form class="form-material" method="post">
+			{% csrf_token %}
+			<div class="card-block">
+					<table class="table table-no-pagin table-hover">
+						<thead>
+							<tr>
+								<th>#</th>
+								<th>Vendedor</th>
+								<th>Autorizar</th>
+							</tr>
+						</thead>
+						<tbody>
+						   {% for product in products %}
+							<tr class="gradeA odd" role="row">
+								<td>{{forloop.counter}}</td>
+								<td>{{ product.name }}</td>
+								<td><input name="{{ product.id }}" class="form-check-input" type="checkbox" value=""
+								{% if product.id in products_actives %}
+										   checked
+								{% endif %}
+								> </td>
+							</tr>
+						{% endfor %}
+						</tbody>
+					</table>
+
+			</div>
+			<button class="btn btn-primary btn-md btn-block waves-effect text-center m-b-20" id="{{ staff.id }}" type="submit" >Activar</button>
+			</form>
+		</div>
+	</div>
+	<div class="col-md-3">
+		<div class="card">
+			<div class="card-header">
+				<h5>Imagen de usuario</h5>
+			</div>
+			<div class="card-block">
+				<img src="../../media/{{ user_data.image }}" alt="{{ user.username }}" width="290">
 			</div>
 		</div>
 	</div>
 </div>
-<script>
-activate_staff()
-check_username()
-</script>
+
+
 {% endblock %}

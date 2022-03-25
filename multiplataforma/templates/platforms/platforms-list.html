@@ -34,14 +34,14 @@
 							</tr>
 						</thead>
 					   <tbody>
-						   {% for platform in platforms %}
+						   {% for product_active in products_actives %}
 								<tr class="gradeA odd" role="row">
 									<td>{{forloop.counter}}</td>
-									<td>{{ platform.name }}</td>
+									<td>{{ product_active.product.name }}</td>
 
 									<td class="center">
-										<a href="{% url 'add-subproduct' platform.id %}"><i class="fa fa-fw" aria-hidden="true" title="Activar"></i></a>
-										<a class="delete-user" id="{{ platform.id }}" href="#"><i class="fa fa-fw " aria-hidden="true" title="Desactivar Vendedor"><i class="ti-trash"></i></i></a>
+										<a href="{% url 'add-subproduct' product_active.product.id %}"><i class="fa fa-fw" aria-hidden="true" title="Activar"></i></a>
+
 									</td>
 								</tr>
 							{% endfor %}

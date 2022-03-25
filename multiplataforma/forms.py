@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.forms import UserCreationForm
 from django.db.models.fields import BLANK_CHOICE_DASH
-from .models import Product, SubProduct, UserData, City, MoneysSaler, PlansPlatform
+from .models import Product, SubProduct, UserData, Country, MoneysSaler, CountsPackage, IssuesReport
 
 
 class ProductForm(forms.ModelForm):
@@ -10,13 +10,6 @@ class ProductForm(forms.ModelForm):
         model = Product
         fields = ['name']
 
-
-class SubProductForm(forms.ModelForm):
-    instructions = forms.CharField(widget=forms.Textarea, label="Instrucciones")
-
-    class Meta:
-        model = SubProduct
-        fields = ['name', 'price', 'instructions', 'renewable']
 
 
 class SignUpForm(UserCreationForm):
@@ -27,10 +20,12 @@ class SignUpForm(UserCreationForm):
     username = forms.CharField(max_length=254, help_text='Requerido. ', label="Username")
     password1 = forms.CharField(max_length=254, help_text='Contraseña', label="Contraseña", widget=forms.PasswordInput())
     password2 = forms.CharField(max_length=254, help_text='Confirme la contraseña', label="Confirme la contraseña", widget=forms.PasswordInput())
+    group = forms.ChoiceField(choices = (('staff', 'Proveedor'), ('vendedor','Distribuidor')))
+
 
     class Meta:
         model = User
-        fields = ('username', 'first_name', 'is_active', 'last_name', 'email','password1', 'password2')
+        fields = ('username', 'first_name', 'is_active', 'last_name', 'email','password1', 'password2','group')
 
 
 class AddMoneyForm(forms.ModelForm):
@@ -64,7 +59,7 @@ class UserDataForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
 
         super(UserDataForm, self).__init__(*args, **kwargs)
-        self.fields['city'] = forms.ModelChoiceField(queryset=City.objects.all(), widget=forms.Select(attrs={'placeholder': 'Ciudad'}))
+        self.fields['country'] = forms.ModelChoiceField(queryset=Country.objects.all(), widget=forms.Select(attrs={'placeholder': 'Pais'}))
 
     address = forms.CharField(required=True,max_length=254, help_text='Requerido. ', label="Dirección")
     phones = forms.CharField(required=True,max_length=254, help_text='Requerido', label="Telefonos")
@@ -72,7 +67,7 @@ class UserDataForm(forms.ModelForm):
 
     class Meta:
         model = UserData
-        fields = ('address', 'phones', 'city', 'observations')
+        fields = ('address', 'phones', 'country', 'observations', 'image')
 
 
 class SubProductForm(forms.ModelForm):
@@ -80,7 +75,7 @@ class SubProductForm(forms.ModelForm):
 
     class Meta:
         model = SubProduct
-        fields = ['name', 'price', 'instructions', 'renewable']
+        fields = ['name', 'price', 'instructions']
 
 
 class PlanProductForm(forms.ModelForm):
@@ -92,5 +87,21 @@ class PlanProductForm(forms.ModelForm):
         # self.fields['password'] = forms.CharField(widget=forms.PasswordInput())
 
     class Meta:
-        model = PlansPlatform
+        model = CountsPackage
         fields = ['email', 'password', 'profile', 'pin']
+
+
+class ReportIssueForm(forms.ModelForm):
+    issue = forms.CharField(widget=forms.Textarea, label="Detalle")
+
+    class Meta:
+        model = IssuesReport
+        fields = ['issue']
+
+
+class ReportForm(forms.ModelForm):
+    response = forms.CharField(widget=forms.Textarea, label="Detalle")
+
+    class Meta:
+        model = IssuesReport
+        fields = ['state', 'response']

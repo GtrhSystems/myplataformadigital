@@ -1,0 +1,127 @@
+{% extends 'layout.html' %}
+{% load humanize %}
+{% load widget_tweaks %}
+{% block menu %} 
+    {% include 'menu.html' %}
+{% endblock %} 
+
+{% block header %}
+ <div class="page-header">
+	  <div class="page-block">
+		  <div class="row align-items-center">
+			  <div class="col-md-8">
+				  <div class="page-header-title">
+					  <h5 class="m-b-10">Listado de ventas</h5>
+				  </div>
+			  </div>
+
+		  </div>
+	  </div>
+  </div>
+{% endblock %}
+{% block content %}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+
+<div class="row">
+	<div class="col-lg-12">
+		<div class="card">
+			<div class="card-header">
+				<h5>Listado de Proveeedores no activos</h5>
+			</div>
+			<div class="card-block table-border-style">
+				<div class="table-responsive">
+                    <table id="packages-table" class="table ">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Subproducto</th>
+                                <th>Precio</th>
+                                <th>Email</th>
+                                {% if user_type != "saler" %}
+                                    <th>Vendedor</th>
+                                {% endif %}
+                                <th>Contraseña</th>
+                                <th>Perfil</th>
+                                <th>Pin</th>
+                                <th>Meses</th>
+                                <th>Vence</th>
+                                <th>Accion</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                           {% for sale in sales %}
+                            <tr class="gradeA odd" role="row">
+
+                                <td>{{ sale.date|date:"d/M/Y P" }}</td>
+                                <td>{{ sale.subproduct.name }}</td>
+                                <td>${{ sale.price|intcomma }}</td>
+                                <td>{{ sale.email }}</td>
+                                {% if user_type != "saler" %}
+                                    <td>{{ sale.saler }}</td>
+                                {% endif %}
+                                <td>{{ sale.password }}</td>
+                                <td>{{ sale.profile }}</td>
+                                <td>{{ sale.pin }}</td>
+                                <td>{{ sale.months }}</td>
+                                <td>{{ sale.date_limit|date:"d/M/Y" }}</td>
+                                <td>
+                                    {% if sale.subproduct.renewable %}
+                                        {% if sale.date_limit|date:"Y/M/d" >=  first_day|date:"Y/M/d"   %}
+                                            <a href="#" class="renew"  email ="{{ sale.email }}"><i class="fa  fa-battery-1  aria-hidden="true" title="Renovar cuenta"></i></a>
+                                        {% endif %}
+                                    {% endif %}
+                                    <a href="#" class="report"  id="{{ sale.id }}"><i class="fa   fa-wrench   aria-hidden="true" title="reportar fallo en esta cuenta"></i></a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+			</div>
+		</div>
+
+	</div>
+	<!-- /.col-lg-12 -->
+</div>
+
+
+<!-- Modal -->
+<div id="myModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    
+    <!-- Modal content-->
+    <div class="modal-content">
+    
+  </div>
+ 
+</div>
+
+<script>
+
+
+$('#packages-table tbody').on("click", ".report" , function(event){       
+    event.preventDefault()
+    id = $(this).attr('id')    
+    $("#myModal").modal({show: true})
+    $.get('/platform/report-issue/Multiplataforma/'+ id ,function(data){
+          $('.modal-content').html(data)
+          
+     }) 
+})  
+
+$('#packages-table tbody').on("click", ".renew" , function(event){       
+    event.preventDefault()
+    email = $(this).attr('email')    
+    $("#myModal").modal({show: true})
+    $.get('/multiplatform/renew/'+ email ,function(data){            
+          $('.modal-content').html(data)
+          
+     }) 
+})  
+
+
+     
+</script>
+
+{% endblock %}

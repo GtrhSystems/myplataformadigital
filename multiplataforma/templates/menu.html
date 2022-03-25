@@ -1,42 +1,24 @@
 <nav class="navbar header-navbar pcoded-header">
 <div class="navbar-wrapper">
 <div class="navbar-logo">
-  <a class="mobile-menu waves-effect waves-light" id="mobile-collapse" href="#!">
-      <i class="ti-menu"></i>
+
+  <a href="/">
+       <img src="/static/logos/myiplataformadigital.png" alt="logo.png" width="210" height="60">
   </a>
-  <div class="mobile-search waves-effect waves-light">
-      <div class="header-search">
-          <div class="main-search morphsearch-search">
-              <div class="input-group">
-                  <span class="input-group-addon search-close"><i class="ti-close"></i></span>
-                  <input type="text" class="form-control" placeholder="Enter Keyword">
-                  <span class="input-group-addon search-btn"><i class="ti-search"></i></span>
-              </div>
-          </div>
-      </div>
-  </div>
-  <a href="index.html">
-      <img class="img-fluid" src="assets/images/logo.png" alt="Theme-Logo" />
-  </a>
-  <a class="mobile-options waves-effect waves-light">
-      <i class="ti-more"></i>
-  </a>
+
 </div>
 
 <div class="navbar-container container-fluid">
   <ul class="nav-left">
       <li>
+          <a class="mobile-menu waves-effect waves-light" id="mobile-collapse" href="#!">
+              <i class="ti-menu"></i>
+          </a>
+      </li>
+      <li>
           <div class="sidebar_toggle"><a href="javascript:void(0)"><i class="ti-menu"></i></a></div>
       </li>
-      <li class="header-search">
-          <div class="main-search morphsearch-search">
-              <div class="input-group">
-                  <span class="input-group-addon search-close"><i class="ti-close"></i></span>
-                  <input type="text" class="form-control">
-                  <span class="input-group-addon search-btn"><i class="ti-search"></i></span>
-              </div>
-          </div>
-      </li>
+
       <li>
           <a href="#!" onclick="javascript:toggleFullScreen()" class="waves-effect waves-light">
               <i class="ti-fullscreen"></i>
@@ -107,9 +89,17 @@
 			{% include 'user_zone.html' %}
 		{% endblock %}
 
-
-
       {% if user_type == "superuser" %}
+      <div class="pcoded-navigation-label" data-i18n="nav.category.navigation">Gestion</div>
+      <ul class="pcoded-item pcoded-left-item">
+            <li class="">
+              <a href="{% url 'market-place' %}" class="waves-effect waves-dark">
+                  <span class="pcoded-micon"><i class="ti-shopping-cart-full"></i></span>
+                  <span class="pcoded-mtext">MarketPlace</span>
+
+              </a>
+           </li>
+      </ul>
       <div class="pcoded-navigation-label" data-i18n="nav.category.navigation">Plataformas y Usuarios</div>
       <ul class="pcoded-item pcoded-left-item">
           <li class="active">
@@ -134,8 +124,6 @@
                           <span class="pcoded-mcaret"></span>
                       </a>
                   </li>
-
-
               </ul>
           </li>
       </ul>
@@ -149,14 +137,14 @@
               </a>
               <ul class="pcoded-submenu">
                   <li class=" ">
-                      <a href="{% url 'staff-list' 1 %}" class="waves-effect waves-dark">
+                      <a href="{% url 'staff-list' 'staff' 1 %}" class="waves-effect waves-dark">
                           <span class="pcoded-micon"><i class="ti-angle-right"></i></span>
                           <span class="pcoded-mtext" data-i18n="nav.basic-components.alert">Proveedores activos</span>
                           <span class="pcoded-mcaret"></span>
                       </a>
                   </li>
                   <li class=" ">
-                      <a href="{% url 'staff-list' 0 %}" class="waves-effect waves-dark">
+                      <a href="{% url 'staff-list' 'staff'  0 %}" class="waves-effect waves-dark">
                           <span class="pcoded-micon"><i class="ti-angle-right"></i></span>
                           <span class="pcoded-mtext" data-i18n="nav.basic-components.breadcrumbs">Activación de proveedores</span>
                           <span class="pcoded-mcaret"></span>
@@ -164,47 +152,58 @@
                   </li>
               </ul>
           </li>
-      </ul>
-      {% endif %}
-
-      {% if user_type == "staff" %}
-      <div class="pcoded-navigation-label" data-i18n="nav.category.navigation">Usuarios y Saldos</div>
-      <ul class="pcoded-item pcoded-left-item">
-          <li class="pcoded-hasmenu">
+          <li class="pcoded-hasmenu ">
               <a href="javascript:void(0)" class="waves-effect waves-dark">
-                  <span class="pcoded-micon"><i class="ti-user"></i></span>
-                  <span class="pcoded-mtext"  data-i18n="nav.basic-components.main">Vendedores</span>
+                  <span class="pcoded-micon"><i class="ti-id-badge"></i></span>
+                  <span class="pcoded-mtext"  data-i18n="nav.basic-components.main">Distribuidores</span>
                   <span class="pcoded-mcaret"></span>
               </a>
               <ul class="pcoded-submenu">
                   <li class=" ">
-                      <a href="{% url 'saler-list' %}" class="waves-effect waves-dark">
+                      <a href="{% url 'staff-list' 'vendedor' 1 %}" class="waves-effect waves-dark">
                           <span class="pcoded-micon"><i class="ti-angle-right"></i></span>
-                          <span class="pcoded-mtext" data-i18n="nav.basic-components.alert">Ver vendedores</span>
+                          <span class="pcoded-mtext" data-i18n="nav.basic-components.alert">Distribuidores activos</span>
                           <span class="pcoded-mcaret"></span>
                       </a>
                   </li>
                   <li class=" ">
-                      <a href="{% url 'saler-add' %}" class="waves-effect waves-dark">
+                      <a href="{% url 'staff-list' 'vendedor' 0 %}" class="waves-effect waves-dark">
                           <span class="pcoded-micon"><i class="ti-angle-right"></i></span>
-                          <span class="pcoded-mtext" data-i18n="nav.basic-components.breadcrumbs">Crear nuevo vendedor</span>
+                          <span class="pcoded-mtext" data-i18n="nav.basic-components.breadcrumbs">Activación de Distribuidores</span>
                           <span class="pcoded-mcaret"></span>
                       </a>
                   </li>
-                  <li class=" ">
+                    <li class=" ">
                       <a href="{% url 'money-saler-list' %}" class="waves-effect waves-dark">
                           <span class="pcoded-micon"><i class="ti-angle-right"></i></span>
                           <span class="pcoded-mtext" data-i18n="nav.basic-components.alert">Saldos Agregados</span>
                           <span class="pcoded-mcaret"></span>
                       </a>
                   </li>
-
-
               </ul>
           </li>
+
       </ul>
+      {% endif %}
+
+      {% if user_type == "staff" %}
+
       <div class="pcoded-navigation-label" data-i18n="nav.category.navigation">Gestion</div>
       <ul class="pcoded-item pcoded-left-item">
+            <li class="">
+              <a href="{% url 'market-place' %}" class="waves-effect waves-dark">
+                  <span class="pcoded-micon"><i class="ti-shopping-cart-full"></i></span>
+                  <span class="pcoded-mtext">MarketPlace</span>
+
+              </a>
+           </li>
+          <li class="">
+              <a href="{% url 'my-packages-in-market-place' %}" class="waves-effect waves-dark">
+                  <span class="pcoded-micon"><i class="ti-shopping-cart-full"></i></span>
+                  <span class="pcoded-mtext">Mis paquetes en tienda</span>
+
+              </a>
+           </li>
          <li class="pcoded-hasmenu">
               <a href="javascript:void(0)" class="waves-effect waves-dark">
                   <span class="pcoded-micon"><i class="ti-layout-grid2-alt"></i></span>
@@ -243,24 +242,55 @@
 
 
               </ul>
+
           </li>
-      </ul>
+           <li class="pcoded-hasmenu">
+              <a href="javascript:void(0)" class="waves-effect waves-dark">
+                  <span class="pcoded-micon"><i class="ti-bar-chart"></i></span>
+                  <span class="pcoded-mtext"  data-i18n="nav.basic-components.main">Ventas</span>
+                  <span class="pcoded-mcaret"></span>
+              </a>
+              <ul class="pcoded-submenu">
+                  <li class=" ">
+                      <a href="{% url 'multiplatforms-sales' 'month' %}" class="waves-effect waves-dark">
+                          <span class="pcoded-micon"><i class="ti-angle-right"></i></span>
+                          <span class="pcoded-mtext" data-i18n="nav.basic-components.alert">Último mes</span>
+                          <span class="pcoded-mcaret"></span>
+                      </a>
+                  </li>
+                  <li class=" ">
+                      <a href="{% url 'multiplatforms-sales' 'historic' %}" class="waves-effect waves-dark">
+                          <span class="pcoded-micon"><i class="ti-angle-right"></i></span>
+                          <span class="pcoded-mtext" data-i18n="nav.basic-components.alert">Generales</span>
+                          <span class="pcoded-mcaret"></span>
+                      </a>
+                  </li>
+              </ul>
+          </li>
+
       {% endif %}
       {% if user_type == "vendedor" %}
       <div class="pcoded-navigation-label" data-i18n="nav.category.navigation">Gestion</div>
       <ul class="pcoded-item pcoded-left-item">
-         <li class="pcoded-hasmenu">
+           <li class="">
+              <a href="{% url 'market-place' %}" class="waves-effect waves-dark">
+                  <span class="pcoded-micon"><i class="ti-shopping-cart-full"></i></span>
+                  <span class="pcoded-mtext">MarketPlace</span>
+
+              </a>
+           </li>
+           <li class="pcoded-hasmenu">
               <a href="javascript:void(0)" class="waves-effect waves-dark">
                   <span class="pcoded-micon"><i class="ti-layout-grid2-alt"></i></span>
-                  <span class="pcoded-mtext"  data-i18n="nav.basic-components.main">Plataformas</span>
+                  <span class="pcoded-mtext"  data-i18n="nav.basic-components.main">Vender plataformas</span>
                   <span class="pcoded-mcaret"></span>
               </a>
               <ul class="pcoded-submenu">
-                  {% for product in products  %}
+                  {% for product_active in products_actives  %}
                       <li class=" ">
-                          <a href="{% url 'platforms' product.name %}" class="waves-effect waves-dark">
+                          <a href="{% url 'platforms' product_active.product %}" class="waves-effect waves-dark">
                               <span class="pcoded-micon"><i class="ti-angle-right"></i></span>
-                              <span class="pcoded-mtext" data-i18n="nav.basic-components.alert">{{ product.name }}</span>
+                              <span class="pcoded-mtext" data-i18n="nav.basic-components.alert">{{ product_active.product }}</span>
                               <span class="pcoded-mcaret"></span>
                           </a>
                       </li>
@@ -269,10 +299,47 @@
 
               </ul>
           </li>
-      </ul>
+          <li class="pcoded-hasmenu">
+              <a href="javascript:void(0)" class="waves-effect waves-dark">
+                  <span class="pcoded-micon"><i class="ti-bar-chart"></i></span>
+                  <span class="pcoded-mtext"  data-i18n="nav.basic-components.main">Ventas</span>
+                  <span class="pcoded-mcaret"></span>
+              </a>
+              <ul class="pcoded-submenu">
+                  <li class=" ">
+                      <a href="{% url 'multiplatforms-sales' 'month' %}" class="waves-effect waves-dark">
+                          <span class="pcoded-micon"><i class="ti-angle-right"></i></span>
+                          <span class="pcoded-mtext" data-i18n="nav.basic-components.alert">Último mes</span>
+                          <span class="pcoded-mcaret"></span>
+                      </a>
+                  </li>
+                  <li class=" ">
+                      <a href="{% url 'multiplatforms-sales' 'historic' %}" class="waves-effect waves-dark">
+                          <span class="pcoded-micon"><i class="ti-angle-right"></i></span>
+                          <span class="pcoded-mtext" data-i18n="nav.basic-components.alert">Generales</span>
+                          <span class="pcoded-mcaret"></span>
+                      </a>
+                  </li>
+              </ul>
+          </li>
+          <li class="">
+              <a href="{% url 'qualify-saler-list' %}" class="waves-effect waves-dark">
+                  <span class="pcoded-micon"><i class="ti-user"></i></span>
+                  <span class="pcoded-mtext">Vendedores</span>
+
+              </a>
+           </li>
+
       {% endif %}
 
-
+          <li class=" ">
+              <a href="{% url 'reported-issues-platform'  %}" class="waves-effect waves-dark">
+                  <span class="pcoded-micon"><i class="ti-alert"></i></span>
+                  <span class="pcoded-mtext" data-i18n="nav.basic-components.alert">Reportes de errores</span>
+                  <span class="pcoded-mcaret"></span>
+              </a>
+          </li>
+        </ul>
 
 
   </div>

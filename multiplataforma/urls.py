@@ -1,7 +1,7 @@
 from multiplataforma import views
 from django.urls import path
-
-
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('', views.IndexView, name='index'),
@@ -13,23 +13,38 @@ urlpatterns = [
     #staffs
     path('staff/register', views.RegisterStaffView, name='staff-add'),
     path('service/check-username/<str:username>', views.CheckUsernameAjaxView, name='check-username'),
-    path('staff/list/<int:authorized>', views.StaffListView, name='staff-list'),
-    path('staff/activate/<int:authorized>/<int:pk>', views.ActivateStaffView, name='activate-staff'),
-    path('staff/activate-ajax/<int:pk>', views.ActivateStaffAjaxView, name='activate-ajax-staff'),
-    path('staff/add-money-saler/<int:pk>', views.AddMoneySalerView, name='add-money-saler'),
-    path('staff/money-saler-list', views.MoneySalerListView, name='money-saler-list'),
+    path('<str:type>/list/<int:authorized>', views.StaffListView, name='staff-list'),
+    path('<str:type>/activate/<int:pk>', views.ActivateStaffView, name='activate-staff'),
+    path('user/add-money/<int:pk>', views.AddMoneySalerView, name='add-money-saler'),
+    path('user/money-saler-list', views.MoneySalerListView, name='money-saler-list'),
+    path('user/qualify-saler-list', views.QualifySalerListView, name='qualify-saler-list'),
+    path('user/qualify-saler/<int:id>/<int:stars>', views.QualifySalerView, name='qualify-saler'),
+
+
     #plataformas-staff
     path('platform/list', views.PlatformListView, name='platforms-list'),
-    path('platform/add-subproduct/<int:id>', views.SubProductCreateView, name='add-subproduct'),
+    #path('platform/add-subproduct/<str:id>', views.SubProductCreateView, name='add-subproduct'),
     path('add-subproduct/<int:id>', views.SubProductCreateView, name='add-subproduct'),
-    path('edit-subproduct/<int:id>', views.SubProductEditView, name='edit-subproduct'),
-    path('add-plan-subproduct/<int:id>', views.PlanPlatformCreateView, name='add-plan-subproduct'),
+    path('edit-package/<int:id>', views.PackageEditView, name='edit-package'),
+    path('add-count-package/<int:id>', views.AddCountToPackageView, name='add-count-package'),
+    path('send-package-to-markeplace/<int:id>', views.SendPackageToMarketPlaceView, name='send-package-to-markeplace'),
     #multiplataformas-vendedor
-    path('platform/<str:name>', views.PlatformsView, name='platforms'),
-    path('platform/sale/<int:id>', views.SalePlatforms, name='sale-platform'),
+    path('platform/market-place', views.MerketPlaceView, name='market-place'),
+    path('platform/my-packages-in-market-place', views.MyPackageMerketPlaceView, name='my-packages-in-market-place'),
+    path('platform/list/<str:name>', views.SalePlatformsView, name='platforms'),
+    path('package/buy/<int:id>', views.BuyPackageView, name='buy-platform'),
+    path('package/sale-count/<int:id>', views.SaleCountView, name='sale-count-package'),
+    path('platform/sales/<str:type>', views.SalesPlatformsView, name='multiplatforms-sales'),
+    path('platform/report-issue/<str:platform>/<int:id>', views.ReportIssuePlatformView, name='report-issue-platform'),
+    path('platform/issues-reported', views.ReportedIssuesView, name='reported-issues-platform'),
+    path('platform/reported-issue/<int:id>', views.ReportedIssue, name='reported-issue'),
+
 
     #Borrado de registros
     path('delete/<str:model>/<str:id>', views.DeleteRegister, name='delete-table-id'),
 
 
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL,  document_root=settings.MEDIA_ROOT)

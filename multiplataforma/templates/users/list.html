@@ -7,7 +7,7 @@
 		  <div class="row align-items-center">
 			  <div class="col-md-8">
 				  <div class="page-header-title">
-					  <h5 class="m-b-10">Proveeedores pendientes de activación</h5>
+					  <h5 class="m-b-10">Proveeedores  {% if authorized == 0 %} pendientes de activación {% endif%} </h5>
 				  </div>
 			  </div>
 
@@ -20,7 +20,7 @@
 	<div class="col-lg-12">
 		<div class="card">
 			<div class="card-header">
-				<h5>Listado de Proveeedores no activos</h5>
+				<h5>Listado de Proveeedores {% if authorized == 0 %} no {% endif%} activos</h5>
 			</div>
 			<div class="card-block table-border-style">
 				<div class="table-responsive">
@@ -35,14 +35,20 @@
 							</tr>
 						</thead>
 					   <tbody>
-						   {% for staff in staffs %}
+						   {% for user in users %}
 								<tr class="gradeA odd" role="row">
 									<td>{{forloop.counter}}</td>
-									<td>{{ staff.date_joined }}</td>
-									<td>{{ staff.username }}</td>
-									<td>{{ staff.first_name }} {{ staff.last_name }}</td>
+									<td>{{ user.date_joined }}</td>
+									<td>{{ user.username }}</td>
+									<td>{{ user.first_name }} {{ user.last_name }}</td>
 									<td class="center">
-										<a href="{% url 'activate-staff'  authorized staff.id %}"><i class="fa fa-fw" aria-hidden="true" title="Ver"></i></a>
+										<a href="{% url 'activate-staff' type user.id %}"><i class="fa fa-fw" aria-hidden="true" title="Ver"><i class="ti-settings"></i></i></a>
+										{% if type == 'vendedor' and authorized == 1 %}
+											<a href="{% url 'add-money-saler' user.id %}"><i class="fa fa-fw" aria-hidden="true" title="Agregar Saldo"><i class="ti-money"></i></i></a>
+										{% endif %}
+										{% if authorized == 1 %}
+											<a class="delete-user" id="{{ user.id }}" href="#"><i class="fa fa-fw " aria-hidden="true" title="Desactivar Vendedor"><i class="ti-trash"></i></i></a>
+										{% endif %}
 									</td>
 								</tr>
 							{% endfor %}
