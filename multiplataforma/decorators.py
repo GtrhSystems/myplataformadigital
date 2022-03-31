@@ -50,7 +50,12 @@ def usertype_in_view(function):
                      'reported-issue',
                      'add-money-saler',
                      'money-saler-list',
-                     'market-place'
+                     'market-place',
+                     'multiplatforms-sales',
+                     'commision-pending',
+                     'pay-staff-sale',
+                     'multiplatforms-sales-month',
+                     'sales-inter-dates'
                      ]
         request_url = request.__dict__['path_info'] #captura todo el request en un dict      
         match = resolve(request_url) #devuelve el name de la vista

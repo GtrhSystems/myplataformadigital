@@ -20,7 +20,6 @@ urlpatterns = [
     path('user/qualify-saler-list', views.QualifySalerListView, name='qualify-saler-list'),
     path('user/qualify-saler/<int:id>/<int:stars>', views.QualifySalerView, name='qualify-saler'),
 
-
     #plataformas-staff
     path('platform/list', views.PlatformListView, name='platforms-list'),
     #path('platform/add-subproduct/<str:id>', views.SubProductCreateView, name='add-subproduct'),
@@ -28,16 +27,22 @@ urlpatterns = [
     path('edit-package/<int:id>', views.PackageEditView, name='edit-package'),
     path('add-count-package/<int:id>', views.AddCountToPackageView, name='add-count-package'),
     path('send-package-to-markeplace/<int:id>', views.SendPackageToMarketPlaceView, name='send-package-to-markeplace'),
+
     #multiplataformas-vendedor
     path('platform/market-place', views.MerketPlaceView, name='market-place'),
     path('platform/my-packages-in-market-place', views.MyPackageMerketPlaceView, name='my-packages-in-market-place'),
     path('platform/list/<str:name>', views.SalePlatformsView, name='platforms'),
     path('package/buy/<int:id>', views.BuyPackageView, name='buy-platform'),
-    path('package/sale-count/<int:id>', views.SaleCountView, name='sale-count-package'),
-    path('platform/sales/<str:type>', views.SalesPlatformsView, name='multiplatforms-sales'),
+
     path('platform/report-issue/<str:platform>/<int:id>', views.ReportIssuePlatformView, name='report-issue-platform'),
     path('platform/issues-reported', views.ReportedIssuesView, name='reported-issues-platform'),
     path('platform/reported-issue/<int:id>', views.ReportedIssue, name='reported-issue'),
+    #ventas
+    path('package/sale-count/<int:id>', views.SaleCountView, name='sale-count-package'),
+    path('platform/sales/month/<int:year>/<int:month>', views.SalesMonthPlatformsView, name='multiplatforms-sales-month'),
+    path('platform/sales/pay-pending', views.CommissionPendingView, name='commision-pending'),
+    path('platform/sales/pay-staff-sale/<int:id>', views.PayStaffSaleView, name='pay-staff-sale'),
+    path('platform/sales/inter-dates', views.InterDatesSalesView, name='sales-inter-dates'),
 
 
     #Borrado de registros

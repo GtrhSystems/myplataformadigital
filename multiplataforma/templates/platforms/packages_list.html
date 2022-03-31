@@ -29,14 +29,13 @@
                     <div class="row align-items-center">
                         <div class="col-9">
                            Vendedor: {{ package.owner|upper }}
-
-                                        <select class="starts" id="{{ package.owner_id }}">
-                                          <option value="1">1</option>
-                                          <option value="2">2</option>
-                                          <option value="3">3</option>
-                                          <option value="4">4</option>
-                                          <option value="5">5</option>
-                                        </select>
+                                <select class="starts" id="{{ package.owner_id }}">
+                                  <option value="1">1</option>
+                                  <option value="2">2</option>
+                                  <option value="3">3</option>
+                                  <option value="4">4</option>
+                                  <option value="5">5</option>
+                                </select>
 
                                 <script type="text/javascript">
                                     $('#{{ package.owner_id }}').val('{{ package.stars }}')
@@ -89,13 +88,10 @@
 		 	 
 	</div>
 </div>
-              <script src="/static/js/barrating.js"></script>
+
+<script src="/static/js/barrating.js"></script>
 <script type="text/javascript">
-
-
-
- buy_package()
-
+    buy_package()
 </script>                     
 
 

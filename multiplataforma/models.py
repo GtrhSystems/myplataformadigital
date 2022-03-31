@@ -1,9 +1,8 @@
 from django.db import models
-from django.db.models import Avg
 from django.contrib.auth.models import User
-# Create your models here.
-
-
+from django.db.models import Q
+from django.db.models import Avg, Count, Min, Sum
+import datetime
 
 
 class ActionUser(models.Model):
@@ -29,6 +28,9 @@ class UserData(models.Model):
     country = models.ForeignKey(Country, on_delete=models.CASCADE)
     observations = models.CharField(default="", max_length=255, verbose_name="Observaciones")
     image = models.ImageField(upload_to='photos')
+    bank_info = models.CharField(max_length=300, verbose_name="Información Bancaria", default="")
+
+
 
 
 
@@ -47,18 +49,67 @@ class Product(models.Model):
         products = self.objects.filter(active=1)
         return products
 
+class PercentCommission(models.Model):
+
+    percent = models.IntegerField(verbose_name="Porcentaje" )
+    date = models.DateTimeField(auto_now_add=True)
+
+
 class SubProduct(models.Model):
 
     product = models.ForeignKey(Product, default=1, verbose_name="Plataforma", on_delete=models.CASCADE)
     name = models.CharField(max_length=150, verbose_name="Nombre", default="")
     price = models.IntegerField(default=0, verbose_name="Precio general", )
-    #renewable = models.BooleanField(default=0, verbose_name="Renovable?:")
+    #renewable = models.BooleanField(default=0, verbose_name="Renovable?")
     instructions = models.CharField(max_length=1000, verbose_name="Instrucciones", default="")
     active = models.BooleanField(default=1, verbose_name="Activo?")
     date = models.DateTimeField(auto_now_add=True)
     creater = models.ForeignKey(User, on_delete=models.CASCADE, related_name="creater") #usuario creador
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="owner")#usuario dueño actual
-    for_sale = models.BooleanField(default=False, verbose_name="para la venta?:")
+    for_sale = models.BooleanField(default=False, verbose_name="para la venta?")
+    pay_value =  models.IntegerField( verbose_name="Comision", default=0)
+    commission = models.IntegerField( verbose_name="Comision", default=0)
+    commission_payed = models.BooleanField(default=False, verbose_name="Comision pagada?")
+
+    def dates_init_finish( year, month):
+
+        import calendar
+        lastday = calendar.monthrange(year, int(month))[1]
+        initial_date = datetime.datetime.strptime(str(year) + "-" + str(month) + "-01", '%Y-%m-%d')
+        final_date = datetime.datetime.strptime(str(year) + "-" + str(month) + "-" + str(lastday), '%Y-%m-%d')
+        print(initial_date)
+        return [initial_date, final_date]
+
+    @classmethod
+    def SalesByStaff(self, user, year, month):
+
+        sales = self.objects.filter(creater = user).filter(~Q(owner=user)).filter( date__range=[initial_date, final_date])
+        return sales
+
+    @classmethod
+    def SalesPendingCommissionDate(self, year, month):
+
+        initial_date, final_date = self.dates_init_finish(year, month)
+        sales = self.objects.filter(commission_payed=True).filter(date__range=[initial_date, final_date])
+        return sales
+
+    @classmethod
+    def SalesPendingCommission(self):
+        sales = self.objects.filter(commission_payed=False)
+        return sales
+
+    def SetPayStaffSale(cls):
+
+        percent = PercentCommission.objects.all().first().percent
+        commission = cls.price * (percent * 0.01)
+        pay = cls.price-commission
+        cls.pay_value = pay
+        cls.commission = commission
+        cls.commission_payed = 1
+        cls.save()
+        return cls
+
+
 
     def __str__(self):
         return str(self.name)

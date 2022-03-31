@@ -7,6 +7,7 @@ from .forms import  *
 from .models import *
 import datetime
 
+PERCENT_COMISSION = PercentCommission.objects.all().first().percent
 
 @login_required
 def check_user_type(request):
@@ -89,7 +90,13 @@ def ActivateStaffView(request, type,  pk):
     user_data = UserData.objects.filter(user = user.first()).first()
     products_actives = list(user.last().get_mys_products_actives().values_list('product_id', flat=True))
     products = Product.get_all_products()
+    form = None
+    if type == "staff":
+        form = BankUserDataForm(request.POST or None, instance = user_data)
     if request.method == 'POST':
+        if form and form.is_valid():
+            user_data.bank_info = request.POST['bank_info']
+            user_data.save()
         if user.last().is_active == 0:
             user.update(is_active=1)
             ActionUser.objects.create(user=request.user, action='Activó  usuario id: ' + str(pk))
@@ -98,7 +105,7 @@ def ActivateStaffView(request, type,  pk):
             if str(product.id) in request.POST:
                 UserProduct.objects.create(user=user_data.user, product=product)
         return redirect('staff-list', type, 1)
-    return render(request, 'users/activate-staff.html', { 'user':user.last(), 'user_data':user_data ,'products':products,  'type': type, 'products_actives':products_actives})
+    return render(request, 'users/activate-staff.html', { 'user':user.last(), 'user_data':user_data ,'products':products,  'type': type, 'products_actives':products_actives, 'form':form})
 
 
 @usertype_in_view
@@ -228,7 +235,6 @@ def SubProductCreateView(request, id):
             subproduct.creater = request.user
             subproduct.product = product
             subproduct.save()
-
             return redirect('add-subproduct', id)
 
     return render(request, 'platforms/add_subproduct.html', {'form': form, 'product': product, 'subproducts': subproducts })
@@ -372,7 +378,6 @@ def SaleCountView(request, id):
     if request.method == 'POST':
         last_count_package = CountsPackage.get_all_counts_package_no_sales(subproduct).last()
         last_count_package.sale_count(request.POST['price'])
-
         CountPackageSale.objects.create(saler =request.user, counts_package = last_count_package, price = request.POST['price'] )
         return redirect('platforms', subproduct.product.name)
 
@@ -380,26 +385,55 @@ def SaleCountView(request, id):
 
 @usertype_in_view
 @login_required
-def SalesPlatformsView(request, type):
+def SalesMonthPlatformsView(request, year=None, month= None):
 
     context = context_app(request)
-    today = datetime.date.today()
-    first_day = today - datetime.timedelta(days=30)
     if context['user_type'] == "staff":
-        adminuser = list(AdminUser.objects.filter(admin=request.user.id).values_list('user_id', flat=True))
-        admin_points = list(AdminUser.objects.filter(admin__in=adminuser).values_list('user_id', flat=True))
-        list_all = adminuser + admin_points
-        sales = PlanPlatformSales.objects.filter(saler_id__in=list_all).filter(date__gte=first_day,
-                                                                                    accepted=True).order_by('-date')
-    elif context['user_type'] == "vendedor":
-        if type == "month":
-            sales = PlanPlatformSales.objects.filter(saler_id=request.user.id, accepted=True).filter(
-                date__gte=first_day).select_related('subproduct').order_by('-date')
-        if type == "historic":
-            sales = PlanPlatformSales.objects.filter(saler_id=request.user.id, accepted=True).select_related('subproduct').order_by('-date')
+        sales =  SubProduct.SalesByStaff(request.user, year, month)
+        sales_sum = sales.aggregate(total_sales=Sum('price'))
+        comission = int(sales_sum['total_sales'])*0.05
 
-    return render(request, 'platforms/sales_month.html',
-                  {'sales': sales, 'user_type': context['user_type'], 'first_day': first_day})
+    elif context['user_type'] == "superuser":
+
+        sales = SubProduct.SalesPendingCommissionDate( year, month)
+        sales_sum = sales.aggregate(total_sales=Sum('price'))
+        comission = int(sales_sum['total_sales']) * 0.05
+
+    return render(request, 'sales/sales_'+context['user_type'] +'.html',  {'sales': sales, 'sales_sum': sales_sum, 'comission': comission})
+
+@usertype_in_view
+@login_required
+def InterDatesSalesView(request):
+    form = GetInterDatesForm()
+
+    return render(request, 'sales/inter-dates.html', {'form': form })
+
+
+@usertype_in_view
+@login_required
+def CommissionPendingView(request):
+
+    sales = SubProduct.SalesPendingCommission()
+    sales_sum = comission = 0
+    if sales:
+        sales_sum = sales.aggregate(total_sales=Sum('price'))
+        comission = int(sales_sum['total_sales']) * (PERCENT_COMISSION*0.01)
+
+    return render(request, 'platforms/sales_comission_pending.html',  {'sales': sales, 'sales_sum': sales_sum, 'comission': comission})
+
+@usertype_in_view
+@login_required
+def PayStaffSaleView(request, id):
+
+    sale = SubProduct.objects.filter(id=id, commission_payed=0).first()
+    if sale:
+        user_data = UserData.objects.filter(user=sale.creater).first()
+        sale_pay = sale.SetPayStaffSale()
+        return render(request, 'platforms/pay_staff_sale.html',  {'sale_pay': sale_pay, 'user_data':user_data})
+    else:
+
+        return HttpResponse("Este pago ya fue generado anteriormente o no existe")
+
 
 @usertype_in_view
 @login_required

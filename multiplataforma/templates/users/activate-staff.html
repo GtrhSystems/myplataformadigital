@@ -54,37 +54,46 @@
 						{{ user_data.observations }}
 					</div>
 			</div>
-			<div class="card-header">
-				<span>De click en las plataformas que desee activar para este usuario</span>
-			</div>
-			<form class="form-material" method="post">
-			{% csrf_token %}
-			<div class="card-block">
-					<table class="table table-no-pagin table-hover">
-						<thead>
-							<tr>
-								<th>#</th>
-								<th>Vendedor</th>
-								<th>Autorizar</th>
-							</tr>
-						</thead>
-						<tbody>
-						   {% for product in products %}
-							<tr class="gradeA odd" role="row">
-								<td>{{forloop.counter}}</td>
-								<td>{{ product.name }}</td>
-								<td><input name="{{ product.id }}" class="form-check-input" type="checkbox" value=""
-								{% if product.id in products_actives %}
-										   checked
-								{% endif %}
-								> </td>
-							</tr>
-						{% endfor %}
-						</tbody>
-					</table>
 
-			</div>
-			<button class="btn btn-primary btn-md btn-block waves-effect text-center m-b-20" id="{{ staff.id }}" type="submit" >Activar</button>
+			<form class="form-material" method="post">
+				{% csrf_token %}
+				{% if form %}
+				<div class="card-block">
+					<div class="form-group form-default">
+						{{ form.bank_info|add_class:'form-control' }}
+						<span class="form-bar"></span>
+						<label class="float-label username">Información bancaria</label>
+					</div>
+				</div>
+				{% endif %}
+				<div class="card-header">
+					<span>De click en las plataformas que desee activar para este usuario</span>
+				</div>
+				<div class="card-block">
+						<table class="table table-no-pagin table-hover">
+							<thead>
+								<tr>
+									<th>#</th>
+									<th>Vendedor</th>
+									<th>Autorizar</th>
+								</tr>
+							</thead>
+							<tbody>
+							   {% for product in products %}
+								<tr class="gradeA odd" role="row">
+									<td>{{forloop.counter}}</td>
+									<td>{{ product.name }}</td>
+									<td><input name="{{ product.id }}" class="form-check-input" type="checkbox" value=""
+									{% if product.id in products_actives %}
+											   checked
+									{% endif %}
+									> </td>
+								</tr>
+							{% endfor %}
+							</tbody>
+						</table>
+				</div>
+				<button class="btn btn-primary btn-md btn-block waves-effect text-center m-b-20" id="{{ staff.id }}" type="submit" >Guardar</button>
 			</form>
 		</div>
 	</div>

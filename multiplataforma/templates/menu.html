@@ -150,6 +150,20 @@
                           <span class="pcoded-mcaret"></span>
                       </a>
                   </li>
+                   <li class=" ">
+                      <a href="{% url 'commision-pending' %}" class="waves-effect waves-dark">
+                          <span class="pcoded-micon"><i class="ti-angle-right"></i></span>
+                          <span class="pcoded-mtext" data-i18n="nav.basic-components.breadcrumbs">Cobrar comisiones</span>
+                          <span class="pcoded-mcaret"></span>
+                      </a>
+                  </li>
+                    <li class=" ">
+                      <a href="{% url 'sales-inter-dates' %}" class="waves-effect waves-dark">
+                          <span class="pcoded-micon"><i class="ti-angle-right"></i></span>
+                          <span class="pcoded-mtext" data-i18n="nav.basic-components.alert">Comisiones Generadas</span>
+                          <span class="pcoded-mcaret"></span>
+                      </a>
+                  </li>
               </ul>
           </li>
           <li class="pcoded-hasmenu ">
@@ -252,14 +266,14 @@
               </a>
               <ul class="pcoded-submenu">
                   <li class=" ">
-                      <a href="{% url 'multiplatforms-sales' 'month' %}" class="waves-effect waves-dark">
+                      <a href="{% url 'multiplatforms-sales'  '2022' '03' %}" class="waves-effect waves-dark">
                           <span class="pcoded-micon"><i class="ti-angle-right"></i></span>
-                          <span class="pcoded-mtext" data-i18n="nav.basic-components.alert">Último mes</span>
+                          <span class="pcoded-mtext" data-i18n="nav.basic-components.alert">Por mes</span>
                           <span class="pcoded-mcaret"></span>
                       </a>
                   </li>
                   <li class=" ">
-                      <a href="{% url 'multiplatforms-sales' 'historic' %}" class="waves-effect waves-dark">
+                      <a href="{% url 'multiplatforms-sales' '2022' '01' %}" class="waves-effect waves-dark">
                           <span class="pcoded-micon"><i class="ti-angle-right"></i></span>
                           <span class="pcoded-mtext" data-i18n="nav.basic-components.alert">Generales</span>
                           <span class="pcoded-mcaret"></span>
@@ -267,7 +281,6 @@
                   </li>
               </ul>
           </li>
-
       {% endif %}
       {% if user_type == "vendedor" %}
       <div class="pcoded-navigation-label" data-i18n="nav.category.navigation">Gestion</div>
@@ -295,8 +308,6 @@
                           </a>
                       </li>
                   {% endfor %}
-
-
               </ul>
           </li>
           <li class="pcoded-hasmenu">
@@ -326,19 +337,11 @@
               <a href="{% url 'qualify-saler-list' %}" class="waves-effect waves-dark">
                   <span class="pcoded-micon"><i class="ti-user"></i></span>
                   <span class="pcoded-mtext">Vendedores</span>
-
               </a>
            </li>
 
       {% endif %}
 
-          <li class=" ">
-              <a href="{% url 'reported-issues-platform'  %}" class="waves-effect waves-dark">
-                  <span class="pcoded-micon"><i class="ti-alert"></i></span>
-                  <span class="pcoded-mtext" data-i18n="nav.basic-components.alert">Reportes de errores</span>
-                  <span class="pcoded-mcaret"></span>
-              </a>
-          </li>
         </ul>
 
 

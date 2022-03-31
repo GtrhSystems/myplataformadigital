@@ -70,6 +70,15 @@ class UserDataForm(forms.ModelForm):
         fields = ('address', 'phones', 'country', 'observations', 'image')
 
 
+class BankUserDataForm(forms.ModelForm):
+
+    bank_info = forms.CharField(required=False, widget=forms.Textarea, label="Información Bancaria")
+
+    class Meta:
+        model = UserData
+        fields = ['bank_info']
+
+
 class SubProductForm(forms.ModelForm):
     instructions = forms.CharField(widget=forms.Textarea, label="Instrucciones")
 
@@ -105,3 +114,17 @@ class ReportForm(forms.ModelForm):
     class Meta:
         model = IssuesReport
         fields = ['state', 'response']
+
+
+class GetInterDatesForm(forms.Form):
+
+    def __init__(self, *args, **kwargs):
+        import datetime
+        YEARS = [x for x in range(2022, 2040)]
+        super(GetInterDatesForm, self).__init__(*args, **kwargs)
+        date =datetime.date.today().strftime('%Y-%m-%d')
+        self.fields['month_year'] = forms.DateField(label='What is your birth date?', initial=date, widget=forms.SelectDateWidget(years=YEARS))
+
+
+    class Meta:
+        fields = ('month_year')
