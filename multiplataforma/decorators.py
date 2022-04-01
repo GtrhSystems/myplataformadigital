@@ -29,7 +29,10 @@ def usertype_in_view(function):
                  'reported-issue',
                  'send-package-to-markeplace',
                  'market-place',
-                 'my-packages-in-market-place'
+                 'my-packages-in-market-place',
+                 'multiplatforms-sales-month',
+                 'sales-inter-dates',
+                 'general-sales'
                  ]
         vendedor = ['platforms',
                     'sale-count-package',
@@ -39,7 +42,9 @@ def usertype_in_view(function):
                     'delete-table-id',
                     'market-place',
                     'qualify-saler-list',
-                    'qualify-saler'
+                    'qualify-saler',
+                    'multiplatforms-sales-month',
+                    'general-sales'
                     ]
         superuser = ['add-product',
                      'staff-list',

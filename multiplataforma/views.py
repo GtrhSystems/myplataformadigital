@@ -5,7 +5,7 @@ from django.http import HttpResponse, JsonResponse
 from .decorators import usertype_in_view
 from .forms import  *
 from .models import *
-import datetime
+
 
 PERCENT_COMISSION = PercentCommission.objects.all().first().percent
 
@@ -25,11 +25,16 @@ def context_app(request):
     user_type = check_user_type(request)
     money = 0
     products_actives = None
+    year =  date =datetime.date.today().strftime('%Y')
+    month = datetime.date.today().strftime('%m')
+    print(month)
     if user_type == 'vendedor':
         money = request.user.get_my_money()
         products_actives = request.user.get_mys_products_actives()
 
     context = {
+        'year': year,
+        'month':month,
         'user_type': user_type,
         'products_actives': products_actives,
         'money': money,
@@ -295,9 +300,8 @@ def SendPackageToMarketPlaceView(request, id):
 
 @usertype_in_view
 @login_required
-def MerketPlaceView(request):
+def MarketPlaceView(request):
     context = context_app(request)
-    print(context['user_type'])
     if context['user_type'] == "vendedor":
         my_money = context_app(request)['money'].money
         products_actives = list(request.user.get_mys_products_actives().values_list('product_id', flat=True))
@@ -308,19 +312,21 @@ def MerketPlaceView(request):
             counts = CountsPackage.get_all_counts_package_no_sales(package)
             stars = package.owner.get_general_stars_saler()
             packages_list.append({ 'id': package.id, 'name': package.name, 'product': package.product ,'counts': len(counts) ,'price':package.price, 'owner_id':package.owner.id, 'owner': package.owner.first_name + " "+package.owner.last_name, 'stars':stars })
-
-        return render(request, 'platforms/packages_list.html', {'packages': packages_list})
-
-    else :
+    else:
         packages_list = []
         packages = SubProduct.objects.filter(active=True, for_sale=True).filter(product__active=True).order_by('-date')
         for package in packages:
             counts = CountsPackage.get_all_counts_package_no_sales(package)
+            print(counts)
+            stars = package.owner.get_general_stars_saler()
+            mine = False
+            if package.owner == request.user:
+                mine = True
             packages_list.append(
                 {'id': package.id, 'name': package.name, 'product': package.product, 'counts': len(counts),
-                 'price': package.price, 'owner': package.owner.first_name + " " + package.owner.last_name})
+                 'price': package.price, 'owner': package.owner.first_name + " " + package.owner.last_name, 'mine':mine})
 
-        return render(request, 'platforms/packages_all_actives_list.html', {'packages': packages_list})
+    return render(request, 'platforms/packages_list.html', {'packages': packages_list})
 
 @usertype_in_view
 @login_required
@@ -381,31 +387,73 @@ def SaleCountView(request, id):
         CountPackageSale.objects.create(saler =request.user, counts_package = last_count_package, price = request.POST['price'] )
         return redirect('platforms', subproduct.product.name)
 
-    return render(request, 'platforms/sale_count_box.html',{ 'id':id, 'subproduct':subproduct})
+    return render(request, 'sales/sale_count_box.html',{ 'id':id, 'subproduct':subproduct})
 
 @usertype_in_view
 @login_required
 def SalesMonthPlatformsView(request, year=None, month= None):
 
     context = context_app(request)
+
     if context['user_type'] == "staff":
+        sales_sum = comission = 0
         sales =  SubProduct.SalesByStaff(request.user, year, month)
-        sales_sum = sales.aggregate(total_sales=Sum('price'))
-        comission = int(sales_sum['total_sales'])*0.05
+        if sales:
+            sales_sum = sales.aggregate(total_sales=Sum('price'))
+            comission = int(sales_sum['total_sales']) * (PERCENT_COMISSION*0.01)
+        return render(request, 'sales/sales.html', {'sales': sales, 'sales_sum': sales_sum, 'comission': comission})
 
     elif context['user_type'] == "superuser":
 
-        sales = SubProduct.SalesPendingCommissionDate( year, month)
-        sales_sum = sales.aggregate(total_sales=Sum('price'))
-        comission = int(sales_sum['total_sales']) * 0.05
+        sales = SubProduct.SalesAllDate( year, month)
+        sales_sum = comission = 0
+        if sales:
+            sales_sum = sales.aggregate(total_sales=Sum('price'))
+            comission = int(sales_sum['total_sales'])  * (PERCENT_COMISSION*0.01)
+        return render(request, 'sales/sales.html', {'sales': sales, 'sales_sum': sales_sum, 'comission': comission})
 
-    return render(request, 'sales/sales_'+context['user_type'] +'.html',  {'sales': sales, 'sales_sum': sales_sum, 'comission': comission})
+    elif context['user_type'] == "vendedor":
+
+        sales = CountsPackage.all_counts_saled_in_dates(year, month, request)
+        sales_sum =  0
+        if sales:
+            sales_sum = sales.aggregate(total_sales=Sum('price_sale'))
+
+        return render(request, 'sales/sales_saler.html', {'sales': sales, 'sales_sum': sales_sum })
+
+
+
+@usertype_in_view
+@login_required
+def GeneralSalesView(request):
+
+    context = context_app(request)
+    if context['user_type'] == "staff":
+        sales = SubProduct.objects.filter(creater = request.user).filter(~Q(owner=request.user))
+        sales_sum = comission = 0
+        if sales:
+            sales_sum = sales.aggregate(total_sales=Sum('price'))
+            comission = int(sales_sum['total_sales']) * (PERCENT_COMISSION * 0.01)
+
+        return render(request, 'sales/sales_generals.html', {'sales': sales, 'sales_sum': sales_sum, 'comission': comission})
+
+    elif context['user_type'] == "vendedor":
+
+        sales = CountsPackage.objects.filter(saled=1).filter(subproduct__owner = request.user)
+        sales_sum = 0
+        if sales:
+            sales_sum = sales.aggregate(total_sales=Sum('price_sale'))
+
+        return render(request, 'sales/sales_saler.html', {'sales': sales, 'sales_sum': sales_sum})
+
+
 
 @usertype_in_view
 @login_required
 def InterDatesSalesView(request):
-    form = GetInterDatesForm()
 
+    context = context_app(request)
+    form = GetInterDatesForm()
     return render(request, 'sales/inter-dates.html', {'form': form })
 
 
@@ -419,7 +467,7 @@ def CommissionPendingView(request):
         sales_sum = sales.aggregate(total_sales=Sum('price'))
         comission = int(sales_sum['total_sales']) * (PERCENT_COMISSION*0.01)
 
-    return render(request, 'platforms/sales_comission_pending.html',  {'sales': sales, 'sales_sum': sales_sum, 'comission': comission})
+    return render(request, 'sales/sales_comission_pending.html',  {'sales': sales, 'sales_sum': sales_sum, 'comission': comission})
 
 @usertype_in_view
 @login_required

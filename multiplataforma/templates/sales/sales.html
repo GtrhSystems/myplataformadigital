@@ -1,24 +1,5 @@
-{% extends 'layout.html' %}
+
 {% load humanize %}
-{% load widget_tweaks %}
-{% block menu %} 
-    {% include 'menu.html' %}
-{% endblock %} 
-
-{% block header %}
- <div class="page-header">
-	  <div class="page-block">
-		  <div class="row align-items-center">
-			  <div class="col-md-8">
-				  <div class="page-header-title">
-					  <h5 class="m-b-10">Ventas</h5>
-				  </div>
-			  </div>
-
-		  </div>
-	  </div>
-  </div>
-{% endblock %}
 {% block content %}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
@@ -27,11 +8,11 @@
 	<div class="col-lg-12">
 		<div class="card">
 			<div class="card-header">
-				<h5>Listado de ventas de proveedor</h5>
+				<h5>Listado de comisiones de proveedor</h5>
 			</div>
 			<div class="card-block table-border-style">
 				<div class="table-responsive">
-                    <table id="packages-table" class="table ">
+                    <table id="sales-table" class="table table-normal">
                         <thead>
                             <tr>
                                 <th>Fecha</th>
@@ -39,7 +20,7 @@
                                 <th>Comprador</th>
                                 <th>Precio</th>
                                 <th>Comision</th>
-                                <th>Pagada?</th>
+
                             </tr>
                         </thead>
                         <tbody>
@@ -50,33 +31,18 @@
                                 <td>{{ sale.owner }}</td>
                                 <td>$ {{ sale.price|intcomma }}</td>
                                 <td>$ {{ sale.commission|intcomma }}</td>
-                                <td>
-                                {% if sale.commission_payed %}
-                                  <i class="ti-check-box"></i>
-                                 {% endif %}
-                                </td>
+
                             </tr>
                         {% endfor %}
+                        {% if sales %}
                         <tr class="gradeA odd" role="row">
                             <td></td>
                             <td></td>
-
-                            <td><strong>VENTAS DEL MES</strong></td>
+                            <td><strong>Totales</strong></td>
                             <td>$ {{ sales_sum.total_sales|intcomma }}</td>
-                            <td>
-
-                            </td>
+                            <td>$ {{ comission|intcomma }} </td>
                         </tr>
-                        <tr class="gradeA odd" role="row">
-                            <td></td>
-                            <td></td>
-
-                            <td><strong>COMISION TOTAL</strong></td>
-                            <td>$ {{ comission|intcomma }}</td>
-                            <td>
-
-                            </td>
-                        </tr>
+                        {% endif %}
                         </tbody>
                     </table>
                 </div>

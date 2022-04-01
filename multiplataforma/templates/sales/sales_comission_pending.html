@@ -49,7 +49,7 @@
                                 <td>{{ sale.name }}</td>
                                 <td>{{ sale.owner }}</td>
                                 <td>$ {{ sale.price|intcomma }}</td>
-                                <td>$ {{ sale.commission|intcomma }}</td>
+                                <td></td>
                                 <td>
                                     <button id="{{ sale.id }}" class="btn btn-mat waves-effect waves-light btn-inverse pay">Generar Pago</button>
                                 </td>
@@ -59,23 +59,11 @@
                             <tr class="gradeA odd" role="row">
                                 <td></td>
                                 <td></td>
-
-                                <td><strong>VENTAS DEL MES</strong></td>
+                                <td><strong>Totales</strong></td>
                                 <td>$ {{ sales_sum.total_sales|intcomma }}</td>
-                                <td>
-
-                                </td>
-                            </tr>
-                            <tr class="gradeA odd" role="row">
-                                <td></td>
-                                <td></td>
-
-                                <td><strong>COMISION TOTAL</strong></td>
                                 <td>$ {{ comission|intcomma }}</td>
-                                <td>
-
-                                </td>
                             </tr>
+
                          {% endif %}
                         </tbody>
                     </table>

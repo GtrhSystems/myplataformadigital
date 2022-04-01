@@ -123,8 +123,7 @@ class GetInterDatesForm(forms.Form):
         YEARS = [x for x in range(2022, 2040)]
         super(GetInterDatesForm, self).__init__(*args, **kwargs)
         date =datetime.date.today().strftime('%Y-%m-%d')
-        self.fields['month_year'] = forms.DateField(label='What is your birth date?', initial=date, widget=forms.SelectDateWidget(years=YEARS))
-
+        self.fields['month_year'] = forms.DateField(label='Selceccion el mes de consulta', initial=date, widget=forms.SelectDateWidget(years=YEARS))
 
     class Meta:
         fields = ('month_year')

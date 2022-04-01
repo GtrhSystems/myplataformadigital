@@ -5,6 +5,14 @@ from django.db.models import Avg, Count, Min, Sum
 import datetime
 
 
+def dates_init_finish(year, month):
+    import calendar
+    lastday = calendar.monthrange(year, int(month))[1]
+    initial_date = datetime.datetime.strptime(str(year) + "-" + str(month) + "-01", '%Y-%m-%d')
+    final_date = datetime.datetime.strptime(str(year) + "-" + str(month) + "-" + str(lastday), '%Y-%m-%d')
+    return [initial_date, final_date]
+
+
 class ActionUser(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     action = models.CharField(max_length=300, default="")
@@ -29,9 +37,6 @@ class UserData(models.Model):
     observations = models.CharField(default="", max_length=255, verbose_name="Observaciones")
     image = models.ImageField(upload_to='photos')
     bank_info = models.CharField(max_length=300, verbose_name="Información Bancaria", default="")
-
-
-
 
 
 class Product(models.Model):
@@ -71,25 +76,17 @@ class SubProduct(models.Model):
     commission = models.IntegerField( verbose_name="Comision", default=0)
     commission_payed = models.BooleanField(default=False, verbose_name="Comision pagada?")
 
-    def dates_init_finish( year, month):
-
-        import calendar
-        lastday = calendar.monthrange(year, int(month))[1]
-        initial_date = datetime.datetime.strptime(str(year) + "-" + str(month) + "-01", '%Y-%m-%d')
-        final_date = datetime.datetime.strptime(str(year) + "-" + str(month) + "-" + str(lastday), '%Y-%m-%d')
-        print(initial_date)
-        return [initial_date, final_date]
 
     @classmethod
     def SalesByStaff(self, user, year, month):
 
+        initial_date, final_date = dates_init_finish(year, month)
         sales = self.objects.filter(creater = user).filter(~Q(owner=user)).filter( date__range=[initial_date, final_date])
         return sales
 
     @classmethod
-    def SalesPendingCommissionDate(self, year, month):
-
-        initial_date, final_date = self.dates_init_finish(year, month)
+    def SalesAllDate(self, year, month):
+        initial_date, final_date = dates_init_finish(year, month)
         sales = self.objects.filter(commission_payed=True).filter(date__range=[initial_date, final_date])
         return sales
 
@@ -109,12 +106,8 @@ class SubProduct(models.Model):
         cls.save()
         return cls
 
-
-
     def __str__(self):
         return str(self.name)
-
-
 
 
 class CountsPackage(models.Model):
@@ -126,6 +119,7 @@ class CountsPackage(models.Model):
     pin = models.CharField(max_length=4, verbose_name="Pin", default="0")
     saled =  models.BooleanField(default=0, verbose_name="Vendida?")
     price_sale = models.IntegerField(default=0, verbose_name="Precio de venta" )
+    date_sale  = models.DateTimeField(auto_now_add=False,  null=True)
 
     def __str__(self):
         return str(self.email)
@@ -141,7 +135,16 @@ class CountsPackage(models.Model):
 
         cls.saled = True
         cls.price_sale = int(price)
+        cls.date_sale = datetime.date.today()
         cls.save()
+
+    @classmethod
+    def all_counts_saled_in_dates(self, year, month, request):
+
+        initial_date, final_date = dates_init_finish(year, month)
+        subproducts_list = list(SubProduct.objects.filter(owner= request.user).values_list('id', flat=True))
+        sales = self.objects.filter(subproduct_id__in=subproducts_list, saled=1).filter(date_sale__range=[initial_date, final_date])
+        return sales
 
 class CountPackageSale(models.Model):
 
@@ -210,9 +213,11 @@ def get_stars_saler(cls, buyer):
 
 def get_general_stars_saler(cls):
 
+    starts = 0
     saler_stars = UserStart.objects.filter(saler=cls).aggregate(Avg('stars'))
-    print(saler_stars)
-    return int(saler_stars['stars__avg'])
+    if saler_stars['stars__avg']:
+        starts = int(saler_stars['stars__avg'])
+    return starts
 
 def get_mys_products_actives(cls):
 

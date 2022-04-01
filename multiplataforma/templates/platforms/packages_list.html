@@ -59,6 +59,7 @@
                         </div>
                     </div>
                 </div>
+                {% if not package.mine %}
                 <div class="card-footer bg-c-purple">
                     <div class="row align-items-center">
                             <div class="col-9">
@@ -71,10 +72,9 @@
                                     <i class="ti-angle-right text-white"></i>
                                 </a>
                             </div>
-
-
                     </div>
                 </div>
+                 {% endif %}
             </div>
         </div>
     {% endfor  %}

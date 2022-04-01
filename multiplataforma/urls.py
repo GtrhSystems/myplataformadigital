@@ -29,7 +29,7 @@ urlpatterns = [
     path('send-package-to-markeplace/<int:id>', views.SendPackageToMarketPlaceView, name='send-package-to-markeplace'),
 
     #multiplataformas-vendedor
-    path('platform/market-place', views.MerketPlaceView, name='market-place'),
+    path('platform/market-place', views.MarketPlaceView, name='market-place'),
     path('platform/my-packages-in-market-place', views.MyPackageMerketPlaceView, name='my-packages-in-market-place'),
     path('platform/list/<str:name>', views.SalePlatformsView, name='platforms'),
     path('package/buy/<int:id>', views.BuyPackageView, name='buy-platform'),
@@ -40,6 +40,7 @@ urlpatterns = [
     #ventas
     path('package/sale-count/<int:id>', views.SaleCountView, name='sale-count-package'),
     path('platform/sales/month/<int:year>/<int:month>', views.SalesMonthPlatformsView, name='multiplatforms-sales-month'),
+    path('platform/sales/general-sales', views.GeneralSalesView, name='general-sales'),
     path('platform/sales/pay-pending', views.CommissionPendingView, name='commision-pending'),
     path('platform/sales/pay-staff-sale/<int:id>', views.PayStaffSaleView, name='pay-staff-sale'),
     path('platform/sales/inter-dates', views.InterDatesSalesView, name='sales-inter-dates'),
