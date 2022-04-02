@@ -14,4 +14,4 @@ start.sh
 media/
 idea/
 git/
-static/
+#static/
