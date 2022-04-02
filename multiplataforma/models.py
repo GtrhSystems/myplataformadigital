@@ -56,7 +56,7 @@ class Product(models.Model):
 
 class PercentCommission(models.Model):
 
-    percent = models.IntegerField(verbose_name="Porcentaje" )
+    percent = models.FloatField(verbose_name="Porcentaje" )
     date = models.DateTimeField(auto_now_add=True)
 
 
