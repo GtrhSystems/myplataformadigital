@@ -14,6 +14,7 @@
 }
 </style>
 
+
  <div class="page-header">
 	  <div class="page-block">
 		  <div class="row align-items-center">
@@ -73,7 +74,17 @@
 					<div class="form-group form-default">
 						{{ form2.address|add_class:'form-control' }}
 						<span class="form-bar"></span>
-						<label class="float-label">Dirección y ciudad</label>
+						<label class="float-label">Dirección</label>
+					</div>
+					<div class="form-group form-default">
+						{{ form2.state|add_class:'form-control' }}
+						<span class="form-bar"></span>
+						<label class="float-label">Estado/Depto</label>
+					</div>
+					<div class="form-group form-default">
+						{{ form2.city|add_class:'form-control' }}
+						<span class="form-bar"></span>
+						<label class="float-label">Ciudad</label>
 					</div>
 					<div class="form-group form-default">
 						<label class="float-label">Pais</label>
@@ -86,14 +97,20 @@
 						<span class="form-bar"></span>
 						<label class="float-label">Telefonos</label>
 					</div>
+
+					<div class="form-group form-default">
+						<span class="form-bar">La contraseña debe contener al menos 8 caracteres y no ser completamente numérica.(se recomienda combinar minúsculas, mayúsculas, números y símbolos)</span>
+					</div>
 					<div class="form-group form-default">
 						{{ form.password1|add_class:'form-control' }}
 						<span class="form-bar"></span>
 						<label class="float-label">Contraseña</label>
+						<span id="passstrength"></span>
 					</div>
 					<div class="form-group form-default">
 						{{ form.password2|add_class:'form-control' }}
 						<span class="form-bar"></span>
+
 						<label class="float-label">Confirm la contraseña</label>
 					</div>
 					<div class="form-group form-default">
@@ -107,8 +124,12 @@
 				  	<h3>Succesfully uploaded : {{img_obj.title}}</h3>
 					<img src="{{ img_obj.image.url}}" alt="connect" style="max-height:300px">
 				{% endif %}
-				{{ form.errors }}
-				{{ form2.errors }}
+				{% if form.errors %}
+					{{ form.errors }}
+				{% endif %}
+				{% if form2.errors %}
+					{{ form2.errors }}
+				{% endif %}
 			</div>
 		</div>
 	</div>

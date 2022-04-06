@@ -26,7 +26,7 @@
       </li>
   </ul>
   <ul class="nav-right">
-      <li class="header-notification">
+      <!--<li class="header-notification">
           <a href="#!" class="waves-effect waves-light">
               <i class="ti-bell"></i>
               <span class="badge bg-c-red"></span>
@@ -67,7 +67,7 @@
                   </div>
               </li>
           </ul>
-      </li>
+      </li>-->
       <li class="user-profile header-notification text-white">
              {% load humanize %}
               <span> {% if user_type == "vendedor" %}
@@ -134,7 +134,7 @@
       <ul class="pcoded-item pcoded-left-item">
           <li class="pcoded-hasmenu ">
               <a href="javascript:void(0)" class="waves-effect waves-dark">
-                  <span class="pcoded-micon"><i class="ti-id-badge"></i></span>
+                  <span class="pcoded-micon"> <i class="fa fa-handshake-o"></i></i></span>
                   <span class="pcoded-mtext"  data-i18n="nav.basic-components.main">Proveedores</span>
                   <span class="pcoded-mcaret"></span>
               </a>
@@ -171,7 +171,7 @@
           </li>
           <li class="pcoded-hasmenu ">
               <a href="javascript:void(0)" class="waves-effect waves-dark">
-                  <span class="pcoded-micon"><i class="ti-user"></i></i></span>
+                  <span class="pcoded-micon"> <i class="fa fa-users"></i></span>
                   <span class="pcoded-mtext"  data-i18n="nav.basic-components.main">Distribuidores</span>
                   <span class="pcoded-mcaret"></span>
               </a>
@@ -204,7 +204,15 @@
       {% endif %}
 
       {% if user_type == "staff" %}
-
+        <ul class="pcoded-item pcoded-left-item">
+          <li class="">
+              <a href="{% url 'index' %}" class="waves-effect waves-dark">
+                  <span class="pcoded-micon"><i class="ti-home"></i><b>D</b></span>
+                  <span class="pcoded-mtext" data-i18n="nav.dash.main">Dashboard</span>
+                  <span class="pcoded-mcaret"></span>
+              </a>
+          </li>
+       </ul>
       <div class="pcoded-navigation-label" data-i18n="nav.category.navigation">Gestion</div>
       <ul class="pcoded-item pcoded-left-item">
             <li class="">
@@ -241,7 +249,7 @@
            <li class="pcoded-hasmenu">
               <a href="javascript:void(0)" class="waves-effect waves-dark">
                   <span class="pcoded-micon"><i class="ti-bar-chart"></i></span>
-                  <span class="pcoded-mtext"  data-i18n="nav.basic-components.main">Ventas</span>
+                  <span class="pcoded-mtext"  data-i18n="nav.basic-components.main">Compras</span>
                   <span class="pcoded-mcaret"></span>
               </a>
               <ul class="pcoded-submenu">

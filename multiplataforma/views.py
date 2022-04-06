@@ -27,7 +27,6 @@ def context_app(request):
     products_actives = None
     year =  date =datetime.date.today().strftime('%Y')
     month = datetime.date.today().strftime('%m')
-    print(month)
     if user_type == 'vendedor':
         money = request.user.get_my_money()
         products_actives = request.user.get_mys_products_actives()
@@ -44,7 +43,21 @@ def context_app(request):
 
 @login_required
 def IndexView(request):
-    return render(request, 'index.html')
+
+    user_type = check_user_type(request)
+    print(user_type)
+    if user_type == "superuser":
+        salers_actives = len(User.objects.filter(is_active=True).filter(groups__name = "vendedor"))
+        salers_requests = len(User.objects.filter(is_active=False).filter(groups__name = "vendedor"))
+        staff_actives  = len(User.objects.filter(is_active=True).filter(groups__name = "staff"))
+        staff_requests = len(User.objects.filter(is_active=False).filter(groups__name="staff"))
+        return render(request, 'dashboard_'+user_type+'.html', {'salers_actives':salers_actives, 'salers_requests':salers_requests, 'staff_actives':staff_actives, 'staff_requests':staff_requests })
+    elif user_type == "staff":
+        models = ["User", "PlansPlatform", "SubProduct"]
+    elif user_type == "vendedor":
+        print('test')
+
+    return render(request, 'dashboard_superuser.html')
 
 
 @usertype_in_view
@@ -68,9 +81,11 @@ def ProductCreateView(request):
 
 def RegisterStaffView(request):
 
-    form = SignUpForm(request.POST or None)
-    form2 = UserDataForm(request.POST, request.FILES or None)
+    form = SignUpForm()
+    form2 = UserDataForm()
     if request.method == 'POST':
+        form = SignUpForm(request.POST or None)
+        form2 = UserDataForm(request.POST, request.FILES or None)
         if form.is_valid() and form2.is_valid():
             user = form.save(commit=False)
             user.is_active = 0
@@ -317,7 +332,6 @@ def MarketPlaceView(request):
         packages = SubProduct.objects.filter(active=True, for_sale=True).filter(product__active=True).order_by('-date')
         for package in packages:
             counts = CountsPackage.get_all_counts_package_no_sales(package)
-            print(counts)
             stars = package.owner.get_general_stars_saler()
             mine = False
             if package.owner == request.user:
@@ -512,10 +526,8 @@ def QualifySalerListView(request):
    salers=[]
    for my_saler in my_salers:
        user_data = UserData.objects.filter(user = my_saler).first()
-       print(user_data.image.url)
        stars = my_saler.get_stars_saler(request.user)
        salers.append({'id': my_saler.id, 'image':user_data.image.url, 'first_name':my_saler.first_name ,'last_name':my_saler.last_name, 'stars': stars})
-   print(salers)
    return render(request, 'users/qualify-saler-list.html', {'my_salers': salers })
 
 @usertype_in_view
@@ -549,7 +561,6 @@ def ReportedIssuesView(request):
 def ReportedIssue(request, id):
 
     context = context_app(request)
-    print('me rasca')
     if context['user_type'] == "superuser" or context['user_type'] == "staff":
         report = get_object_or_404(IssuesReport, pk=id)
         form = ReportForm(instance=report)
@@ -585,7 +596,6 @@ def DeleteRegister(request, model, id):
             if model == "User":
                 if user_type == "staff":
                     is_my_saler = SalerStaff.Is_my_saler(request.user.id, id)
-                    print(is_my_saler)
                     if not is_my_saler:
                         return redirect('index')
                 eval(model + ".objects.filter(id=" + id + ").update(is_active=0)")

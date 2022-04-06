@@ -31,9 +31,12 @@ class Country(models.Model):
 class UserData(models.Model):
 
     user= models.ForeignKey(User, on_delete=models.CASCADE)
+    document  = models.CharField(max_length=15, verbose_name="Documento", default="")
     address = models.CharField(max_length=150, verbose_name="Dirección", default="")
     phones = models.CharField(max_length=150, verbose_name="Dirección", default="")
     country = models.ForeignKey(Country, on_delete=models.CASCADE)
+    state = models.CharField(max_length=50, verbose_name="Estado", default="")
+    city = models.CharField(max_length=50, verbose_name="Ciudad", default="")
     observations = models.CharField(default="", max_length=255, verbose_name="Observaciones")
     image = models.ImageField(upload_to='photos')
     bank_info = models.CharField(max_length=300, verbose_name="Información Bancaria", default="")

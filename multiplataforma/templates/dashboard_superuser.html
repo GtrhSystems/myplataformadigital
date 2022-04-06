@@ -1,0 +1,106 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+<div class="row">
+    <!-- task, page, download counter  start -->
+    <div class="col-xl-3 col-md-6">
+        <div class="card">
+            <div class="card-block">
+                <div class="row align-items-center">
+                    <div class="col-8">
+                        <h4 class="text-c-purple">{{ staff_actives }}</h4>
+                        <h6 class="text-muted m-b-0">Proveedores Activos</h6>
+                    </div>
+                    <div class="col-4 text-right">
+                        <i class="fa fa-handshake-o f-28"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-c-purple">
+                <div class="row align-items-center">
+                    <div class="col-9">
+                        <a href="{% url 'staff-list' 'staff' 1 %}"><p class="text-white m-b-0">Ver</p></a>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card">
+            <div class="card-block">
+                <div class="row align-items-center">
+                    <div class="col-8">
+                        <h4 class="text-c-green">{{ salers_requests }}</h4>
+                        <h6 class="text-muted m-b-0">Proveedores en solicitud</h6>
+                    </div>
+                    <div class="col-4 text-right">
+                        <i class="fa fa-file-text-o f-28"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-c-green">
+                <div class="row align-items-center">
+                    <div class="col-9">
+                         <a href="{% url 'staff-list' 'staff' 0 %}"><p class="text-white m-b-0">Ver</p></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card">
+            <div class="card-block">
+                <div class="row align-items-center">
+                    <div class="col-8">
+                        <h4 class="text-c-red">{{ salers_actives }}</h4>
+                        <h6 class="text-muted m-b-0">Distribuidores activos</h6>
+                    </div>
+                    <div class="col-4 text-right">
+
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-c-red">
+                <div class="row align-items-center">
+                    <div class="col-9">
+                         <a href="{% url 'staff-list' 'vendedor' 1 %}"><p class="text-white m-b-0">Ver</p></a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card">
+            <div class="card-block">
+                <div class="row align-items-center">
+                    <div class="col-8">
+                        <h4 class="text-c-blue">{{ salers_requests }}</h4>
+                        <h6 class="text-muted m-b-0">Distribuidores en solicitud</h6>
+                    </div>
+                    <div class="col-4 text-right">
+                        <i class="fa fa-user-plus f-28"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-c-blue">
+                <div class="row align-items-center">
+                    <div class="col-9">
+                        <a href="{% url 'staff-list' 'vendedor' 0 %}"><p class="text-white m-b-0">Ver</p></a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- task, page, download counter  end -->
+
+    <!--  sale analytics start -->
+
+
+    <!--  project and team member end -->
+</div>
+
+{% endblock %}
