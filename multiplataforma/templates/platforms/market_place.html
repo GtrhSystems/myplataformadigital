@@ -28,7 +28,8 @@
                   <div class="card-header bg-c-purple">
                     <div class="row align-items-center">
                         <div class="col-9">
-                           Vendedor: {{ package.owner|upper }}
+                           Vendedor: {{ package.creater|upper }}
+                            {% if package.stars  > 0 %}
                                 <select class="starts" id="{{ package.owner_id }}">
                                   <option value="1">1</option>
                                   <option value="2">2</option>
@@ -36,14 +37,20 @@
                                   <option value="4">4</option>
                                   <option value="5">5</option>
                                 </select>
-
                                 <script type="text/javascript">
-                                    $('#{{ package.owner_id }}').val('{{ package.stars }}')
+                                    $('#{{ package.creater_id }}').val('{{ package.stars }}')
                                 </script>
-
+                          {% endif %}
                         </div>
                         <div class="col-9">
                             Cuentas registradas: {{ package.counts  }}
+                        </div>
+                         <div class="col-9">
+                                {% if package.individual_sale  %}
+                                   Venta por cuenta individual
+                                {% else  %}
+                                    Venta de todo el paquete
+                                {% endif  %}
                         </div>
                     </div>
                 </div>
@@ -52,19 +59,32 @@
 
                         <div class="col-8">
                             <h4 class="text-c-purple">{{ package.name|upper }}</h4>
-                            <h6 class="text-muted m-b-0">${{ package.price|intcomma }}</h6>
+                            <h6 class="text-muted m-b-0">${{ package.price|intcomma }}
+                            {% if package.individual_sale  %}
+                                 por cuenta individual
+                            {% else  %}
+                                 todo el paquete
+                            {% endif  %}
+                            </h6>
                         </div>
                         <div class="col-4 text-right">
                             <img src="/static/logos/{{ package.product.name }}.jpg" alt="{{ subproduct.name }}" width="80" height="80">
                         </div>
                     </div>
                 </div>
-                {% if not package.mine %}
+                {% if not user_type == "staff"  %}
                 <div class="card-footer bg-c-purple">
                     <div class="row align-items-center">
                             <div class="col-9">
                                 <a href="#" class="sale" id="{{ package.id }}" name_product="{{ package.name }}" >
-                                    <p class="text-white m-b-0">Comprar</p>
+                                    <p class="text-white m-b-0">Comprar
+                                      {% if package.individual_sale  %}
+                                          una cuenta individual
+                                      {% else  %}
+                                           todo el paquete
+                                      {% endif  %}
+
+                                    </p>
                                  </a>
                             </div>
                             <div class="col-3 text-right ">

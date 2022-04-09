@@ -57,15 +57,6 @@
 
 			<form class="form-material" method="post">
 				{% csrf_token %}
-				{% if form %}
-				<div class="card-block">
-					<div class="form-group form-default">
-						{{ form.bank_info|add_class:'form-control' }}
-						<span class="form-bar"></span>
-						<label class="float-label username">Información bancaria</label>
-					</div>
-				</div>
-				{% endif %}
 				<div class="card-header">
 					<span>De click en las plataformas que desee activar para este usuario</span>
 				</div>

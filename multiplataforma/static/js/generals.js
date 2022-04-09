@@ -83,7 +83,7 @@ function create_plan_subproduct(){
             var id = $(this).attr('id');
             var mensaje = confirm("Desea eliminar esta cuenta?");
             if (mensaje) {
-                $.get('/delete/PlansPlatform/'+id ,function(data){
+                $.get('/delete/CountsPackage/'+id ,function(data){
                     alert(data)
                     location.reload();
                 })

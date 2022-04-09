@@ -73,41 +73,16 @@ class SubProduct(models.Model):
     active = models.BooleanField(default=1, verbose_name="Activo?")
     date = models.DateTimeField(auto_now_add=True)
     creater = models.ForeignKey(User, on_delete=models.CASCADE, related_name="creater") #usuario creador
-    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="owner")#usuario dueño actual
+    #owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="owner")#usuario dueño actual
     for_sale = models.BooleanField(default=False, verbose_name="para la venta?")
-    pay_value =  models.IntegerField( verbose_name="Comision", default=0)
-    commission = models.IntegerField( verbose_name="Comision", default=0)
-    commission_payed = models.BooleanField(default=False, verbose_name="Comision pagada?")
+    individual_sale = models.BooleanField(default=False, verbose_name="Venta por cuenta")
 
 
-    @classmethod
-    def SalesByStaff(self, user, year, month):
 
-        initial_date, final_date = dates_init_finish(year, month)
-        sales = self.objects.filter(creater = user).filter(~Q(owner=user)).filter( date__range=[initial_date, final_date])
-        return sales
 
-    @classmethod
-    def SalesAllDate(self, year, month):
-        initial_date, final_date = dates_init_finish(year, month)
-        sales = self.objects.filter(commission_payed=True).filter(date__range=[initial_date, final_date])
-        return sales
 
-    @classmethod
-    def SalesPendingCommission(self):
-        sales = self.objects.filter(commission_payed=False)
-        return sales
 
-    def SetPayStaffSale(cls):
 
-        percent = PercentCommission.objects.all().first().percent
-        commission = cls.price * (percent * 0.01)
-        pay = cls.price-commission
-        cls.pay_value = pay
-        cls.commission = commission
-        cls.commission_payed = 1
-        cls.save()
-        return cls
 
     def __str__(self):
         return str(self.name)
@@ -121,41 +96,84 @@ class CountsPackage(models.Model):
     profile = models.CharField(max_length=20, verbose_name="Perfil", default="")
     pin = models.CharField(max_length=4, verbose_name="Pin", default="0")
     saled =  models.BooleanField(default=0, verbose_name="Vendida?")
+    price_buy = models.IntegerField(default=0, verbose_name="Precio de Compra")
+    date_buy = models.DateTimeField(auto_now_add=False, null=True)
     price_sale = models.IntegerField(default=0, verbose_name="Precio de venta" )
     date_sale  = models.DateTimeField(auto_now_add=False,  null=True)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE)  # usuario dueño actual
+    pay_value = models.IntegerField(verbose_name="Comision", default=0)
+    commission = models.IntegerField(verbose_name="Comision", default=0)
+    commission_payed = models.BooleanField(default=False, verbose_name="Comision pagada?")
+    date_pay = models.DateTimeField(auto_now_add=False, null=True)
 
     def __str__(self):
         return str(self.email)
 
     @classmethod
+    def SalesPendingCommission(self):
+        sales = self.objects.filter(commission_payed=False)
+        return sales
+
+    @classmethod
+    def SalesByStaffbyDate(self, user, year, month):
+
+        initial_date, final_date = dates_init_finish(year, month)
+        subproducts = SubProduct.objects.filter(creater=user)
+        my_counts_sales = CountsPackage.objects.filter(subproduct__in=subproducts).filter(~Q(owner=user)).filter(date_buy__range=[initial_date, final_date])
+        return my_counts_sales
+
+    @classmethod
     def get_all_counts_package_no_sales(self, subproduct):
 
-        CountsPackage = self.objects.filter(subproduct=subproduct, saled=False)
+        CountsPackage = self.objects.filter(subproduct=subproduct, owner=subproduct.creater)
+        return CountsPackage
 
+    @classmethod
+    def get_mys_counts_package_no_sales(self, subproduct, me):
+        CountsPackage = self.objects.filter(subproduct=subproduct, owner=me,saled=False)
         return CountsPackage
 
     def sale_count(cls, price):
 
         cls.saled = True
         cls.price_sale = int(price)
-        cls.date_sale = datetime.date.today()
+        cls.date_sale = datetime.datetime.now()
         cls.save()
 
     @classmethod
     def all_counts_saled_in_dates(self, year, month, request):
 
         initial_date, final_date = dates_init_finish(year, month)
-        subproducts_list = list(SubProduct.objects.filter(owner= request.user).values_list('id', flat=True))
-        sales = self.objects.filter(subproduct_id__in=subproducts_list, saled=1).filter(date_sale__range=[initial_date, final_date])
+        #subproducts_list = list(SubProduct.objects.filter(owner= request.user).values_list('id', flat=True))
+        sales = self.objects.filter(owner=request.user, saled=1).filter(date_sale__range=[initial_date, final_date])
         return sales
 
-class CountPackageSale(models.Model):
+    def SetPayStaffSale(cls):
 
-    saler = models.ForeignKey(User, on_delete=models.CASCADE)
-    counts_package = models.ForeignKey(CountsPackage, on_delete=models.CASCADE, default="")
-    price = models.IntegerField(default=0)
-    is_renovation = models.BooleanField(default=0, verbose_name="Es renovacion?:")
-    date = models.DateTimeField(auto_now_add=True)
+        percent = PercentCommission.objects.all().first().percent
+        commission = cls.price_buy * (percent * 0.01)
+        pay = cls.price_buy-commission
+        cls.pay_value = pay
+        cls.commission_payed = 1
+        cls.date_pay = datetime.datetime.now()
+        cls.save()
+        return cls
+
+    @classmethod
+    def SalesAllbyDate(self, year, month):
+
+        initial_date, final_date = dates_init_finish(year, month)
+        sales = self.objects.filter(commission_payed=True).filter(date_pay__range=[initial_date, final_date])
+        return sales
+
+
+#class CountPackageSale(models.Model):
+
+#   saler = models.ForeignKey(User, on_delete=models.CASCADE)#
+#    counts_package = models.ForeignKey(CountsPackage, on_delete=models.CASCADE, default="")
+#    price = models.IntegerField(default=0)
+#    is_renovation = models.BooleanField(default=0, verbose_name="Es renovacion?:")
+#    date = models.DateTimeField(auto_now_add=True)
 
 
 class UserProduct(models.Model):
@@ -211,7 +229,10 @@ class UserStart(models.Model):
 def get_stars_saler(cls, buyer):
 
     saler_stars = UserStart.objects.filter(saler=cls,buyer=buyer).first()
-    return saler_stars.stars
+    stars = 0
+    if saler_stars:
+        stars = saler_stars.stars
+    return stars
 
 
 def get_general_stars_saler(cls):
@@ -230,7 +251,8 @@ def get_mys_products_actives(cls):
 #trae subproductos comprados por el vendedor
 def get_my_buy_subproducts_actives_by_product(cls, product):
 
-    my_sub_products_actives = SubProduct.objects.filter(owner=cls, product=product, active=True)
+    mys_subproducts =  list(CountsPackage.objects.filter(owner=cls, saled=False).values_list('subproduct_id', flat=True))
+    my_sub_products_actives = SubProduct.objects.filter(product=product, active=True, id__in=mys_subproducts)
     return my_sub_products_actives
 
 def subtract_money(cls, money_user, money_to_discount, detail):
@@ -264,10 +286,17 @@ def get_my_money(cls):
 
 def get_my_salers(cls):
 
-    my_subproduct = list(SubProduct.objects.filter(owner = cls).values_list('creater_id', flat=True))
-    my_salers = User.objects.filter(is_active=True, id__in= my_subproduct)
+    my_counts = list(CountsPackage.objects.filter(owner = cls).values_list('subproduct_id', flat=True))
+    unique_list = list(dict.fromkeys(my_counts))
+    subrpoducts = list(SubProduct.objects.filter(id__in=unique_list).values_list('creater_id', flat=True))
+    my_salers = User.objects.filter(is_active=True, id__in= subrpoducts)
     return my_salers
 
+def get_my_general_sales(cls):
+
+    subproducts =SubProduct.objects.filter(creater=cls)
+    my_counts_sales = CountsPackage.objects.filter( subproduct__in=subproducts).filter(~Q(owner=cls))
+    return my_counts_sales
 
 User.add_to_class("get_general_stars_saler",get_general_stars_saler)
 User.add_to_class("get_stars_saler",get_stars_saler)
@@ -276,6 +305,7 @@ User.add_to_class("get_mys_products_actives",get_mys_products_actives)
 User.add_to_class("add_money_user",add_money_user)
 User.add_to_class("get_my_money",get_my_money)
 User.add_to_class("subtract_money",subtract_money)
+User.add_to_class("get_my_general_sales",get_my_general_sales)
 User.add_to_class("get_my_buy_subproducts_actives_by_product",get_my_buy_subproducts_actives_by_product)
 #**************************fin funciones para user adicionales********************************************
 #class PlanPriceBySaler(models.Model):

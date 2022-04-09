@@ -42,7 +42,7 @@
                 <div class="card-footer bg-c-purple">
                     <div class="row align-items-center">
                         <div class="col-9">
-                            <select class="starts" id="{{ my_saler.id }}">
+                            <select class="stars" id="{{ my_saler.id }}">
                               <option value="1">1</option>
                               <option value="2">2</option>
                               <option value="3">3</option>
@@ -72,12 +72,12 @@
 <script src="/static/js/barrating.js"></script>
 <script type="text/javascript">
    $(function() {
-      $('.starts').barrating({
+      $('.stars').barrating({
         theme: 'fontawesome-stars'
       });
    });
 
-    $('.starts').change(function(){
+    $('.stars').change(function(){
         user_id =  $(this).attr('id')
         starts  = $(this).val()
         $.get('/user/qualify-saler/'+user_id+'/'+starts ,function(data){

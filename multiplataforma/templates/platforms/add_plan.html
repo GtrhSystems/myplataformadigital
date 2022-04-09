@@ -10,8 +10,8 @@
 		  <div class="row align-items-center">
 			  <div class="col-md-8">
 				  <div class="page-header-title">
-					  <h5 class="m-b-10">Tus planes de {{  subproduct.product.name }} {{ subproduct.name }}</h5>
-					  <p class="m-b-0">Crear nuevos planes y editar los existentes</p>
+					  <h5 class="m-b-10">Tus cuentas de {{  subproduct.product.name }} {{ subproduct.name }}</h5>
+					  <p class="m-b-0">Crear nuevas cuentas y editar los existentes</p>
 				  </div>
 			  </div>
 		  </div>
@@ -24,8 +24,8 @@
 	<div class="col-md-12">
 		<div class="card">
 			<div class="card-header">
-				<h5>Nueva Plataforma</h5>
-				<span>Digite el nombre para la nueva plataforma</span>
+				<h5>Nueva cuenta para {{  subproduct.product.name }} {{ subproduct.name }}</h5>
+				<span>Digite los datos de la nueva cuenta</span>
 			</div>
 			<div class="card-block">
 				<form id="create_plan_form" method="post">
@@ -52,7 +52,7 @@
 							<td>{{ form.pin|add_class:'form-control' }}</td>
 							<p class="help-block">Introduce el pin.</p>
 						</div>
-						<input class="btn  btn btn-primary waves-effect waves-light btn-lg btn-block create_plan" type="submit" value="Crear cuenta para este paquete"/>
+						<input class="btn  btn btn-primary waves-effect waves-light btn-lg btn-block create_plan" type="submit" value="Agregar cuenta para este paquete"/>
 					</fieldset>
 				</form>
 				{{ errors }}
@@ -70,10 +70,14 @@
 	<div class="col-lg-12">
 		<div class="card">
 			<div class="card-header row align-items-center">
-				<h5>Listado de Proveeedores no activos</h5>
-				{% if plans|length > 0 %}
+				<h5>Listado de cuentas registradas en {{  subproduct.product.name }} {{ subproduct.name }}</h5>
+				{% if plans|length > 0 and not subproduct.for_sale %}
 				 <div class="col-12 text-right ">
 					<button id="add-marketplace" id_package="{{ id }}" class="btn btn-info btn-round waves-effect waves-light">Publicar en tienda</button>
+				 </div>
+				{% elif subproduct.for_sale %}
+				 <div class="col-12 text-right ">
+					<button class="btn btn-info btn-round waves-effect waves-light">Ya se encuentra publicada en tienda</button>
 				 </div>
 				{% endif %}
 			</div>

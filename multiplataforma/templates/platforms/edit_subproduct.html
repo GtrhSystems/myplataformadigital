@@ -30,9 +30,14 @@
 					<form method="post">
 						<div class="row">
 							<div class="col-lg-12">
-							
+
 									{% csrf_token %}
 									<fieldset>
+										<div class="form-group form-default">
+											{{ form.individual_sale|add_class:'form-control' }}
+											<span class="form-bar"></span>
+											<label class="float-label">Tipo de venta</label>
+										</div>
 										<div class="form-group">
 												<label>{{ form.name.label_tag }}</label>
 												<td>{{ form.name|add_class:'form-control' }}</td>
@@ -63,7 +68,17 @@
 		</div>
 	</div>
 </div>
+<script>
+	if('{{   subproduct.individual_sale }}' == 'True'){
+		var boolean = 1
+	}else{
+		var boolean = 0
+	}
 
+	$('#id_individual_sale').val(boolean).change();
+
+
+</script>
 
 
 {% endblock %}

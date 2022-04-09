@@ -1,12 +1,14 @@
 {% load humanize %}
 <div class="modal-header">
     <h2>Información para pago manual</h2>
-    <h4>Se desconto la comision asignada</h4>
+
 </div>
+
 <div class="modal-body">
+    <h4>Se desconto la comision asignada</h4>
         <div class="form-group form-default">
 
-            <p class="form-bar">Pago a usuario: {{ sale_pay.creater.username|upper }}</p>
+            <p class="form-bar">Pago a usuario: {{ sale_pay.subproduct.creater.username|upper }}</p>
             <p class="form-bar">La cantidad de : {{ sale_pay.pay_value|intcomma}}</p>
             <p class="form-bar">{{ user_data.bank_info }}</p>
         </div>

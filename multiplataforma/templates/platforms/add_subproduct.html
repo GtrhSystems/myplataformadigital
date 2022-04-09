@@ -35,19 +35,25 @@
 								<div class="card-block">
 									{% csrf_token %}
 									<div class="form-group form-default">
+										{{ form.individual_sale|add_class:'form-control' }}
+										<span class="form-bar"></span>
+										<label class="float-label">Tipo de venta</label>
+									</div>
+									<div class="form-group form-default">
 										{{ form.name|add_class:'form-control' }}
 										<span class="form-bar"></span>
-										<label class="float-label">Nombre</label>
+										<label class="float-label">Producto</label>
 									</div>
 									<div class="form-group form-default">
 										{{ form.price|add_class:'form-control' }}
 										<span class="form-bar"></span>
-										<label class="float-label">Precio</label>
+										<label class="float-label">Precio (si es venta por cuentas, ingrese en valor de cada una, si no el valor completo del paquete)</label>
 									</div>
+
 									<div class="form-group form-default">
 										{{ form.instructions|add_class:'form-control' }}
 										<span class="form-bar"></span>
-										<label class="float-label">Instrucciones</label>
+										<label class="float-label">Condiciones de uso</label>
 									</div>
 							{{  form.errors }}
 							</div>

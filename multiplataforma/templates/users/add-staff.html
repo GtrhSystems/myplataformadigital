@@ -19,7 +19,13 @@
 	  <div class="page-block">
 		  <div class="row align-items-center">
 			  <div class="col-md-8">
-				  <div class="page-header-title">
+				  <div style="float:left;" class="navbar-logo">
+					  <a href="/">
+						   <img src="/static/logos/myiplataformadigital.png" alt="logo.png" width="210" height="60">
+					  </a>
+				  </div>
+
+				  <div style="float: left;margin-left: 200px;" class="page-header-title">
 					  <h5 class="m-b-10">REGISTRO DE STAFFS</h5>
 					  <p class="m-b-0">Ingrese los datos en el formulario</p>
 				  </div>
@@ -34,7 +40,7 @@
 	<div class="col-md-12">
 		<div class="card">
 			<div class="card-header">
-				<h5>Nuevo Colaborador</h5>
+				<h5>NUEVO COLABORADOR</h5>
 				<span>Digite la información requerida</span>
 			</div>
 			<div class="card-block">
@@ -45,6 +51,14 @@
 						<span class="form-bar"></span>
 						<label class="float-label username">Tipo de usuario</label>
 					</div>
+			</div>
+		</div>
+		<div class="card">
+			<div class="card-header">
+				<h5>Información personal</h5>
+
+			</div>
+				<div class="card-block">
 					<div class="form-group">
 						<label>Fotografia:</label>
 						{{ form2.image }}
@@ -67,6 +81,11 @@
 						<label class="float-label">Apellidos</label>
 					</div>
 					<div class="form-group form-default">
+						{{ form2.document|add_class:'form-control' }}
+						<span class="form-bar"></span>
+						<label class="float-label">Documento</label>
+					</div>
+					<div class="form-group form-default">
 						{{ form.email|add_class:'form-control' }}
 						<span class="form-bar"></span>
 						<label class="float-label">Correo</label>
@@ -77,14 +96,14 @@
 						<label class="float-label">Dirección</label>
 					</div>
 					<div class="form-group form-default">
-						{{ form2.state|add_class:'form-control' }}
-						<span class="form-bar"></span>
-						<label class="float-label">Estado/Depto</label>
-					</div>
-					<div class="form-group form-default">
 						{{ form2.city|add_class:'form-control' }}
 						<span class="form-bar"></span>
 						<label class="float-label">Ciudad</label>
+					</div>
+					<div class="form-group form-default">
+						{{ form2.state|add_class:'form-control' }}
+						<span class="form-bar"></span>
+						<label class="float-label">Estado/Depto</label>
 					</div>
 					<div class="form-group form-default">
 						<label class="float-label">Pais</label>
@@ -97,7 +116,32 @@
 						<span class="form-bar"></span>
 						<label class="float-label">Telefonos</label>
 					</div>
+				</div>
 
+		</div>
+		<div class="card">
+			<div class="card-header">
+				<h5>Observaciones y datos bancarios</h5>
+			</div>
+				<div class="card-block">
+					<div class="form-group form-default">
+						{{ form2.bank_info|add_class:'form-control' }}
+						<span class="form-bar"></span>
+						<label class="float-label">Información Bancaria (paypal, airtm, Binance y tranferencias Bancarias solo para Mexico )</label>
+					</div>
+
+					<div class="form-group form-default">
+						{{ form2.observations|add_class:'form-control' }}
+						<span class="form-bar"></span>
+						<label class="float-label">Observaciones</label>
+					</div>
+			</div>
+		</div>
+		<div class="card">
+			<div class="card-header">
+				<h5>Contraseña</h5>
+			</div>
+				<div class="card-block">
 					<div class="form-group form-default">
 						<span class="form-bar">La contraseña debe contener al menos 8 caracteres y no ser completamente numérica.(se recomienda combinar minúsculas, mayúsculas, números y símbolos)</span>
 					</div>
@@ -111,13 +155,9 @@
 						{{ form.password2|add_class:'form-control' }}
 						<span class="form-bar"></span>
 
-						<label class="float-label">Confirm la contraseña</label>
+						<label class="float-label">Confirme la contraseña</label>
 					</div>
-					<div class="form-group form-default">
-						{{ form2.observations|add_class:'form-control' }}
-						<span class="form-bar"></span>
-						<label class="float-label">Observaciones</label>
-					</div>
+
 					<input class="btn btn-primary btn-md btn-block waves-effect text-center m-b-20 send-register" type="submit" value="Registrase"/>
 				</form>
 				{% if img_obj %}

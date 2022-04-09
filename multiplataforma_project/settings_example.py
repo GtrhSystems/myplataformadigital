@@ -72,6 +72,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'multiplataforma_project.wsgi.application'
+ASGI_APPLICATION = 'comments_project.asgi.application'
 
 
 # Database

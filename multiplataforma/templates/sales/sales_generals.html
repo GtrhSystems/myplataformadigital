@@ -1,5 +1,6 @@
 {% extends 'layout.html' %}
 {% load humanize %}
+{% load mathfilters %}
 {% load widget_tweaks %}
 {% block menu %} 
     {% include 'menu.html' %}
@@ -38,6 +39,7 @@
                                 <th>Subproducto</th>
                                 <th>Comprador</th>
                                 <th>Precio</th>
+                                <th>Pago</th>
                                 <th>Comision</th>
                                 <th>Pagada?</th>
                             </tr>
@@ -45,10 +47,11 @@
                         <tbody>
                            {% for sale in sales %}
                                 <tr class="gradeA odd" role="row">
-                                    <td>{{ sale.date|date:"d/M/Y P" }}</td>
-                                    <td>{{ sale.name }}</td>
+                                    <td>{{ sale.date_buy|date:"d/M/Y P" }}</td>
+                                    <td>{{ sale.subproduct.name }}</td>
                                     <td>{{ sale.owner }}</td>
-                                    <td>$ {{ sale.price|intcomma }}</td>
+                                    <td>$ {{ sale.price_buy|intcomma }}</td>
+                                    <td>$ {{ sale.price_buy|sub:sale.commission|intcomma }}</td>
                                     <td>$ {{ sale.commission|intcomma }}</td>
                                     <td>
                                     {% if sale.commission_payed %}

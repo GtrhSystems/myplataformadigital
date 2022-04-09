@@ -1,8 +1,24 @@
   <div class="">
           <div class="main-menu-header">
-              <div class="user-details">
-                  <span id="more-details">{{ user.username }} <i class="fa fa-caret-down"></i></span>
-              </div>
+                  <div class="user-details">
+                      <span id="more-details">{{ user.username }} <i class="fa fa-caret-down"></i></span>
+                     {% if user_type == "staff" %}
+                     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css">
+                     <link rel="stylesheet" href="/static/css/fontawesome-stars.css">
+
+                     <select class="starts" id="starts_staff">
+                          <option value="1">1</option>
+                          <option value="2">2</option>
+                          <option value="3">3</option>
+                          <option value="4">4</option>
+                          <option value="5">5</option>
+                     </select>
+                     <script type="text/javascript">
+                           $('#starts_staff').val('{{ stars }}')
+                     </script>
+                         <script src="/static/js/barrating.js"></script>
+                      {% endif %}
+                  </div>
           </div>
 
           <div class="main-menu-content">
@@ -17,6 +33,13 @@
       </div>
 
  <script>
+ $(function() {
+  $('.starts').barrating({
+    theme: 'fontawesome-stars',
+    readonly: true
+  });
+});
+
 function logout(){
 $.get( "/accounts/logout?next={% url 'index' %}", function( data ) {
 	  	window.location = '/'

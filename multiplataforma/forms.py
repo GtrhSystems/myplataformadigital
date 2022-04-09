@@ -63,28 +63,30 @@ class UserDataForm(forms.ModelForm):
 
     address = forms.CharField(required=True,max_length=254, help_text='Requerido. ', label="Dirección")
     phones = forms.CharField(required=True,max_length=254, help_text='Requerido', label="Telefonos")
+    bank_info = forms.CharField(required=False, widget=forms.Textarea, label="Información Bancaria")
     observations = forms.CharField(required=False, widget=forms.Textarea, label="Observaciones")
 
     class Meta:
         model = UserData
-        fields = ('address', 'phones', 'state', 'city','country', 'observations', 'image')
+        fields = ('address', 'document', 'phones', 'state', 'city','country', 'observations', 'image', 'bank_info')
 
 
-class BankUserDataForm(forms.ModelForm):
+#class BankUserDataForm(forms.ModelForm):
 
-    bank_info = forms.CharField(required=False, widget=forms.Textarea, label="Información Bancaria")
+#    bank_info = forms.CharField(required=False, widget=forms.Textarea, label="Información Bancaria")
 
-    class Meta:
-        model = UserData
-        fields = ['bank_info']
+ #   class Meta:
+ #       model = UserData
+ #       fields = ['bank_info']
 
 
 class SubProductForm(forms.ModelForm):
     instructions = forms.CharField(widget=forms.Textarea, label="Instrucciones")
+    individual_sale =  forms.ChoiceField(choices = (('',''),( '0', 'Paquete Completo'), ('1','Venta por cuentas')), widget=forms.Select(attrs={'placeholder': 'Tipo de venta'}))
 
     class Meta:
         model = SubProduct
-        fields = ['name', 'price', 'instructions']
+        fields = ['name', 'price', 'instructions', 'individual_sale']
 
 
 class PlanProductForm(forms.ModelForm):

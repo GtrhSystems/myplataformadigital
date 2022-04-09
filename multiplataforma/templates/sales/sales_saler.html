@@ -1,5 +1,6 @@
 {% extends 'layout.html' %}
 {% load humanize %}
+{% load mathfilters %}
 {% load widget_tweaks %}
 {% block menu %} 
     {% include 'menu.html' %}
@@ -38,7 +39,8 @@
                                 <th>Paquete</th>
                                 <th>Precio compra</th>
                                 <th>Cuenta</th>
-                                <th>Precio</th>
+                                <th>Precio venta</th>
+                                <th>Ganancia</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -46,10 +48,10 @@
                                 <tr class="gradeA odd" role="row">
                                     <td>{{ sale.date_sale|date:"d/M/Y P" }}</td>
                                     <td>{{ sale.subproduct.name  }}</td>
-                                    <td>$ {{ sale.subproduct.price|intcomma }}</td>
+                                    <td>$ {{ sale.price_buy|intcomma }}</td>
                                     <td>{{ sale.email }}</td>
                                     <td>$ {{ sale.price_sale|intcomma }}</td>
-
+                                      <td>$ {{ sale.price_sale|sub:sale.price_buy|intcomma }}</td>
                                 </tr>
                             {% endfor %}
                             {% if sales %}
@@ -59,6 +61,7 @@
                                     <td></td>
                                     <td><strong>Totales</strong></td>
                                     <td>$ {{ sales_sum.total_sales|intcomma }}</td>
+                                     <td>$ {{ total_win|intcomma }}</td>
 
 
                                 </tr>
