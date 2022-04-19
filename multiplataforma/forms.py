@@ -62,13 +62,13 @@ class UserDataForm(forms.ModelForm):
         self.fields['country'] = forms.ModelChoiceField(queryset=Country.objects.all(), widget=forms.Select(attrs={'placeholder': 'Pais'}))
 
     address = forms.CharField(required=True,max_length=254, help_text='Requerido. ', label="Dirección")
-    phones = forms.CharField(required=True,max_length=254, help_text='Requerido', label="Telefonos")
-    bank_info = forms.CharField(required=False, widget=forms.Textarea, label="Información Bancaria")
-    observations = forms.CharField(required=False, widget=forms.Textarea, label="Observaciones")
+    phones = forms.CharField(required=True,max_length=254, help_text='Requerido', label="Telefonos", widget=forms.TextInput(attrs={'placeholder': 'Ejemplo:(052) 31665873265'}))
+    bank_info = forms.CharField(required=False, widget=forms.Textarea(attrs={"rows":3, "cols":10}), label="Información Bancaria")
+    observations = forms.CharField(required=False, widget=forms.Textarea(attrs={"rows":3, "cols":10}), label="Observaciones")
 
     class Meta:
         model = UserData
-        fields = ('address', 'document', 'phones', 'state', 'city','country', 'observations', 'image', 'bank_info')
+        fields = ('address', 'document', 'phones', 'state', 'city','country', 'observations', 'image','image_document', 'bank_info')
 
 
 #class BankUserDataForm(forms.ModelForm):

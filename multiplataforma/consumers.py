@@ -39,6 +39,6 @@ class PackagesConsumer(WebsocketConsumer):
     def package_message(self, event):
         
         message = event['message']
-        print(message)
+        print('mensaje: ' + str(message))
         # Send message to WebSocket
         self.send( message)

@@ -32,6 +32,7 @@ class UserData(models.Model):
 
     user= models.ForeignKey(User, on_delete=models.CASCADE)
     document  = models.CharField(max_length=15, verbose_name="Documento", default="")
+    image_document = models.ImageField(default="", upload_to='documents')
     address = models.CharField(max_length=150, verbose_name="Dirección", default="")
     phones = models.CharField(max_length=150, verbose_name="Dirección", default="")
     country = models.ForeignKey(Country, on_delete=models.CASCADE)
@@ -77,13 +78,6 @@ class SubProduct(models.Model):
     for_sale = models.BooleanField(default=False, verbose_name="para la venta?")
     individual_sale = models.BooleanField(default=False, verbose_name="Venta por cuenta")
 
-
-
-
-
-
-
-
     def __str__(self):
         return str(self.name)
 
@@ -125,6 +119,7 @@ class CountsPackage(models.Model):
     @classmethod
     def get_all_counts_package_no_sales(self, subproduct):
 
+        print(subproduct)
         CountsPackage = self.objects.filter(subproduct=subproduct, owner=subproduct.creater)
         return CountsPackage
 
@@ -280,7 +275,7 @@ def get_my_money(cls):
 
     money_saler = MoneysSaler.objects.filter(saler=cls).last()
     if money_saler:
-        return money_saler
+        return money_saler.money
     else:
         return 0
 

@@ -1,3 +1,38 @@
+/* web socket with channels */
+const MultiplataformaSocket = new WebSocket('ws://' + window.location.host+ '/marketplace/get-packages-socket' );
+
+MultiplataformaSocket.onclose = function(e) {
+    console.error('message socket closed unexpectedly');
+    location.reload();
+};
+
+function listenig_socket(){
+
+	MultiplataformaSocket.onmessage = function(e) {
+		var data = e.data;
+		console.log(data)
+		data_split = data.split('_')
+		id = data_split[0]
+		type = data_split[1]
+		event = data_split[2]
+		console.log(id)
+		console.log(type)
+		console.log(event)
+		if (type =="False" && event == 'remove'){
+            $('#card_'+id ).remove()
+        }else if (type =="False" && event == 'hide'){
+            $('.sale_'+id ).hide()
+        }else if (type =="False" && event == 'show'){
+            $('.sale_'+id ).show()
+        }else if (type =="True" && event == 'reload'){
+            location.reload();
+        }
+
+
+	};
+}
+
+
 $(document).ready(function() {
     $('.js-example-basic-single').select2();
      $('.table-normal').DataTable( {
@@ -136,19 +171,27 @@ function buy_package(){
                 event.preventDefault()
                 var id = $(this).attr('id');
                 name_product = $(this).attr('name_product')
+                type_attr = $(this).attr('type')
+                MultiplataformaSocket.send(id +'_'+ type_attr +'_hide');
                 $('.modal-content').html('<div class="modal-header"><h2>¿Desea comprar '+name_product+'?</h2><button type="button" class="close" data-dismiss="modal"><i class="ti-close"></i></button></div><div class="modal-body"><button type="button" id="sale" class="btn btn-primary btn-md btn-block waves-effect text-center m-b-20">Aceptar</button></div>')
                 $("#myModal").modal({show: true})
                 $("#sale").on("click", function(event){
                     $(this).prop('disabled', true)
                     $.get('/package/buy/'+id ,function(data){
-                        $('.modal-content').html(data)
+                        $('.modal-body').html(data)
+                        if(type_attr == "True"){
+                            MultiplataformaSocket.send(id +'_'+ type_attr +'_reload');
+                        }else{
+                            MultiplataformaSocket.send(id +'_'+ type_attr +'_remove');
+                        }
+
                     })
                 })
             });
         });
 
         $("#myModal").on("hidden.bs.modal", function () {
-           location.reload();
+           MultiplataformaSocket.send(id +'_'+ type_attr +'_show');
         });
 
 }
@@ -164,8 +207,6 @@ function sale_package(){
                         $('.modal-content').html(data)
                 })
                 $("#myModal").modal({show: true})
-
-
             });
         });
 

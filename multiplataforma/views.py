@@ -5,6 +5,8 @@ from django.http import HttpResponse, JsonResponse
 from .decorators import usertype_in_view
 from .forms import  *
 from .models import *
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
 
 PERCENT_COMISSION = PercentCommission.objects.all().first().percent
@@ -205,11 +207,7 @@ def AddMoneySalerView(request, pk):
 
     form = AddMoneyForm(request.POST or None)
     saler = User.objects.filter(id = pk).filter(groups__name = 'vendedor').first()
-    money_saler = saler.get_my_money()
-    if money_saler == 0:
-        money = money_saler
-    else:
-        money = money_saler.money
+    money = saler.get_my_money()
     if request.method == 'POST':
         if form.is_valid():
             saler.add_money_user(money, request.POST['money'], "Recarga de saldo")
@@ -314,11 +312,13 @@ def SendPackageToMarketPlaceView(request, id):
 def MarketPlaceView(request):
     context = context_app(request)
     if context['user_type'] == "vendedor":
-        my_money = context_app(request)['money'].money
-        products_actives = list(request.user.get_mys_products_actives().values_list('product_id', flat=True))
-        staff_actives = list(User.objects.filter(groups__name = 'staff', is_active= True).values_list('id', flat=True))
+        #my_money = context_app(request)['money']
+        products_actives = request.user.get_mys_products_actives().values_list('product_id', flat=True)
+        staff_actives = User.objects.filter(groups__name = 'staff', is_active= True).values_list('id', flat=True)
         packages_list = []
-        packages = SubProduct.objects.filter(active=True, price__lte=my_money, creater__in = staff_actives, for_sale=True).filter(product_id__in= products_actives ).order_by('-date')
+        packages = SubProduct.objects.filter(active=True, creater__in=staff_actives,
+                                             for_sale=True).filter(product__in=products_actives).order_by('-date')
+        #packages = SubProduct.objects.filter(active=True, price__lte=my_money, creater__in = staff_actives, for_sale=True).filter(product__in= products_actives ).order_by('-date')
         for package in packages:
             counts = CountsPackage.get_all_counts_package_no_sales(package)
             if len(counts) == 0:
@@ -378,7 +378,7 @@ def BuyPackageView(request, id):
     subproduct = SubProduct.objects.filter(id=id, active=True).select_related('product').first()
     counts = CountsPackage.objects.filter(subproduct_id=subproduct.id, owner = subproduct.creater)
     if subproduct and len(counts) > 0:
-        money_user = request.user.get_my_money().money
+        money_user = request.user.get_my_money()
         if money_user:
             if subproduct.price > money_user:
                 return HttpResponse("No tienes suficiente saldo para esta transacción")
@@ -398,8 +398,7 @@ def BuyPackageView(request, id):
                     commission = int(individual_price) * (PERCENT_COMISSION * 0.01)
                     counts.update(owner=request.user, date_buy =datetime.datetime.now(),price_buy = individual_price, commission=commission)
                     count = None
-
-                remains = request.user.subtract_money(money_user, subproduct.price , "Compra: " + str(subproduct.name) + " a " + subproduct.creater.username)
+                request.user.subtract_money(money_user, subproduct.price , "Compra: " + str(subproduct.name) + " a " + subproduct.creater.username)
                 if subproduct.individual_sale:
                     return render(request, 'platforms/sale_plan.html',  { 'subproduct': subproduct, 'count':count })
                 else:

@@ -24,7 +24,7 @@
 <div class="row">
     {% for package in packages %}
         <div class="col-xl-4 col-md-7">
-            <div class="card">
+            <div class="card" id="card_{{ package.id }}" >
                   <div class="card-header bg-c-purple">
                     <div class="row align-items-center">
                         <div class="col-9">
@@ -72,28 +72,25 @@
                         </div>
                     </div>
                 </div>
-                {% if not user_type == "staff"  %}
-                <div class="card-footer bg-c-purple">
-                    <div class="row align-items-center">
-                            <div class="col-9">
-                                <a href="#" class="sale" id="{{ package.id }}" name_product="{{ package.name }}" >
+                {% if  user_type == "vendedor"  %}
+                <a href="#" class="sale" id="{{ package.id }}" name_product="{{ package.name }}"  type="{{ package.individual_sale }}">
+                    <div class="card-footer bg-c-purple sale_{{ package.id }}">
+                        <div class="row align-items-center">
+                                <div class="col-9">
                                     <p class="text-white m-b-0">Comprar
                                       {% if package.individual_sale  %}
-                                          una cuenta individual
+                                          cuenta individual
                                       {% else  %}
-                                           todo el paquete
+                                           paquete
                                       {% endif  %}
-
                                     </p>
-                                 </a>
-                            </div>
-                            <div class="col-3 text-right ">
-                                <a href="#" class="sale" id = "{{ package.id }}" name_product="{{ package.name }}" >
+                                </div>
+                                <div class="col-3 text-right ">
                                     <i class="ti-angle-right text-white"></i>
-                                </a>
-                            </div>
+                                </div>
+                        </div>
                     </div>
-                </div>
+                  </a>
                  {% endif %}
             </div>
         </div>
@@ -111,7 +108,9 @@
 
 <script src="/static/js/barrating.js"></script>
 <script type="text/javascript">
+    listenig_socket()
     buy_package()
+
 </script>                     
 
 

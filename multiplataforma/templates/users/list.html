@@ -24,7 +24,7 @@
 			</div>
 			<div class="card-block table-border-style">
 				<div class="table-responsive">
-					<table class="table table-hover table-normal">
+					<table class="table table-hover table-normal" id="salers-table">
 						<thead>
 							<tr>
 								<th>#</th>
@@ -47,7 +47,7 @@
 											<a href="{% url 'add-money-saler' user.id %}"><i class="fa fa-fw" aria-hidden="true" title="Agregar Saldo"><i class="ti-money"></i></i></a>
 										{% endif %}
 										{% if authorized == 1 %}
-											<a class="delete-user" id="{{ user.id }}" href="#"><i class="fa fa-fw " aria-hidden="true" title="Desactivar Vendedor"><i class="ti-trash"></i></i></a>
+											<a class="delete-user" id="{{ user.id }}" href="javascript:void(0)"><i class="fa fa-fw " aria-hidden="true" title="Desactivar Vendedor"><i class="ti-trash"></i></i></a>
 										{% endif %}
 									</td>
 								</tr>
@@ -61,4 +61,7 @@
 	</div>
 	<!-- /.col-lg-12 -->
 </div>
+<script>
+	delete_saler()
+</script>
 {% endblock %}
