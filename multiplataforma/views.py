@@ -248,6 +248,7 @@ def SubProductCreateView(request, id):
             subproduct.owner = request.user
             subproduct.creater = request.user
             subproduct.product = product
+            subproduct.pay_value = 0
             subproduct.save()
             return redirect('add-subproduct', id)
 

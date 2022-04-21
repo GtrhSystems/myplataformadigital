@@ -95,8 +95,8 @@ class CountsPackage(models.Model):
     price_sale = models.IntegerField(default=0, verbose_name="Precio de venta" )
     date_sale  = models.DateTimeField(auto_now_add=False,  null=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE)  # usuario dueño actual
-    pay_value = models.IntegerField(verbose_name="Comision", default=0)
-    commission = models.IntegerField(verbose_name="Comision", default=0)
+    pay_value = models.IntegerField(default=0, verbose_name="Comision")
+    commission = models.IntegerField(default=0, verbose_name="Comision")
     commission_payed = models.BooleanField(default=False, verbose_name="Comision pagada?")
     date_pay = models.DateTimeField(auto_now_add=False, null=True)
 
