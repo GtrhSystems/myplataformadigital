@@ -12,6 +12,7 @@
 .red{
 	background: #ff5252;
 }
+
 </style>
 
 
@@ -127,7 +128,7 @@
 				<h5>Información adicional</h5>
 			</div>
 				<div class="card-block">
-					<div class="form-group form-default">
+					<div class="form-group form-default bank-information" >
 						{{ form2.bank_info|add_class:'form-control' }}
 						<span class="form-bar"></span>
 						<label class="float-label">Información Bancaria (Clave interbancaria para transferencia solo para Mexico) , paypal, airtm y Binance(Use una linea para cada uno)</label>
@@ -159,8 +160,10 @@
 
 						<label class="float-label">Confirme la contraseña</label>
 					</div>
-
+					<div class="registrationFormAlert" id="divCheckPasswordMatch">
 					<input class="btn btn-primary btn-md btn-block waves-effect text-center m-b-20 send-register" type="submit" value="Registrase"/>
+
+
 				</form>
 				{% if img_obj %}
 				  	<h3>Succesfully uploaded : {{img_obj.title}}</h3>
@@ -177,6 +180,15 @@
 	</div>
 </div>
 <script>
+$('#id_group').change(function(){
+	if ($(this).val() == "staff"){
+		$('.bank-information').show()
+		$('#id_bank_info').text('')
+	}else{
+		$('.bank-information').hide()
+		$('#id_bank_info').text('N/A')
+	}
+})
 register_staff()
 </script>
 {% endblock %}

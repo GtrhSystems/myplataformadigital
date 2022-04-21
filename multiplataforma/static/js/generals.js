@@ -1,4 +1,4 @@
-/* web socket with channels */
+/* web socket with channels 
 const MultiplataformaSocket = new WebSocket('ws://' + window.location.host+ '/marketplace/get-packages-socket' );
 
 MultiplataformaSocket.onclose = function(e) {
@@ -31,7 +31,7 @@ function listenig_socket(){
 
 	};
 }
-
+*/
 
 $(document).ready(function() {
     $('.js-example-basic-single').select2();
@@ -57,6 +57,7 @@ $(document).ready(function() {
 function register_staff(){
 
     $(document).ready(function ($) {
+
         $('#id_password1').keyup(function(e) {
              var strongRegex = new RegExp("^(?=.{8,})(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*\\W).*$", "g");
              var mediumRegex = new RegExp("^(?=.{7,})(((?=.*[A-Z])(?=.*[a-z]))|((?=.*[A-Z])(?=.*[0-9]))|((?=.*[a-z])(?=.*[0-9]))).*$", "g");
@@ -76,19 +77,90 @@ function register_staff(){
              return true;
         });
 
+         $(".staff_register").validate({
+                rules: {
+                  id_address : {
+                    required: true,
+                    minlength: 10
+                  },
+                  id_document: {
+                    required: true,
+                    number: true,
+                    min: 10
+                  },
+                  id_phones: {
+                    required: true,
+                    min: 6
+                  },
+                   id_state: {
+                    required: true,
+                    min: 3
+                  },
+                   id_city: {
+                    required: true,
+                    min: 3
+                  },
+                   id_country: {
+                    required: true,
+                    min: 3
+                  },
+                   id_image: {
+                    required: true,
+                    min: 3
+                  },
+                   id_image_document: {
+                    required: true,
+                    min: 3
+                  },
+                  id_bank_info: {
+                    required: {
+                      depends: function(elem) {
+                        return $("#id_group").val() == "staff"
+                      }
+                    }
+                  },
+                  id_first_name: {
+                    required: true,
+                    min: 6
+                  },
+                  id_last_name: {
+                    required: true,
+                    min: 6
+                  },
+                  id_email: {
+                    required: true,
+                    email: true
+                  },
+                  id_password1: {
+                    required: true,
+                    min: 8
+                  },
+                  id_password2: {
+                    required: true,
+                    equalTo:id_password1,
+                    min: 8
+                  },
+
+
+                }
+          });
+
+
     });
 
 
 
 	$('.send-register').click(function(e){
-		e.preventDefault()
-		$('.modal-body').html("<p>Pronto no estaremos comunicando contigo por medio de correo para darte una respuesta</p")
-		$('#Modal').modal()
-		$('#Modal').removeClass('fade')
-		$('#Modal').show()
-		setTimeout(function() {
-			$('.staff_register').submit()
-		}, 2000);
+
+        e.preventDefault()
+        $('.modal-body').html("<p>Pronto no estaremos comunicando contigo por medio de correo para darte una respuesta</p")
+        $('#Modal').modal()
+        $('#Modal').removeClass('fade')
+        $('#Modal').show()
+        setTimeout(function() {
+            $('.staff_register').submit()
+        }, 2000);
+
 	})
 
 
@@ -154,6 +226,10 @@ function delete_saler(){
             })
         }
     });
+}
+
+function validate_form(){
+
 }
 
 function buy_package(){

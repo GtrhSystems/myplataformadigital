@@ -63,8 +63,8 @@ class UserDataForm(forms.ModelForm):
 
     address = forms.CharField(required=True,max_length=254, help_text='Requerido. ', label="Dirección")
     phones = forms.CharField(required=True,max_length=254, help_text='Requerido', label="Telefonos", widget=forms.TextInput(attrs={'placeholder': 'Ejemplo:(052) 31665873265'}))
-    bank_info = forms.CharField(required=False, widget=forms.Textarea(attrs={"rows":3, "cols":10}), label="Información Bancaria")
-    observations = forms.CharField(required=False, widget=forms.Textarea(attrs={"rows":3, "cols":10}), label="Observaciones")
+    bank_info = forms.CharField(required=True, widget=forms.Textarea(attrs={"rows":3, "cols":10}), label="Información Bancaria")
+    observations = forms.CharField(required=True, widget=forms.Textarea(attrs={"rows":3, "cols":10}), label="Observaciones")
 
     class Meta:
         model = UserData
