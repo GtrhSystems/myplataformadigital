@@ -25,7 +25,6 @@ class PackagesConsumer(WebsocketConsumer):
 
     def receive(self, text_data):
 
-        print('text:' + text_data )
         async_to_sync(self.channel_layer.group_send)(
             self.room_group_name,
             {
@@ -39,6 +38,5 @@ class PackagesConsumer(WebsocketConsumer):
     def package_message(self, event):
         
         message = event['message']
-        print('mensaje: ' + str(message))
         # Send message to WebSocket
         self.send( message)

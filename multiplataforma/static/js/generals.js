@@ -1,4 +1,4 @@
-/* web socket with channels 
+/* web socket with channels */
 const MultiplataformaSocket = new WebSocket('ws://' + window.location.host+ '/marketplace/get-packages-socket' );
 
 MultiplataformaSocket.onclose = function(e) {
@@ -10,14 +10,10 @@ function listenig_socket(){
 
 	MultiplataformaSocket.onmessage = function(e) {
 		var data = e.data;
-		console.log(data)
 		data_split = data.split('_')
 		id = data_split[0]
 		type = data_split[1]
 		event = data_split[2]
-		console.log(id)
-		console.log(type)
-		console.log(event)
 		if (type =="False" && event == 'remove'){
             $('#card_'+id ).remove()
         }else if (type =="False" && event == 'hide'){
@@ -31,7 +27,7 @@ function listenig_socket(){
 
 	};
 }
-*/
+
 
 $(document).ready(function() {
     $('.js-example-basic-single').select2();

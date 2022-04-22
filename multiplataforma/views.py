@@ -8,8 +8,10 @@ from .models import *
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
+PERCENT_COMISSION = 0
+if PercentCommission.objects.all():
+    PERCENT_COMISSION = PercentCommission.objects.all().first().percent
 
-PERCENT_COMISSION = PercentCommission.objects.all().first().percent
 
 @login_required
 def check_user_type(request):
@@ -49,7 +51,6 @@ def context_app(request):
 def IndexView(request):
 
     user_type = check_user_type(request)
-    print(user_type)
     if user_type == "superuser":
         salers_actives = len(User.objects.filter(is_active=True).filter(groups__name = "vendedor"))
         salers_requests = len(User.objects.filter(is_active=False).filter(groups__name = "vendedor"))
@@ -57,11 +58,18 @@ def IndexView(request):
         staff_requests = len(User.objects.filter(is_active=False).filter(groups__name="staff"))
         return render(request, 'dashboard_'+user_type+'.html', {'salers_actives':salers_actives, 'salers_requests':salers_requests, 'staff_actives':staff_actives, 'staff_requests':staff_requests })
     elif user_type == "staff":
-        models = ["User", "PlansPlatform", "SubProduct"]
+        date = datetime.datetime.today()
+        sales = CountsPackage.SalesByStaffbyDate(request.user, int(date.strftime("%Y")), int(date.strftime("%m")))
+        if sales:
+            sales_sum = sales.aggregate(total_sales=Sum('price_buy'))
+            comission = int(sales_sum['total_sales']) * (PERCENT_COMISSION * 0.01)
+            return render(request, 'sales/sales.html', {'sales': sales, 'sales_sum': sales_sum, 'comission': comission, 'layout': True})
+        return render(request, 'sales/sales.html', { 'layout': True})
+
     elif user_type == "vendedor":
         return redirect('market-place')
 
-    return render(request, 'dashboard_superuser.html')
+
 
 
 @usertype_in_view
@@ -248,7 +256,6 @@ def SubProductCreateView(request, id):
             subproduct.owner = request.user
             subproduct.creater = request.user
             subproduct.product = product
-            subproduct.pay_value = 0
             subproduct.save()
             return redirect('add-subproduct', id)
 
@@ -428,32 +435,33 @@ def SalesMonthPlatformsView(request, year=None, month= None):
 
     context = context_app(request)
     if context['user_type'] == "staff":
+        template = 'sales/sales_no_layout.html'
         sales_sum = comission = 0
         sales =  CountsPackage.SalesByStaffbyDate(request.user, year, month)
         if sales:
             sales_sum = sales.aggregate(total_sales=Sum('price_buy'))
             comission = int(sales_sum['total_sales']) * (PERCENT_COMISSION*0.01)
-        return render(request, 'sales/sales.html', {'sales': sales, 'sales_sum': sales_sum, 'comission': comission})
+            return render(request, template, {'sales': sales, 'sales_sum': sales_sum, 'comission': comission})
 
     elif context['user_type'] == "superuser":
-
+        template = 'sales/sales_staff.html'
         sales = CountsPackage.SalesAllbyDate( year, month)
-        sales_sum = comission = 0
         if sales:
             sales_sum = sales.aggregate(total_sales=Sum('price_buy'))
             comission_sum =  sales.aggregate(total_commission=Sum('commission'))
-        return render(request, 'sales/sales_staff.html', {'sales': sales, 'sales_sum': sales_sum, 'comission': comission_sum['total_commission']    })
+            return render(request, template, {'sales': sales, 'sales_sum': sales_sum, 'comission': comission_sum['total_commission']    })
+
+
 
     elif context['user_type'] == "vendedor":
-
+        template = 'sales/sales_saler.html'
         sales = CountsPackage.all_counts_saled_in_dates(year, month, request)
         sales_sum =  0
         if sales:
             sales_sum = sales.aggregate(total_sales=Sum('price_sale'))
+            return render(request, template, {'sales': sales, 'sales_sum': sales_sum })
 
-        return render(request, 'sales/sales_saler.html', {'sales': sales, 'sales_sum': sales_sum })
-
-
+    return render(request, template)
 
 @usertype_in_view
 @login_required
@@ -476,9 +484,7 @@ def GeneralSalesView(request):
         if sales:
             sales_sum = sales.aggregate(total_sales=Sum('price_sale'))
             total_buy = sales.aggregate(total_buy=Sum('price_buy'))
-            print(total_buy['total_buy'])
             total_win =  float(sales_sum['total_sales'])-float(total_buy['total_buy'])
-            print(total_win)
 
         return render(request, 'sales/sales_saler.html', {'sales': sales, 'sales_sum': sales_sum, 'total_win':total_win})
 
@@ -629,7 +635,6 @@ def DeleteRegister(request, model, id):
                     exist_id = eval(model + ".objects.filter(id=" + id + ").first() ")
                 elif model == "CountsPackage":
                     exist_id = eval(model + ".objects.filter(id=" + id + ").select_related('subproduct').first() ")
-                    print(exist_id)
                     if exist_id.subproduct.owner_id != request.user.id:
                         exist_id = None
                 elif model == "PlanPlatformSales":
