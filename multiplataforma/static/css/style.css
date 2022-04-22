@@ -15102,8 +15102,13 @@ pre.line-numbers > code {
         font-size: 16px;
         line-height: 3.5;
         width: 60px; }
-    .header-navbar .navbar-container .nav-left, .header-navbar .navbar-wrapper .navbar-container .nav-right {
-      display: none; }
+    .header-navbar .navbar-container .nav-left .ti-fullscreen, .header-navbar .navbar-wrapper .navbar-container .nav-right {
+      display: none;
+    }
+
+    .header-navbar .navbar-container .nav-left{
+        position: absolute;
+    }
 
   .btn-blog {
     text-align: center; }
