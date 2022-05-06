@@ -47,6 +47,18 @@ def context_app(request):
     return context
 
 
+def LoginCookieView(request, action, username):
+
+    #userdata = cookies.SimpleCookie()
+    response = HttpResponse()
+    if action == "remember":
+        response.set_cookie("username", username)
+
+    else:
+        response.delete_cookie('username')
+    return response
+
+
 @login_required
 def IndexView(request):
 

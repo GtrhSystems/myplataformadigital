@@ -25,9 +25,8 @@
 						   <img src="/static/logos/myiplataformadigital.png" alt="logo.png" width="210" height="60">
 					  </a>
 				  </div>
-
 				  <div style="float: left;margin-left: 200px;" class="page-header-title">
-					  <h5 class="m-b-10">REGISTRO DE STAFFS</h5>
+					  <h5 class="m-b-10">¡Registrate!</h5>
 					  <p class="m-b-0">Ingrese los datos en el formulario</p>
 				  </div>
 			  </div>
@@ -38,10 +37,10 @@
 {% endblock %}
 {% block content %}
 <div class="row">
-	<div class="col-md-12">
+	<div class="col-md-6">
 		<div class="card">
 			<div class="card-header">
-				<h5>NUEVO COLABORADOR</h5>
+				<h5>MIEMBRO NUEVO</h5>
 				<span>Digite la información requerida</span>
 			</div>
 			<div class="card-block">
@@ -60,9 +59,9 @@
 			</div>
 				<div class="card-block">
 					<div class="form-group">
-						<label>Fotografia:</label>
+						<label>Fotografia legible:</label>
 						{{ form2.image }}
-						<span class="form-bar"></span>
+
 					</div>
 					<div class="form-group form-default">
 						{{ form.username|add_class:'form-control' }}
@@ -88,7 +87,9 @@
 						<label>Imagen del documento:</label>
 						{{ form2.image_document }}
 						<span class="form-bar"></span>
-
+							<label class="float-label">
+								<small>
+								(Imagen de identificación por ambas caras)</small>
 					</div>
 					<div class="form-group form-default">
 						{{ form.email|add_class:'form-control' }}
@@ -118,7 +119,7 @@
 					<div class="form-group form-default">
 						{{ form2.phones|add_class:'form-control' }}
 						<span class="form-bar"></span>
-						<label class="float-label">Celular (Con código de país y WhatsApp)</label>
+						<label class="float-label">Número de celular con código de país y que tenga WhatsApp</label>
 					</div>
 				</div>
 
@@ -129,14 +130,31 @@
 			</div>
 				<div class="card-block">
 					<div class="form-group form-default bank-information" >
-						{{ form2.bank_info|add_class:'form-control' }}
+						{{ form2.payPal|add_class:'form-control' }}
 						<span class="form-bar"></span>
-						<label class="float-label">Información Bancaria (Clave interbancaria para transferencia solo para Mexico) , paypal, airtm y Binance(Use una linea para cada uno)</label>
+						<label class="float-label">Paypal</label>
 					</div>
+					<div class="form-group form-default bank-information" >
+						{{ form2.aritms|add_class:'form-control' }}
+						<span class="form-bar"></span>
+						<label class="float-label">Aritms</label>
+					</div>
+					<div class="form-group form-default bank-information" >
+						{{ form2.binance|add_class:'form-control' }}
+						<span class="form-bar"></span>
+						<label class="float-label">Binance</label>
+					</div>
+					<div class="form-group form-default bank-information" >
+						{{ form2.banco|add_class:'form-control' }}
+						<span class="form-bar"></span>
+						<label class="float-label">Banco Clave interbancaria</label>
+						<small>(Solo si eres de México)</small>
+					</div>
+
 					<div class="form-group form-default">
 						{{ form2.observations|add_class:'form-control' }}
 						<span class="form-bar"></span>
-						<label class="float-label">Que es lo que vendes?</label>
+						<label class="float-label">Que es lo que vendes y explicar por qué quieres entrar como proveedor</label>
 					</div>
 			</div>
 		</div>
@@ -145,9 +163,7 @@
 				<h5>Contraseña</h5>
 			</div>
 				<div class="card-block">
-					<div class="form-group form-default">
-						<span class="form-bar">La contraseña debe contener al menos 8 caracteres y no ser completamente numérica.(se recomienda combinar minúsculas, mayúsculas, números y símbolos)</span>
-					</div>
+
 					<div class="form-group form-default">
 						{{ form.password1|add_class:'form-control' }}
 						<span class="form-bar"></span>
@@ -159,6 +175,9 @@
 						<span class="form-bar"></span>
 
 						<label class="float-label">Confirme la contraseña</label>
+					</div>
+					<div class="form-group form-default">
+						<span class="form-bar"><strong>La contraseña debe contener al menos 8 caracteres y no ser completamente numérica.(se recomienda combinar minúsculas, mayúsculas, números y símbolos)</strong></span>
 					</div>
 					<div class="registrationFormAlert" id="divCheckPasswordMatch">
 					<input class="btn btn-primary btn-md btn-block waves-effect text-center m-b-20 send-register" type="submit" value="Registrase"/>

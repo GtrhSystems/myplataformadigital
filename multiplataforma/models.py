@@ -40,7 +40,12 @@ class UserData(models.Model):
     city = models.CharField(max_length=50, verbose_name="Ciudad", default="")
     observations = models.CharField(default="", max_length=255, verbose_name="Observaciones")
     image = models.ImageField(upload_to='photos')
-    bank_info = models.CharField(max_length=300, verbose_name="Información Bancaria", default="")
+    #bank_info = models.CharField(max_length=300, verbose_name="Información Bancaria", default="")
+    paypal = models.CharField(blank=True, null=True, max_length=100, verbose_name="PayPal", default="")
+    aritms = models.CharField(blank=True, null=True, max_length=100, verbose_name="Aritms", default="")
+    binance = models.CharField(blank=True, null=True, max_length=100, verbose_name="Binance", default="")
+    banco = models.CharField(blank=True, null=True, max_length=150, verbose_name="Banco", default="")
+
 
 
 class Product(models.Model):
