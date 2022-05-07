@@ -198,6 +198,9 @@ def ActivateStaffView(request, type,  pk):
 def StaffListView(request, type, authorized):
 
     users = User.objects.filter(is_active=authorized).filter(groups__name = type)
+    for user in users:
+        userdata = UserData.objects.get(user=user)
+        user.email_verified= userdata.email_verified
     return render(request, 'users/list.html', {'users': users, 'authorized':authorized, 'type':type})
 
 

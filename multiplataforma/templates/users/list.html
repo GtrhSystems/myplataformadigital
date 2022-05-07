@@ -31,6 +31,7 @@
 								<th>Fecha</th>
 								<th>Username</th>
 								<th>Nombres</th>
+								<th>Correo verificado</th>
 								<th>Ver</th>
 							</tr>
 						</thead>
@@ -41,6 +42,13 @@
 									<td>{{ user.date_joined }}</td>
 									<td>{{ user.username }}</td>
 									<td>{{ user.first_name }} {{ user.last_name }}</td>
+									<td>
+										{% if user.email_verified == True %}
+											<i class="ti-check-box"></i>
+										{% else %}
+											<i class="ti-close"></i>
+										{% endif %}
+									</td>
 									<td class="center">
 										<a href="{% url 'activate-staff' type user.id %}"><i class="fa fa-fw" aria-hidden="true" title="Ver"><i class="ti-settings"></i></i></a>
 										{% if type == 'vendedor' and authorized == 1 %}
