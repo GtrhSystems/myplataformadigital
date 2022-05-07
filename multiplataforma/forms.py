@@ -68,7 +68,7 @@ class UserDataForm(forms.ModelForm):
 
     class Meta:
         model = UserData
-        fields = ('address', 'document', 'phones', 'state', 'city','country', 'observations', 'image','image_document', 'paypal', 'aritms','binance','banco')
+        fields = ('address', 'phones', 'state', 'city','country', 'observations', 'image','image_document', 'paypal', 'aritms','binance','banco')
 
 
 

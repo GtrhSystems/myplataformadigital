@@ -1,0 +1,40 @@
+{% extends 'layout.html' %}
+{% load widget_tweaks %}
+{% load humanize %}
+{% block menu_izquierdo %}
+{% endblock %}
+{% block header %}
+ <div class="page-header">
+	  <div class="page-block">
+		  <div class="row align-items-center">
+			  <div class="col-md-8">
+				  <div class="page-header-title">
+					  <h5 class="m-b-10">Correo verificado </h5>
+				  </div>
+			  </div>
+		  </div>
+	  </div>
+  </div>
+{% endblock %}
+{% block content %}
+<div class="row">
+	<div class="col-lg-12">
+		<div class="card">
+			<div class="card-header">
+				<h5>Tu correo ha sido verificado</h5>
+			</div>
+			<div class="card-block table-border-style">
+				<div class="table-responsive">
+					Hola <strong>{{ user.username }}</strong>, ¡tu correo <strong>{{ user.email }}</strong>  ha sido verificado correctamente!, pronto no estaremos comunicando contigo por medio de correo para darte una respuesta
+				</div>
+			</div>
+		</div>
+
+	</div>
+	<!-- /.col-lg-12 -->
+</div>
+<script>
+	$('.pcoded-navbar').remove()
+	$('.pcoded-content').css("margin-left","0px")
+</script>
+{% endblock %}

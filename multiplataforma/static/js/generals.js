@@ -52,101 +52,96 @@ $(document).ready(function() {
 
 function register_staff(){
 
-    $(document).ready(function ($) {
-
-        $('#id_password1').keyup(function(e) {
-             var strongRegex = new RegExp("^(?=.{8,})(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*\\W).*$", "g");
-             var mediumRegex = new RegExp("^(?=.{7,})(((?=.*[A-Z])(?=.*[a-z]))|((?=.*[A-Z])(?=.*[0-9]))|((?=.*[a-z])(?=.*[0-9]))).*$", "g");
-             var enoughRegex = new RegExp("(?=.{6,}).*", "g");
-             if (false == enoughRegex.test($(this).val())) {
-                     $('#passstrength').html('Faltan caracteres.');
-             } else if (strongRegex.test($(this).val())) {
-                     $('#passstrength').className = 'ok';
-                     $('#passstrength').html('Fuerte!');
-             } else if (mediumRegex.test($(this).val())) {
-                     $('#passstrength').className = 'alert';
-                     $('#passstrength').html('Media!');
-             } else {
-                     $('#passstrength').className = 'error';
-                     $('#passstrength').html('Débil!');
-             }
-             return true;
-        });
-
-         $(".staff_register").validate({
-                rules: {
-                  id_address : {
-                    required: true,
-                    minlength: 10
-                  },
-                  id_document: {
-                    required: true,
-                    number: true,
-                    min: 10
-                  },
-                  id_phones: {
-                    required: true,
-                    min: 6
-                  },
-                   id_state: {
-                    required: true,
-                    min: 3
-                  },
-                   id_city: {
-                    required: true,
-                    min: 3
-                  },
-                   id_country: {
-                    required: true,
-                    min: 3
-                  },
-                   id_image: {
-                    required: true,
-                    min: 3
-                  },
-                   id_image_document: {
-                    required: true,
-                    min: 3
-                  },
-                  id_bank_info: {
-                    required: {
-                      depends: function(elem) {
-                        return $("#id_group").val() == "staff"
-                      }
-                    }
-                  },
-                  id_first_name: {
-                    required: true,
-                    min: 6
-                  },
-                  id_last_name: {
-                    required: true,
-                    min: 6
-                  },
-                  id_email: {
-                    required: true,
-                    email: true
-                  },
-                  id_password1: {
-                    required: true,
-                    min: 8
-                  },
-                  id_password2: {
-                    required: true,
-                    equalTo:id_password1,
-                    min: 8
-                  },
 
 
-                }
-          });
-
-
+    $('#id_password1').keyup(function(e) {
+         var strongRegex = new RegExp("^(?=.{8,})(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*\\W).*$", "g");
+         var mediumRegex = new RegExp("^(?=.{7,})(((?=.*[A-Z])(?=.*[a-z]))|((?=.*[A-Z])(?=.*[0-9]))|((?=.*[a-z])(?=.*[0-9]))).*$", "g");
+         var enoughRegex = new RegExp("(?=.{6,}).*", "g");
+         if (false == enoughRegex.test($(this).val())) {
+                 $('#passstrength').html('Faltan caracteres.');
+         } else if (strongRegex.test($(this).val())) {
+                 $('#passstrength').className = 'ok';
+                 $('#passstrength').html('Fuerte!');
+         } else if (mediumRegex.test($(this).val())) {
+                 $('#passstrength').className = 'alert';
+                 $('#passstrength').html('Media!');
+         } else {
+                 $('#passstrength').className = 'error';
+                 $('#passstrength').html('Débil!');
+         }
+         return true;
     });
 
+     $(".staff_register").validate({
+            rules: {
+              id_address : {
+                required: true,
+                minlength: 10
+              },
+              id_document: {
+                required: true,
+                number: true,
+                min: 10
+              },
+              id_phones: {
+                required: true,
+                min: 6
+              },
+               id_state: {
+                required: true,
+                min: 3
+              },
+               id_city: {
+                required: true,
+                min: 3
+              },
+               id_country: {
+                required: true,
+                min: 3
+              },
+               id_image: {
+                required: true,
+                min: 3
+              },
+               id_image_document: {
+                required: true,
+                min: 3
+              },
+              id_bank_info: {
+                required: {
+                  depends: function(elem) {
+                    return $("#id_group").val() == "staff"
+                  }
+                }
+              },
+              id_first_name: {
+                required: true,
+                min: 6
+              },
+              id_last_name: {
+                required: true,
+                min: 6
+              },
+              id_email: {
+                required: true,
+                email: true
+              },
+              id_password1: {
+                required: true,
+                min: 8
+              },
+              id_password2: {
+                required: true,
+                equalTo:id_password1,
+                min: 8
+              },
 
 
-	$('.send-register').click(function(e){
+            }
+      });
+
+	/*$('.send-register').click(function(e){
 
         e.preventDefault()
         $('.modal-body').html("<p>Pronto no estaremos comunicando contigo por medio de correo para darte una respuesta</p")
@@ -156,8 +151,7 @@ function register_staff(){
         setTimeout(function() {
             $('.staff_register').submit()
         }, 2000);
-
-	})
+	})*/
 
 
 }

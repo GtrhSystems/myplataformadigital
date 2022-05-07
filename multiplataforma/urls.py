@@ -13,6 +13,8 @@ urlpatterns = [
     path('saler/list', views.SalerListView, name='saler-list'),
     #staffs
     path('staff/register', views.RegisterStaffView, name='staff-add'),
+    path('staff/email-validations-register/<str:username>', views.EmailValidationRegisterView, name='email-validations-register'),
+    path('staff/email-verification/<str:token>', views.EmailVerificationView, name='email-verification'),
     path('service/check-username/<str:username>', views.CheckUsernameAjaxView, name='check-username'),
     path('<str:type>/list/<int:authorized>', views.StaffListView, name='staff-list'),
     path('<str:type>/activate/<int:pk>', views.ActivateStaffView, name='activate-staff'),

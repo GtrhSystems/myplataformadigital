@@ -1,0 +1,15 @@
+{% autoescape off %}
+Hola,
+
+Por favor has click en el siguiente enlace para verificar tu correo electrónico en tu cuenta de mymultiplataformadigital.
+
+{{ protocol }}://{{ domain }}/staff/email-verification/{{ token }}
+
+Este enlace solo se puede utilizar una vez.
+
+Si no hizo esta solicitud, simplemente puede ignorar este email.
+
+Atentamente,
+El equipo de mymultiplataformadigital.com
+
+{% endautoescape %}

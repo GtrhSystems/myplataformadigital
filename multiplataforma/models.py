@@ -31,7 +31,7 @@ class Country(models.Model):
 class UserData(models.Model):
 
     user= models.ForeignKey(User, on_delete=models.CASCADE)
-    document  = models.CharField(max_length=15, verbose_name="Documento", default="")
+    #document  = models.CharField(max_length=15, verbose_name="Documento", default="")
     image_document = models.ImageField(default="", upload_to='documents')
     address = models.CharField(max_length=150, verbose_name="Dirección", default="")
     phones = models.CharField(max_length=150, verbose_name="Dirección", default="")
@@ -45,7 +45,8 @@ class UserData(models.Model):
     aritms = models.CharField(blank=True, null=True, max_length=100, verbose_name="Aritms", default="")
     binance = models.CharField(blank=True, null=True, max_length=100, verbose_name="Binance", default="")
     banco = models.CharField(blank=True, null=True, max_length=150, verbose_name="Banco", default="")
-
+    token_register = models.CharField(max_length=150, verbose_name="Token", default="")
+    email_verified = models.BooleanField(default=0, verbose_name="Email verificado?:")
 
 
 class Product(models.Model):

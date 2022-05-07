@@ -5,6 +5,8 @@ from django.http import HttpResponse, JsonResponse
 from .decorators import usertype_in_view
 from .forms import  *
 from .models import *
+from .libraries import *
+from django.core.mail import send_mail, BadHeaderError
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 
@@ -105,6 +107,7 @@ def ProductCreateView(request):
 
 def RegisterStaffView(request):
 
+    from django.utils.crypto import get_random_string
     form = SignUpForm()
     form2 = UserDataForm()
     if request.method == 'POST':
@@ -116,15 +119,59 @@ def RegisterStaffView(request):
             user.save()
             UserData = form2.save(commit=False)
             UserData.user = user
+            token = get_random_string(length=30)
+            UserData.token_register = token
             UserData.save()
             group = Group.objects.get(name=request.POST['group'])
             user.groups.add(group)
-            return redirect('index')
+            return redirect('email-validations-register', user.username)
 
     return render(request, 'users/add-staff.html', {'form': form , 'form2':form2 })
 
 
 
+def EmailValidationRegisterView(request, username):
+
+    from django.template.loader import render_to_string
+    user = User.objects.get(username=username)
+    userdata = UserData.objects.get(user=user)
+    if userdata.token_register != "":
+        subject = "Validación de correo mymultiplataforma.com"
+        email_template_name = "mail/email-verification.txt"
+        mail_data = {
+            "email": user.email,
+            #'domain': 'myplataformadigital.com',
+            'domain': ' 162.240.66.189',
+            'site_name': 'mymultiplataformadigital',
+            "user": user,
+            'token': userdata.token_register,
+            'protocol': 'http',
+            #'protocol': 'https',
+        }
+        content = render_to_string(email_template_name, mail_data)
+        try:
+            mailing = Mail()
+            mailing.send(user.email, subject, content)
+        except BadHeaderError:
+            return HttpResponse('Invalid header found.')
+    else:
+        return HttpResponse('Token no existe.')
+    return render(request, 'users/email-validations-register.html',{ "user":user })
+
+def EmailVerificationView(request, token):
+
+    try:
+        userdata = UserData.objects.get(token_register=token)
+        if userdata:
+            user = User.objects.get(id=userdata.id)
+            userdata.token_register = ""
+            userdata.email_verified = True
+            userdata.save()
+        else:
+            return HttpResponse('Error. token invalido.')
+    except:
+        return HttpResponse('Error. token invalido.')
+    return render(request, 'users/email-verified.html',{ "user":user })
 
 @usertype_in_view
 @login_required
