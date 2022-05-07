@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.db.models import Avg, Count, Min, Sum
+from .validators import valid_extension
+
 import datetime
 
 
@@ -32,7 +34,7 @@ class UserData(models.Model):
 
     user= models.ForeignKey(User, on_delete=models.CASCADE)
     #document  = models.CharField(max_length=15, verbose_name="Documento", default="")
-    image_document = models.ImageField(default="", upload_to='documents')
+    image_document = models.FileField(default="", upload_to='documents', validators=[valid_extension])
     address = models.CharField(max_length=150, verbose_name="Dirección", default="")
     phones = models.CharField(max_length=150, verbose_name="Dirección", default="")
     country = models.ForeignKey(Country, on_delete=models.CASCADE)

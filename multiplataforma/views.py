@@ -9,6 +9,8 @@ from .libraries import *
 from django.core.mail import send_mail, BadHeaderError
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+from django.views.decorators.clickjacking import xframe_options_exempt
+
 
 PERCENT_COMISSION = 0
 if PercentCommission.objects.all():
@@ -175,10 +177,12 @@ def EmailVerificationView(request, token):
 
 @usertype_in_view
 @login_required
+@xframe_options_exempt
 def ActivateStaffView(request, type,  pk):
 
     user =  User.objects.filter( id = pk)
     user_data = UserData.objects.filter(user = user.first()).first()
+    extention= str(user_data.image_document).split('.')[1]
     products_actives = list(user.last().get_mys_products_actives().values_list('product_id', flat=True))
     products = Product.get_all_products()
     if request.method == 'POST':
@@ -190,7 +194,7 @@ def ActivateStaffView(request, type,  pk):
             if str(product.id) in request.POST:
                 UserProduct.objects.create(user=user_data.user, product=product)
         return redirect('staff-list', type, 1)
-    return render(request, 'users/activate-staff.html', { 'user':user.last(), 'user_data':user_data ,'products':products,  'type': type, 'products_actives':products_actives})
+    return render(request, 'users/activate-staff.html', { 'user':user.last(), 'user_data':user_data ,'products':products,  'type': type, 'products_actives':products_actives, 'extention':extention})
 
 
 @usertype_in_view

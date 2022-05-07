@@ -120,16 +120,30 @@
 				<h5>Imagen de usuario</h5>
 			</div>
 			<div class="card-block">
-				<img class="zoom" src="../../media/{{ user_data.image }}" alt="{{ user.username }}" width="90">
+				<a class="image-zoom"  href="#"  link="/media/{{ user_data.image }}">
+					<i class="ti-image" style="font-size: 62px;"></i>
+				</a>
 			</div>
+
 		</div>
 		<div class="card">
 			<div class="card-header">
-				<h5>Imagen de documento</h5>
+				<h5>Documento</h5>
 			</div>
-			<div class="card-block">
-				<img class="zoom" src="../../media/{{ user_data.image_document }}" alt="{{ user.username }}" width="90">
-			</div>
+			{% if extention == "pdf"%}
+				<div class="card-block">
+					<a class="zoom"  href="#"  link="/media/{{ user_data.image_document }}" >
+						<i class="ti-receipt" style="font-size: 62px;"></i>
+					</a>
+
+				</div>
+			{% else %}
+				<div class="card-block">
+						<a class="zoom"  href="#"  link="/media/{{ user_data.image_document }}" >
+								<i class="ti-image" style="font-size: 62px;"></i>
+						</a>
+				</div>
+			{% endif %}
 		</div>
 	</div>
 </div>
@@ -142,13 +156,27 @@ $('#all_aut').change(function(){
 	}
 })
 
+$('.image-zoom').click(function(e){
+
+        e.preventDefault()
+        image= $(this).attr("link")
+        $('.modal-body').html('<img src="'+image+'"  width="410">')
+        $('#Modal').modal()
+        $('#Modal').removeClass('fade')
+        $('#Modal').show()
+})
+
 
 $('.zoom').click(function(e){
 
         e.preventDefault()
-        image= $(this).attr("src")
-        console.log(image)
-        $('.modal-body').html('<img src="'+image+'"  width="390">')
+        image= $(this).attr("link")
+        {% if extention == "pdf"%}
+			 $('.modal-body').html('<embed src="'+image+'" width="450" height="375">')
+        {% else %}
+        	 $('.modal-body').html('<img src="'+image+'"  width="410">')
+        {% endif %}
+
         $('#Modal').modal()
         $('#Modal').removeClass('fade')
         $('#Modal').show()
