@@ -1,0 +1,71 @@
+{% extends 'layout.html' %}
+
+{% load widget_tweaks %}
+{% block menu %}
+    {% include 'menu.html' %}
+{% endblock %}
+
+{% block header %}
+ <div class="page-header">
+	  <div class="page-block">
+		  <div class="row align-items-center">
+			  <div class="col-md-8">
+				  <div class="page-header-title">
+					  <h5 class="m-b-10">Transacciones</h5>
+				  </div>
+			  </div>
+
+		  </div>
+	  </div>
+  </div>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+	<div class="col-md-12">
+		<div class="card">
+			<div class="card-header">
+				<h5>Filtrado por mes</h5>
+				<span>Seleccione el mes requerido</span>
+			</div>
+			<div class="card-block">
+				<form method="post">
+					{% csrf_token %}
+					<fieldset>
+					<div class="form-group">
+						<label>Mes de consulta:</label>
+						<td>{{ form.month_year|add_class:'form-control' }}</td>
+
+					</div>
+
+					<input class="btn btn-primary btn-md btn-block waves-effect text-center m-b-20 list" type="submit" value="Buscar"/>
+					{{ form.errors }}
+
+					 </fieldset>
+				</form>
+			</div>
+			<!-- /.col-lg-6 (nested) -->
+		</div>
+		<!-- /.row (nested) -->
+	</div>
+	<!-- /.panel-body -->
+</div>
+<div id="sales"></div>
+<script>
+	$('#id_month_year_day').remove()
+	$('body').on("click", ".list" , function(event){
+            event.preventDefault()
+            $('#sales').html('')
+			year = $('#id_month_year_year').val()
+			month = $('#id_month_year_month').val()
+			$.get('/transactions/month/'+year+'/'+month ,function(data){
+				$('#sales').html(data)
+			})
+
+    });
+
+
+
+</script>
+
+{% endblock %}

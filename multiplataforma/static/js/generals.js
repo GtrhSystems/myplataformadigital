@@ -41,9 +41,10 @@ $(document).ready(function() {
 		  paging: false
     });
      $('.table-no-order').DataTable( {
-		  scrollX: false,
+		  scrollX: true,
 		  responsive: true,
-		  ordering: false
+		  ordering: false,
+		  paging: false,
 
     });
 
@@ -206,12 +207,25 @@ function create_plan_subproduct(){
 }
 
 function delete_saler(){
-    $('#salers-table tbody').on("click", ".delete-user" , function(event){
+
+    $('#salers-table tbody').on("click", ".pause-user" , function(event){
         event.preventDefault()
-        var id = $(this).attr('id');
+        var id = $(this).attr('user_id');
         var mensaje = confirm("Desea desactivar este usuario?");
         if (mensaje) {
             $.get('/delete/User/'+id ,function(data){
+                alert(data)
+                location.reload();
+            })
+        }
+    });
+
+    $('#salers-table tbody').on("click", ".delete-user" , function(event){
+        event.preventDefault()
+        var id = $(this).attr('id');
+        var mensaje = confirm("Desea Eliminar definitivamente este usuario?");
+        if (mensaje) {
+            $.get('/delete/DeleteUser/'+id ,function(data){
                 alert(data)
                 location.reload();
             })
@@ -245,13 +259,12 @@ function buy_package(){
                 $("#sale").on("click", function(event){
                     $(this).prop('disabled', true)
                     $.get('/package/buy/'+id ,function(data){
-                        $('.modal-body').html(data)
                         if(type_attr == "True"){
                             MultiplataformaSocket.send(id +'_'+ type_attr +'_reload');
+                            location.reload();
                         }else{
                             MultiplataformaSocket.send(id +'_'+ type_attr +'_remove');
                         }
-
                     })
                 })
             });

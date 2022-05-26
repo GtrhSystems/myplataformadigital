@@ -48,6 +48,8 @@ urlpatterns = [
     path('platform/sales/pay-staff-sale/<int:id>', views.PayStaffSaleView, name='pay-staff-sale'),
     path('platform/sales/inter-dates', views.InterDatesSalesView, name='sales-inter-dates'),
 
+    path('transactions/inter-dates', views.InterDatesTransactionsView, name='transactions-inter-dates'),
+    path('transactions/month/<int:year>/<int:month>', views.TransactionsMonthView, name='multiplatforms-sales-month'),
 
     #Borrado de registros
     path('delete/<str:model>/<str:id>', views.DeleteRegister, name='delete-table-id'),

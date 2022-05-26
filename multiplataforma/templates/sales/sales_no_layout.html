@@ -16,9 +16,10 @@
                             <tr>
                                 <th>Fecha</th>
                                 <th>Subproducto</th>
-                                <th>Comprador</th>
-                                <th>Precio</th>
-                                <th>Comision</th>
+                                <th>Distribuidor</th>
+                                <th>Venta</th>
+                                 <th>Comision {{ PERCENT_COMISSION }}%</th>
+                                <th>Total</th>
 
                             </tr>
                         </thead>
@@ -26,12 +27,11 @@
                            {% for sale in sales %}
                             <tr class="gradeA odd" role="row">
                                <td>{{ sale.date_buy|date:"d/M/Y P" }}</td>
-                                    <td>{{ sale.subproduct.name }}</td>
-                                    <td>{{ sale.owner }}</td>
-                                    <td>$ {{ sale.price_buy|intcomma }}</td>
-                                    <td>$ {{ sale.price_buy|sub:sale.commission|intcomma }}</td>
-                                    <td>$ {{ sale.commission|intcomma }}</td>
-
+                               <td>{{ sale.subproduct.name }}</td>
+                               <td>{{ sale.owner }}</td>
+                               <td>$ {{ sale.price_buy|intcomma }}</td>
+                               <td>$ {{ sale.commission|intcomma }}</td>
+                               <td>$ {{ sale.price_buy|sub:sale.commission|intcomma }}</td>
                             </tr>
                         {% endfor %}
                         {% if sales %}
@@ -41,6 +41,7 @@
                             <td><strong>Totales</strong></td>
                             <td>$ {{ sales_sum.total_sales|intcomma }}</td>
                             <td>$ {{ comission|intcomma }} </td>
+                              <td>$ {{ sales_sum.total_sales|sub:comission|intcomma }}</td>
                         </tr>
                         {% endif %}
                         </tbody>

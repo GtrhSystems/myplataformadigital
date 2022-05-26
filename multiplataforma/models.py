@@ -95,7 +95,7 @@ class CountsPackage(models.Model):
     subproduct = models.ForeignKey(SubProduct, default=1, verbose_name="Producto", on_delete=models.CASCADE)
     email = models.CharField(max_length=100, verbose_name="Email")
     password = models.CharField(max_length=50, default="")
-    profile = models.CharField(max_length=20, verbose_name="Perfil", default="")
+    profile = models.CharField(blank=True, max_length=20, verbose_name="Perfil", default="")
     pin = models.CharField(max_length=4, verbose_name="Pin", default="0")
     saled =  models.BooleanField(default=0, verbose_name="Vendida?")
     price_buy = models.IntegerField(default=0, verbose_name="Precio de Compra")
@@ -201,6 +201,13 @@ class MoneysSaler(models.Model):
 
         money_saler = self.objects.all().order_by('-date')
         return money_saler
+
+    @classmethod
+    def Get_mys_transactions(self,  user,  year, month):
+
+        initial_date, final_date = dates_init_finish(year, month)
+        trasnsactions = self.objects.filter(saler = user).filter(date__range=[initial_date, final_date])
+        return trasnsactions
 
     def __str__(self):
         return str(self.money)

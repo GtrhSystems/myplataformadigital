@@ -44,7 +44,8 @@ def usertype_in_view(function):
                     'qualify-saler-list',
                     'qualify-saler',
                     'multiplatforms-sales-month',
-                    'general-sales'
+                    'general-sales',
+                    'transactions-inter-dates',
                     ]
         superuser = ['add-product',
                      'staff-list',

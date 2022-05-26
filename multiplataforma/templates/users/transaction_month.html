@@ -1,0 +1,50 @@
+
+{% load humanize %}
+{% load mathfilters %}
+{% load widget_tweaks %}
+
+
+{% block content %}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+
+<div class="row">
+	<div class="col-lg-12">
+		<div class="card">
+			<div class="card-header">
+				<h5>Listado de trasnsacciones </h5>
+			</div>
+			<div class="card-block table-border-style">
+				<div class="table-responsive">
+                    <table  class="table table-no-order">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Detalle</th>
+                                <th>Transacción</th>
+                                <th>Saldo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                           {% for transaction in transactions %}
+                                <tr class="gradeA odd" role="row">
+                                    <td>{{ transaction.date|date:"d/M/Y P" }}</td>
+                                    <td>{{ transaction.detail  }}</td>
+                                    <td>${{ transaction.transaction_money|intcomma  }}</td>
+                                     <td>${{ transaction.money|intcomma  }}</td>
+                                </tr>
+                            {% endfor %}
+
+                        </tbody>
+                    </table>
+                </div>
+			</div>
+		</div>
+
+	</div>
+	<!-- /.col-lg-12 -->
+</div>
+
+
+
+{% endblock %}

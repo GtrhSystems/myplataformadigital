@@ -55,8 +55,9 @@
 											<a href="{% url 'add-money-saler' user.id %}"><i class="fa fa-fw" aria-hidden="true" title="Agregar Saldo"><i class="ti-money"></i></i></a>
 										{% endif %}
 										{% if authorized == 1 %}
-											<a class="delete-user" id="{{ user.id }}" href="javascript:void(0)"><i class="fa fa-fw " aria-hidden="true" title="Desactivar Vendedor"><i class="ti-trash"></i></i></a>
+											<a class="pause-user" user_id="{{ user.id }}" href="javascript:void(0)"><i class="fa fa-fw " aria-hidden="true" title="Desactivar Vendedor"><i class="ti-control-pause"></i></i></a>
 										{% endif %}
+										<a class="delete-user" id="{{ user.id }}" href="javascript:void(0)"><i class="fa fa-fw " aria-hidden="true" title="Eliminar Vendedor"><i class="ti-trash"></i></i></a>
 									</td>
 								</tr>
 							{% endfor %}

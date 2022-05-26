@@ -165,7 +165,7 @@ def EmailVerificationView(request, token):
     try:
         userdata = UserData.objects.get(token_register=token)
         if userdata:
-            user = User.objects.get(id=userdata.id)
+            user = User.objects.get(id=userdata.user_id)
             userdata.token_register = ""
             userdata.email_verified = True
             userdata.save()
@@ -182,7 +182,9 @@ def ActivateStaffView(request, type,  pk):
 
     user =  User.objects.filter( id = pk)
     user_data = UserData.objects.filter(user = user.first()).first()
-    extention= str(user_data.image_document).split('.')[1]
+    extention = ""
+    if user_data.image_document != "":
+        extention= str(user_data.image_document).split('.')[1]
     products_actives = list(user.last().get_mys_products_actives().values_list('product_id', flat=True))
     products = Product.get_all_products()
     if request.method == 'POST':
@@ -315,7 +317,7 @@ def SubProductCreateView(request, id):
 
     form = SubProductForm(request.POST or None)
     product = Product.objects.filter(id=id).first()
-    subproducts = SubProduct.objects.filter(product_id=id, creater=request.user,  active=True)
+    subproducts = SubProduct.objects.filter(product_id=id, creater=request.user, active=True, for_sale=True)
     if request.method == 'POST':
         if form.is_valid():
             subproduct = form.save(commit=False)
@@ -323,7 +325,7 @@ def SubProductCreateView(request, id):
             subproduct.creater = request.user
             subproduct.product = product
             subproduct.save()
-            return redirect('add-subproduct', id)
+            return redirect('add-count-package', subproduct.id)
 
     return render(request, 'platforms/add_subproduct.html', {'form': form, 'product': product, 'subproducts': subproducts })
 
@@ -354,7 +356,7 @@ def AddCountToPackageView(request, id):
     if not subproduct:
         return redirect('index')
     form = PlanProductForm(request.POST or None)
-    plans = CountsPackage.objects.filter(subproduct_id=id)
+    plans = CountsPackage.objects.filter(subproduct_id=id, owner=request.user)
     if request.method == 'POST':
         if form.is_valid():
             plan = form.save(commit=False)
@@ -465,13 +467,14 @@ def BuyPackageView(request, id):
                     count.date_buy = datetime.datetime.now()
                     count.save()
                 else:
-                    subproduct.for_sale=0
+                    subproduct.for_sale = False
                     subproduct.save()
                     len_counts = len(CountsPackage.objects.filter(subproduct_id=subproduct.id))
                     individual_price = subproduct.price/len_counts
                     commission = int(individual_price) * (PERCENT_COMISSION * 0.01)
                     counts.update(owner=request.user, date_buy =datetime.datetime.now(),price_buy = individual_price, commission=commission)
                     count = None
+
                 request.user.subtract_money(money_user, subproduct.price , "Compra: " + str(subproduct.name) + " a " + subproduct.creater.username)
                 if subproduct.individual_sale:
                     return render(request, 'platforms/sale_plan.html',  { 'subproduct': subproduct, 'count':count })
@@ -487,13 +490,13 @@ def BuyPackageView(request, id):
 def SaleCountView(request, id):
 
     subproduct = SubProduct.objects.filter(id=id, active=True).first()
+    last_count_package = CountsPackage.get_mys_counts_package_no_sales(subproduct, request.user).last()
     if request.method == 'POST':
-        last_count_package = CountsPackage.get_mys_counts_package_no_sales(subproduct, request.user).last()
         last_count_package.sale_count(request.POST['price'])
         #CountPackageSale.objects.create(saler =request.user, counts_package = last_count_package, price = request.POST['price'] )
         return redirect('platforms', subproduct.product.name)
 
-    return render(request, 'sales/sale_count_box.html',{ 'id':id, 'subproduct':subproduct})
+    return render(request, 'sales/sale_count_box.html',{ 'id':id, 'subproduct':subproduct, 'count':last_count_package})
 
 @usertype_in_view
 @login_required
@@ -507,7 +510,7 @@ def SalesMonthPlatformsView(request, year=None, month= None):
         if sales:
             sales_sum = sales.aggregate(total_sales=Sum('price_buy'))
             comission = int(sales_sum['total_sales']) * (PERCENT_COMISSION*0.01)
-            return render(request, template, {'sales': sales, 'sales_sum': sales_sum, 'comission': comission})
+            return render(request, template, {'sales': sales, 'sales_sum': sales_sum, 'comission': comission, 'PERCENT_COMISSION':PERCENT_COMISSION})
 
     elif context['user_type'] == "superuser":
         template = 'sales/sales_staff.html'
@@ -517,15 +520,14 @@ def SalesMonthPlatformsView(request, year=None, month= None):
             comission_sum =  sales.aggregate(total_commission=Sum('commission'))
             return render(request, template, {'sales': sales, 'sales_sum': sales_sum, 'comission': comission_sum['total_commission']    })
 
-
-
     elif context['user_type'] == "vendedor":
         template = 'sales/sales_saler.html'
         sales = CountsPackage.all_counts_saled_in_dates(year, month, request)
         sales_sum =  0
         if sales:
             sales_sum = sales.aggregate(total_sales=Sum('price_sale'))
-            return render(request, template, {'sales': sales, 'sales_sum': sales_sum })
+            buy_sum = sales.aggregate(total_buy=Sum('price_buy'))
+            return render(request, template, {'sales': sales, 'sales_sum': sales_sum, 'buy_sum':buy_sum })
 
     return render(request, template)
 
@@ -550,9 +552,9 @@ def GeneralSalesView(request):
         if sales:
             sales_sum = sales.aggregate(total_sales=Sum('price_sale'))
             total_buy = sales.aggregate(total_buy=Sum('price_buy'))
-            total_win =  float(sales_sum['total_sales'])-float(total_buy['total_buy'])
-
-        return render(request, 'sales/sales_saler.html', {'sales': sales, 'sales_sum': sales_sum, 'total_win':total_win})
+            #total_win =  float(sales_sum['total_sales'])-float(total_buy['total_buy'])
+            buy_sum = sales.aggregate(total_buy=Sum('price_buy'))
+        return render(request, 'sales/sales_saler.html', {'sales': sales, 'sales_sum': sales_sum,  'buy_sum':buy_sum })
 
 
 
@@ -560,9 +562,30 @@ def GeneralSalesView(request):
 @login_required
 def InterDatesSalesView(request):
 
-    context = context_app(request)
+    #context = context_app(request)
     form = GetInterDatesForm()
     return render(request, 'sales/inter-dates.html', {'form': form })
+
+
+@usertype_in_view
+@login_required
+def InterDatesTransactionsView(request):
+
+    form = GetInterDatesForm()
+    return render(request, 'users/inter-dates.html', {'form': form })
+
+
+@usertype_in_view
+@login_required
+def TransactionsMonthView(request, year=None, month= None):
+
+    context = context_app(request)
+    if context['user_type'] == "vendedor":
+        transactions = MoneysSaler.Get_mys_transactions(request.user, year, month)
+        return render(request, 'users/transaction_month.html', {'transactions': transactions })
+
+
+
 
 
 @usertype_in_view
@@ -679,7 +702,7 @@ def DeleteRegister(request, model, id):
 
     user_type = check_user_type(request)
     if user_type == "superuser":
-        models = ["User", "Product"]
+        models = ["User", "Product","DeleteUser"]
     elif user_type == "staff":
         models = ["User", "CountsPackage", "SubProduct"]
     elif user_type == "vendedor" :
@@ -687,15 +710,28 @@ def DeleteRegister(request, model, id):
     else:
         return redirect('index')
     if model in models:
+
         try:
             if model == "User":
                 if user_type == "staff":
                     is_my_saler = SalerStaff.Is_my_saler(request.user.id, id)
                     if not is_my_saler:
                         return redirect('index')
+
                 eval(model + ".objects.filter(id=" + id + ").update(is_active=0)")
                 action = "Borrado de " + model + " con id: " + str(id)
                 message = "Desactivado satisfactorio"
+
+            elif model == "DeleteUser":
+                if user_type == "staff":
+                    is_my_saler = SalerStaff.Is_my_saler(request.user.id, id)
+                    if not is_my_saler:
+                        return redirect('index')
+                user =  User.objects.get(id=id)
+                UserData.objects.get(user= user).delete()
+                user.delete()
+                action = "ELiminacion total de " + model + " con id: " + str(id)
+                message = "Eliminación total satisfactoria"
             else:
                 if model == "SubProduct" or model == "Product":
                     exist_id = eval(model + ".objects.filter(id=" + id + ").first() ")

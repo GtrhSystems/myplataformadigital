@@ -12,7 +12,7 @@
 		  <div class="row align-items-center">
 			  <div class="col-md-8">
 				  <div class="page-header-title">
-					  <h5 class="m-b-10">Ventas</h5>
+					  <h5 class="m-b-10">Compras</h5>
 				  </div>
 			  </div>
 
@@ -28,17 +28,19 @@
 	<div class="col-lg-12">
 		<div class="card">
 			<div class="card-header">
-				<h5>Listado de ventas </h5>
+				<h5>Listado de compras </h5>
 			</div>
 			<div class="card-block table-border-style">
 				<div class="table-responsive">
-                    <table id="packages-table" class="table table-no-order">
+                    <table  class="table table-no-order">
                         <thead>
                             <tr>
                                 <th>Fecha</th>
                                 <th>Paquete</th>
+                                <th>Email</th>
+                                <th>Contraseña</th>
+                                <th>Perfil</th>
                                 <th>Precio compra</th>
-                                <th>Cuenta</th>
                                 <th>Precio venta</th>
                                 <th>Ganancia</th>
                             </tr>
@@ -48,22 +50,24 @@
                                 <tr class="gradeA odd" role="row">
                                     <td>{{ sale.date_sale|date:"d/M/Y P" }}</td>
                                     <td>{{ sale.subproduct.name  }}</td>
-                                    <td>$ {{ sale.price_buy|intcomma }}</td>
                                     <td>{{ sale.email }}</td>
+                                    <td>{{ sale.password }}</td>
+                                    <td>{{ sale.profile }}</td>
+                                    <td>$ {{ sale.price_buy|intcomma }}</td>
                                     <td>$ {{ sale.price_sale|intcomma }}</td>
-                                      <td>$ {{ sale.price_sale|sub:sale.price_buy|intcomma }}</td>
+                                    <td>$ {{ sale.price_sale|sub:sale.price_buy|intcomma }}</td>
                                 </tr>
                             {% endfor %}
                             {% if sales %}
                                 <tr class="gradeA odd" role="row">
                                     <td></td>
                                     <td></td>
+                                      <td></td>
                                     <td></td>
                                     <td><strong>Totales</strong></td>
+                                    <td>$ {{ buy_sum.total_buy|intcomma }}</td>
                                     <td>$ {{ sales_sum.total_sales|intcomma }}</td>
-                                     <td>$ {{ total_win|intcomma }}</td>
-
-
+                                    <td>$ {{ sales_sum.total_sales|sub:buy_sum.total_buy|intcomma }}</td>
                                 </tr>
                              {% endif %}
                         </tbody>
