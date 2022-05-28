@@ -58,7 +58,7 @@
             $('#sales').html('')
 			year = $('#id_month_year_year').val()
 			month = $('#id_month_year_month').val()
-			$.get('/transactions/month/'+year+'/'+month ,function(data){
+			$.get('/buys/month/'+year+'/'+month ,function(data){
 				$('#sales').html(data)
 			})
 

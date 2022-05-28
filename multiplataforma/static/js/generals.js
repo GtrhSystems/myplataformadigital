@@ -23,8 +23,6 @@ function listenig_socket(){
         }else if (type =="True" && event == 'reload'){
             location.reload();
         }
-
-
 	};
 }
 
@@ -41,7 +39,6 @@ $(document).ready(function() {
 		  paging: false
     });
      $('.table-no-order').DataTable( {
-		  scrollX: true,
 		  responsive: true,
 		  ordering: false,
 		  paging: false,
@@ -296,6 +293,25 @@ function sale_package(){
 
 }
 
+function resale_package(){
+
+        $( ".sale" ).each(function() {
+            $(this).on("click", function(event){
+                event.preventDefault()
+                var id = $(this).attr('id');
+                name_product = $(this).attr('name_product')
+                $.get('/package/resale-count/'+id ,function(data){
+                        $('.modal-content').html(data)
+                })
+                $("#myModal").modal({show: true})
+            });
+        });
+
+        $("#myModal").on("hidden.bs.modal", function () {
+           location.reload();
+        });
+
+}
 
 
 

@@ -42,14 +42,15 @@ urlpatterns = [
     path('platform/reported-issue/<int:id>', views.ReportedIssue, name='reported-issue'),
     #ventas
     path('package/sale-count/<int:id>', views.SaleCountView, name='sale-count-package'),
+    path('package/resale-count/<int:id>', views.ResaleCountView, name='resale-count-package'),
     path('platform/sales/month/<int:year>/<int:month>', views.SalesMonthPlatformsView, name='multiplatforms-sales-month'),
     path('platform/sales/general-sales', views.GeneralSalesView, name='general-sales'),
     path('platform/sales/pay-pending', views.CommissionPendingView, name='commision-pending'),
     path('platform/sales/pay-staff-sale/<int:id>', views.PayStaffSaleView, name='pay-staff-sale'),
     path('platform/sales/inter-dates', views.InterDatesSalesView, name='sales-inter-dates'),
 
-    path('transactions/inter-dates', views.InterDatesTransactionsView, name='transactions-inter-dates'),
-    path('transactions/month/<int:year>/<int:month>', views.TransactionsMonthView, name='multiplatforms-sales-month'),
+    path('buys/inter-dates', views.BuysInterDatesView, name='buys-inter-dates'),
+    path('buys/month/<int:year>/<int:month>', views.BuysMonthView, name='multiplatforms-sales-month'),
 
     #Borrado de registros
     path('delete/<str:model>/<str:id>', views.DeleteRegister, name='delete-table-id'),

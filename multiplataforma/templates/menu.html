@@ -270,6 +270,15 @@
           </li>
       {% endif %}
       {% if user_type == "vendedor" %}
+       <ul class="pcoded-item pcoded-left-item">
+          <li class="">
+              <a href="{% url 'index' %}" class="waves-effect waves-dark">
+                  <span class="pcoded-micon"><i class="ti-home"></i><b>D</b></span>
+                  <span class="pcoded-mtext" data-i18n="nav.dash.main">Dashboard</span>
+                  <span class="pcoded-mcaret"></span>
+              </a>
+          </li>
+       </ul>
       <div class="pcoded-navigation-label" data-i18n="nav.category.navigation">Gestion</div>
       <ul class="pcoded-item pcoded-left-item">
            <li class="">
@@ -305,16 +314,9 @@
               </a>
               <ul class="pcoded-submenu">
                   <li class=" ">
-                      <a href="{% url 'multiplatforms-sales-month' year month %}" class="waves-effect waves-dark">
+                      <a href="{% url 'buys-inter-dates' %}" class="waves-effect waves-dark">
                           <span class="pcoded-micon"><i class="ti-angle-right"></i></span>
-                          <span class="pcoded-mtext" data-i18n="nav.basic-components.alert">Este mes</span>
-                          <span class="pcoded-mcaret"></span>
-                      </a>
-                  </li>
-                  <li class=" ">
-                      <a href="{% url 'general-sales' %}" class="waves-effect waves-dark">
-                          <span class="pcoded-micon"><i class="ti-angle-right"></i></span>
-                          <span class="pcoded-mtext" data-i18n="nav.basic-components.alert">Generales</span>
+                          <span class="pcoded-mtext" data-i18n="nav.basic-components.alert">Por mes</span>
                           <span class="pcoded-mcaret"></span>
                       </a>
                   </li>
@@ -326,12 +328,12 @@
                   <span class="pcoded-mtext">Proveedores</span>
               </a>
            </li>
-          <li class="">
-              <a href="{% url 'transactions-inter-dates' %}" class="waves-effect waves-dark">
+         <!-- <li class="">
+              <a href="" class="waves-effect waves-dark">
                   <span class="pcoded-micon"><i class="ti-money"></i></span>
                   <span class="pcoded-mtext">Transacciones</span>
               </a>
-           </li>
+           </li>-->
 
       {% endif %}
 

@@ -14,7 +14,7 @@ from django.views.decorators.clickjacking import xframe_options_exempt
 
 PERCENT_COMISSION = 0
 if PercentCommission.objects.all():
-    PERCENT_COMISSION = PercentCommission.objects.all().first().percent
+   PERCENT_COMISSION = PercentCommission.objects.all().first().percent
 
 
 @login_required
@@ -83,7 +83,9 @@ def IndexView(request):
         return render(request, 'sales/sales.html', { 'layout': True})
 
     elif user_type == "vendedor":
-        return redirect('market-place')
+
+        sales_to_expire = CountsPackage.sales_to_expire(request.user )
+        return render(request, 'sales/sales_to_expire.html',  {'sales': sales_to_expire })
 
 
 
@@ -115,11 +117,13 @@ def RegisterStaffView(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST or None)
         form2 = UserDataForm(request.POST, request.FILES or None)
+        print(request.POST)
         if form.is_valid() and form2.is_valid():
             user = form.save(commit=False)
             user.is_active = 0
             user.save()
             UserData = form2.save(commit=False)
+            print(UserData)
             UserData.user = user
             token = get_random_string(length=30)
             UserData.token_register = token
@@ -142,13 +146,13 @@ def EmailValidationRegisterView(request, username):
         email_template_name = "mail/email-verification.txt"
         mail_data = {
             "email": user.email,
-            #'domain': 'myplataformadigital.com',
-            'domain': ' 162.240.66.189',
+            'domain': 'myplataformadigital.com',
+            #'domain': ' 162.240.66.189',
             'site_name': 'mymultiplataformadigital',
             "user": user,
             'token': userdata.token_register,
-            'protocol': 'http',
-            #'protocol': 'https',
+            #'protocol': 'http',
+            'protocol': 'https',
         }
         content = render_to_string(email_template_name, mail_data)
         try:
@@ -492,11 +496,20 @@ def SaleCountView(request, id):
     subproduct = SubProduct.objects.filter(id=id, active=True).first()
     last_count_package = CountsPackage.get_mys_counts_package_no_sales(subproduct, request.user).last()
     if request.method == 'POST':
-        last_count_package.sale_count(request.POST['price'])
-        #CountPackageSale.objects.create(saler =request.user, counts_package = last_count_package, price = request.POST['price'] )
+        last_count_package.sale_count(request.POST['months'])
         return redirect('platforms', subproduct.product.name)
-
     return render(request, 'sales/sale_count_box.html',{ 'id':id, 'subproduct':subproduct, 'count':last_count_package})
+
+
+@usertype_in_view
+@login_required
+def ResaleCountView(request, id):
+
+    count_package = CountsPackage.objects.filter(id=id, owner=request.user).last()
+    if request.method == 'POST':
+        count_package.resale_count(request.POST['months'])
+        return redirect('index')
+    return render(request, 'sales/resale_count_box.html',{ 'id':id, 'count':count_package})
 
 @usertype_in_view
 @login_required
@@ -569,7 +582,7 @@ def InterDatesSalesView(request):
 
 @usertype_in_view
 @login_required
-def InterDatesTransactionsView(request):
+def BuysInterDatesView(request):
 
     form = GetInterDatesForm()
     return render(request, 'users/inter-dates.html', {'form': form })
@@ -577,12 +590,12 @@ def InterDatesTransactionsView(request):
 
 @usertype_in_view
 @login_required
-def TransactionsMonthView(request, year=None, month= None):
+def BuysMonthView(request, year=None, month= None):
 
     context = context_app(request)
     if context['user_type'] == "vendedor":
-        transactions = MoneysSaler.Get_mys_transactions(request.user, year, month)
-        return render(request, 'users/transaction_month.html', {'transactions': transactions })
+        buys = CountsPackage.all_counts_buy_in_dates(request.user, year, month)
+        return render(request, 'users/buys_month.html', {'buys': buys })
 
 
 

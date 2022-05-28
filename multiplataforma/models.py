@@ -100,13 +100,15 @@ class CountsPackage(models.Model):
     saled =  models.BooleanField(default=0, verbose_name="Vendida?")
     price_buy = models.IntegerField(default=0, verbose_name="Precio de Compra")
     date_buy = models.DateTimeField(auto_now_add=False, null=True)
-    price_sale = models.IntegerField(default=0, verbose_name="Precio de venta" )
+    #price_sale = models.IntegerField(default=0, verbose_name="Precio de venta" )
     date_sale  = models.DateTimeField(auto_now_add=False,  null=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE)  # usuario dueño actual
     pay_value = models.IntegerField(default=0, verbose_name="Comision")
     commission = models.IntegerField(default=0, verbose_name="Comision")
     commission_payed = models.BooleanField(default=False, verbose_name="Comision pagada?")
     date_pay = models.DateTimeField(auto_now_add=False, null=True)
+    date_finish = models.DateTimeField(auto_now_add=False, null=True)
+
 
     def __str__(self):
         return str(self.email)
@@ -127,27 +129,54 @@ class CountsPackage(models.Model):
     @classmethod
     def get_all_counts_package_no_sales(self, subproduct):
 
-        print(subproduct)
         CountsPackage = self.objects.filter(subproduct=subproduct, owner=subproduct.creater)
         return CountsPackage
 
     @classmethod
     def get_mys_counts_package_no_sales(self, subproduct, me):
+
         CountsPackage = self.objects.filter(subproduct=subproduct, owner=me,saled=False)
         return CountsPackage
 
-    def sale_count(cls, price):
+    def sale_count(cls, months):
 
+        days =  int(months) * 30
+        date_finish = datetime.datetime.now() + datetime.timedelta(days=days)
+        cls.date_finish = date_finish
         cls.saled = True
-        cls.price_sale = int(price)
         cls.date_sale = datetime.datetime.now()
         cls.save()
+
+    def resale_count(cls, months):
+
+        days = int(months) * 30
+        if cls.date_finish is None:
+            initial_date = datetime.datetime.now()
+        else:
+            initial_date = cls.date_finish
+        cls.date_finish =  initial_date + datetime.timedelta(days=days)
+        cls.save()
+
+    @classmethod
+    def sales_to_expire(self, user):
+
+        date = datetime.date.today() + datetime.timedelta(days=3)
+        sales_to_expire = self.objects.filter(owner = user).filter(date_finish__range=[datetime.date.today(), date ]).order_by('-date_finish')
+        return sales_to_expire
+
+    @classmethod
+    def all_counts_buy_in_dates(self, user, year, month):
+
+        initial_date, final_date = dates_init_finish(year, month)
+        sales = self.objects.filter(owner=user).filter(date_buy__range=[initial_date, final_date]).order_by('-date_buy')
+        return sales
+
 
     @classmethod
     def all_counts_saled_in_dates(self, year, month, request):
 
         initial_date, final_date = dates_init_finish(year, month)
-        #subproducts_list = list(SubProduct.objects.filter(owner= request.user).values_list('id', flat=True))
+
         sales = self.objects.filter(owner=request.user, saled=1).filter(date_sale__range=[initial_date, final_date])
         return sales
 
@@ -168,6 +197,8 @@ class CountsPackage(models.Model):
         initial_date, final_date = dates_init_finish(year, month)
         sales = self.objects.filter(commission_payed=True).filter(date_pay__range=[initial_date, final_date])
         return sales
+
+
 
 
 #class CountPackageSale(models.Model):

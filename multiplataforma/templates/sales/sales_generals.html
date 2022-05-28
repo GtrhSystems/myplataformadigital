@@ -37,7 +37,10 @@
                             <tr>
                                 <th>Fecha</th>
                                 <th>Subproducto</th>
-                                <th>Comprador</th>
+                                  <th>Email</th>
+                                 <th>Contraseña</th>
+                                 <th>Perfil</th>
+                                <th>CDistribuidor</th>
                                 <th>Precio</th>
                                 <th>Pago</th>
                                 <th>Comision</th>
@@ -49,6 +52,9 @@
                                 <tr class="gradeA odd" role="row">
                                     <td>{{ sale.date_buy|date:"d/M/Y P" }}</td>
                                     <td>{{ sale.subproduct.name }}</td>
+                                    <td>{{ sale.email }}</td>
+                                    <td>{{ sale.password }}</td>
+                                    <td>{{ sale.profile }}</td>
                                     <td>{{ sale.owner }}</td>
                                     <td>$ {{ sale.price_buy|intcomma }}</td>
                                     <td>$ {{ sale.price_buy|sub:sale.commission|intcomma }}</td>

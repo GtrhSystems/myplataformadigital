@@ -1,6 +1,6 @@
 {% load humanize %}
 <div class="modal-header">
-    <h2>¿Desea vender una cuenta del paquete {{ subproduct.name }}?</h2>
+    <h2>¿Desea renovar esta cuenta {{ count.subproduct.name }}?</h2>
     <button type="button" class="close" data-dismiss="modal"><i class="ti-close"></i></button>
 </div>
 <div class="modal-body">
@@ -26,7 +26,7 @@
 			<td>{{ subproduct.instructions }}</td>
 		</div>
 	</div>
-    <form method="post" action="{% url 'sale-count-package' id %}">
+    <form method="post" action="{% url 'resale-count-package' count.id %}">
 	{% csrf_token %}
         <div class="form-group form-default">
 			<label class="float-label">Dias adquiridos</label>
