@@ -2,8 +2,18 @@ from multiplataforma import views
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib.auth import views as auth_views #import this
+from django.conf.urls import  include
 
 urlpatterns = [
+
+    #registration
+    path("password_reset", views.PasswordResetRequest.as_view(), name="password_reset_own"),
+    path('password_reset/done-owner/', auth_views.PasswordResetDoneView.as_view(template_name='registration/password_reset_done_own.html'), name='password_reset_done_own'),
+    path('reset_own/<uidb64>/<token>/',  auth_views.PasswordResetConfirmView.as_view(template_name="registration/password_reset_confirm_own.html"), name='password_reset_confirm_own'),
+    path('reset/done/', auth_views.PasswordResetCompleteView.as_view(template_name='registration/password_reset_complete_own.html'), name='password_reset_complete'),
+
+
     path('', views.IndexView, name='index'),
     path('set_cookie/<str:action>/<str:username>', views.LoginCookieView, name='login-cookie'),
     path('add-product', views.ProductCreateView, name='add-product'),

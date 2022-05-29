@@ -40,13 +40,13 @@
                                             <input name="remember"  class="check" type="checkbox" >
                                         </label>
                                     </div>
-                                    <!--<div class="row m-t-25 text-left">
+                                    <div class="row m-t-25 text-left">
                                         <div class="col-12">
                                             <div class="forgot-phone text-right f-right">
-                                                <a href="#" class="text-right f-w-600"> Olvidó su contraseña?</a>
+                                                <a href="{% url 'password_reset_own' %}" class="text-right f-w-600"> Olvidó su contraseña?</a>
                                             </div>
                                         </div>
-                                    </div>-->
+                                    </div>
                                     <div class="row m-t-30">
                                         <div class="col-md-12">
                                             <button  id="login" type="submit" class="btn btn-primary btn-md btn-block waves-effect waves-light text-center m-b-20">Ingresar</button>
@@ -82,10 +82,7 @@
 <!-- Warning Section Ends -->
 {% block scripts %}
 	 {% include 'script.html' %}
-
     <script>
-
-
         username = Cookies.get('username');
         if (username){
             $('#username').val(username)

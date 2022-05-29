@@ -10,6 +10,14 @@ from django.core.mail import send_mail, BadHeaderError
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from django.views.decorators.clickjacking import xframe_options_exempt
+from django.views import View #PARA VISTAS GENERICAS
+from django.contrib.auth.forms import UserCreationForm, PasswordResetForm
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from django.contrib.auth.tokens import default_token_generator
+from django.template.loader import render_to_string
+
+
 
 
 PERCENT_COMISSION = 0
@@ -50,6 +58,46 @@ def context_app(request):
     }
     return context
 
+
+class PasswordResetRequest(View):
+
+    def get(self, request):
+
+        form = PasswordResetForm()
+        return render(request, 'registration/password_reset.html', {"form": form, 'error': None})
+
+    def post(self, request):
+
+        form = PasswordResetForm(request.POST)
+        if form.is_valid():
+            data = form.cleaned_data['email']
+            associated_users = User.objects.filter(Q(email=data))
+            if associated_users.exists():
+                for user in associated_users:
+                    subject = "Cambio de password Mymultiplataforma"
+                    email_template_name = "registration/password_reset_email.txt"
+                    mail_data = {
+                        "email": user.email,
+                        'domain': 'myplataformadigital.com',
+                        # 'domain': ' 162.240.66.189',
+                        'site_name': 'mymultiplataformadigital',
+                        "uid": urlsafe_base64_encode(force_bytes(user.pk)),
+                        "user": user,
+                        'token':  default_token_generator.make_token(user),
+                        # 'protocol': 'http',
+                        'protocol': 'https',
+                    }
+                    content = render_to_string(email_template_name, mail_data)
+                    try:
+                        mailing = Mail()
+
+                        mailing.send(user.email, subject, content)
+                        # send_mail(subject, email, 'admin@originstv.co' , [user.email], fail_silently=False)
+                    except BadHeaderError:
+                        return HttpResponse('Invalid header found.')
+                    return redirect("password_reset_done_own")
+            error = "Correo electrónico inexistente en nuestro sistema"
+            return render(request, 'registration/password_reset.html', {"form": form, 'error': error})
 
 def LoginCookieView(request, action, username):
 
