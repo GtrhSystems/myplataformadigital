@@ -736,7 +736,7 @@ def ReportedIssuesView(request):
 
     context = context_app(request)
     if context['user_type']== "superuser":
-        reports = IssuesReport.subproduct.filter(state=0).order_by('state')
+        reports = IssuesReport.objects.filter(state=0).order_by('state')
     elif context['user_type']== "staff":
         reports = IssuesReport.get_reports_of_mys_counts_created(request.user)
     elif context['user_type'] == "vendedor":
