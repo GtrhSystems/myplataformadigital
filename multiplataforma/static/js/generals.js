@@ -21,7 +21,7 @@ function listenig_socket(){
         }else if (type =="False" && event == 'show'){
             $('.sale_'+id ).show()
         }else if (type =="True" && event == 'reload'){
-            location.reload();
+            /*location.reload();*/
         }
 	};
 }
@@ -244,21 +244,25 @@ function buy_package(){
        });
 
 
-        $( ".sale" ).each(function() {
+       $( ".sale" ).each(function() {
             $(this).on("click", function(event){
                 event.preventDefault()
                 var id = $(this).attr('id');
+                name_subproduct = $(this).attr('name_subproduct')
                 name_product = $(this).attr('name_product')
+                console.log(name_product)
                 type_attr = $(this).attr('type')
                 MultiplataformaSocket.send(id +'_'+ type_attr +'_hide');
-                $('.modal-content').html('<div class="modal-header"><h2>¿Desea comprar '+name_product+'?</h2><button type="button" class="close" data-dismiss="modal"><i class="ti-close"></i></button></div><div class="modal-body"><button type="button" id="sale" class="btn btn-primary btn-md btn-block waves-effect text-center m-b-20">Aceptar</button></div>')
+                $('.modal-content').html('<div class="modal-header"><h2>¿Desea comprar '+name_subproduct+'?</h2><button type="button" class="close" data-dismiss="modal"><i class="ti-close"></i></button></div><div class="modal-body"><button type="button" id="sale" class="btn btn-primary btn-md btn-block waves-effect text-center m-b-20">Aceptar</button></div>')
                 $("#myModal").modal({show: true})
                 $("#sale").on("click", function(event){
                     $(this).prop('disabled', true)
                     $.get('/package/buy/'+id ,function(data){
                         if(type_attr == "True"){
                             MultiplataformaSocket.send(id +'_'+ type_attr +'_reload');
-                            location.reload();
+                            console.log("redireccionando")
+                            window.location.href = "/platform/list/"+name_product;
+                            /*location.reload();*/
                         }else{
                             MultiplataformaSocket.send(id +'_'+ type_attr +'_remove');
                         }
@@ -306,6 +310,16 @@ function resale_package(){
                 $("#myModal").modal({show: true})
             });
         });
+
+
+        $('#sales-table tbody').on("click", ".report" , function(event){
+            event.preventDefault()
+            id = $(this).attr('id')
+            $("#myModal").modal({show: true})
+            $.get('/platform/report-issue/'+ id ,function(data){
+                $('.modal-content').html(data)
+            })
+        })
 
         $("#myModal").on("hidden.bs.modal", function () {
            location.reload();

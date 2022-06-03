@@ -16,15 +16,17 @@
 			</div>
 			<div class="card-block table-border-style">
 				<div class="table-responsive">
-                    <table  class="table table-no-order">
+                    <table id="sales-table" class="table table-no-order">
                         <thead>
                             <tr>
                                 <th>Fecha</th>
+                                <th>Producto</th>
                                 <th>Expira</th>
                                 <th>Precio</th>
                                 <th>Email</th>
                                 <th>Paswword</th>
                                 <th>Perfil</th>
+                                <th>Pin</th>
                                 <th>Accion</th>
                             </tr>
                         </thead>
@@ -32,13 +34,19 @@
                            {% for buy in buys %}
                                 <tr class="gradeA odd" role="row">
                                     <td>{{ buy.date_buy|date:"d/M/Y P" }}</td>
+                                    <td>{{ buy.subproduct.product.name }} {{ buy.subproduct.name }}</td>
                                     <td>{{ buy.date_finish|date:"d/M/Y P" }}</td>
                                     <td>${{ buy.price_buy|intcomma   }}</td>
                                     <td>{{ buy.email  }}</td>
                                     <td>{{ buy.password }}</td>
                                     <td>{{ buy.profile  }}</td>
-                                    <td> <a href="#" class="sale"  name_product="{{ buy.subproduct.name }}" id="{{ buy.id}}">
-                                        <i class="ti-loop" title="Renovar cuenta"></i>
+                                    <td>{{ buy.pin }}</td>
+                                    <td>
+                                        <a href="#" class="sale"  name_product="{{ buy.subproduct.name }}" id="{{ buy.id}}">
+                                            <i class="ti-loop" title="Renovar cuenta"></i>
+                                        </a>
+                                        <a href="#" class="report"  id="{{ buy.id}}">
+                                            <i class="ti-comment" title="Reportar error en la cuenta"></i>
                                         </a>
                                     </td>
                                 </tr>

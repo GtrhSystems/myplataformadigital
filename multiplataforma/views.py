@@ -115,14 +115,22 @@ def LoginCookieView(request, action, username):
 def IndexView(request):
 
     user_type = check_user_type(request)
+    date = datetime.date.today()
+
     if user_type == "superuser":
-        salers_actives = len(User.objects.filter(is_active=True).filter(groups__name = "vendedor"))
+        staff_actives = User.objects.filter(is_active=True).filter(groups__name="staff")
+        salers_actives = User.objects.filter(is_active=True).filter(groups__name="vendedor")
+        len_salers_actives = len(salers_actives)
         salers_requests = len(User.objects.filter(is_active=False).filter(groups__name = "vendedor"))
-        staff_actives  = len(User.objects.filter(is_active=True).filter(groups__name = "staff"))
+        len_staff_actives  = len(staff_actives)
         staff_requests = len(User.objects.filter(is_active=False).filter(groups__name="staff"))
-        return render(request, 'dashboard_'+user_type+'.html', {'salers_actives':salers_actives, 'salers_requests':salers_requests, 'staff_actives':staff_actives, 'staff_requests':staff_requests })
+
+        vendedor_sales = CountsPackage.vendedor_all_counts_saled_for_date(date)
+
+
+        return render(request, 'dashboard_'+user_type+'.html', {'len_salers_actives':len_salers_actives, 'salers_requests':salers_requests, 'len_staff_actives':len_staff_actives, 'staff_requests':staff_requests ,'vendedor_sales':vendedor_sales})
     elif user_type == "staff":
-        date = datetime.datetime.today()
+
         sales = CountsPackage.SalesByStaffbyDate(request.user, int(date.strftime("%Y")), int(date.strftime("%m")))
         if sales:
             sales_sum = sales.aggregate(total_sales=Sum('price_buy'))
@@ -511,9 +519,11 @@ def BuyPackageView(request, id):
             if subproduct.price > money_user:
                 return HttpResponse("No tienes suficiente saldo para esta transacción")
             else:
+                date_finish = datetime.datetime.now() + datetime.timedelta(days=30)
                 if subproduct.individual_sale:
                     count = counts.last()
                     count.owner = request.user
+                    count.date_finish = date_finish
                     count.price_buy = subproduct.price
                     count.commission = int(subproduct.price ) * (PERCENT_COMISSION * 0.01)
                     count.date_buy = datetime.datetime.now()
@@ -524,12 +534,12 @@ def BuyPackageView(request, id):
                     len_counts = len(CountsPackage.objects.filter(subproduct_id=subproduct.id))
                     individual_price = subproduct.price/len_counts
                     commission = int(individual_price) * (PERCENT_COMISSION * 0.01)
-                    counts.update(owner=request.user, date_buy =datetime.datetime.now(),price_buy = individual_price, commission=commission)
+                    counts.update(owner=request.user, date_finish=date_finish, date_buy =datetime.datetime.now(),price_buy = individual_price, commission=commission)
                     count = None
-
                 request.user.subtract_money(money_user, subproduct.price , "Compra: " + str(subproduct.name) + " a " + subproduct.creater.username)
                 if subproduct.individual_sale:
-                    return render(request, 'platforms/sale_plan.html',  { 'subproduct': subproduct, 'count':count })
+                    return redirect('platforms', subproduct.name)
+                    #return render(request, 'platforms/sale_plan.html',  { 'subproduct': subproduct, 'count':count })
                 else:
                     return HttpResponse("Paquete adquirido, todo el paquete aparecera a su nombre")
 
@@ -678,21 +688,20 @@ def PayStaffSaleView(request, id):
 
 @usertype_in_view
 @login_required
-def ReportIssuePlatformView(request, platform, id):
+def ReportIssuePlatformView(request,  id):
 
-    sale = PlanPlatformSales.objects.filter(id=id).first()
-    if sale.saler_id == request.user.id:
+    sale = CountsPackage.objects.filter(id=id).first()
+    if sale.owner == request.user:
         form = ReportIssueForm()
         if request.method == 'POST':
             form = ReportIssueForm(request.POST)
             report = form.save(commit=False)
             report.user = request.user
-            report.email = sale.email
-            report.platform = platform
+            report.count = sale
             report.is_active = 1
             report.save()
             return redirect('reported-issues-platform')
-        return render(request, 'reports/plataform.html', {"form": form, 'sale': sale, 'platform': platform})
+        return render(request, 'reports/plataform.html', {"form": form, 'sale': sale})
     else:
         return redirect('index')
 
@@ -727,10 +736,9 @@ def ReportedIssuesView(request):
 
     context = context_app(request)
     if context['user_type']== "superuser":
-        reports = IssuesReport.objects.filter(state=0).order_by('state')
+        reports = IssuesReport.subproduct.filter(state=0).order_by('state')
     elif context['user_type']== "staff":
-        mys_salers_list = list(SalerStaff.My_salers(request.user)).values_list('saler', flat=True)
-        reports = IssuesReport.objects.filter(user_id__in=mys_salers_list, state=0).order_by('state')
+        reports = IssuesReport.get_reports_of_mys_counts_created(request.user)
     elif context['user_type'] == "vendedor":
         reports = IssuesReport.objects.filter(user=request.user).order_by('state')
     return render(request, 'reports/list.html', {"reports": reports })
@@ -807,7 +815,7 @@ def DeleteRegister(request, model, id):
                 if exist_id is None:
                     action = "Intento de borrado de " + model + " con id: " + str(id)
                     message = "No tienes acceso, esta acción será reportada"
-                if model == "CountsPackage" :
+                if model == "CountsPackage" or model=="IssuesReport" :
                     eval(model + ".objects.filter(id=" + id + ").delete()")
                 else:
                     eval(model + ".objects.filter(id=" + id + ").update(active=0)")

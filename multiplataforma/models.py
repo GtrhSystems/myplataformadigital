@@ -90,6 +90,7 @@ class SubProduct(models.Model):
         return str(self.name)
 
 
+
 class CountsPackage(models.Model):
 
     subproduct = models.ForeignKey(SubProduct, default=1, verbose_name="Producto", on_delete=models.CASCADE)
@@ -141,7 +142,7 @@ class CountsPackage(models.Model):
     def sale_count(cls, months):
 
         days =  int(months) * 30
-        date_finish = datetime.datetime.now() + datetime.timedelta(days=days)
+        date_finish = cls.date_finish + datetime.timedelta(days=days)
         cls.date_finish = date_finish
         cls.saled = True
         cls.date_sale = datetime.datetime.now()
@@ -176,8 +177,25 @@ class CountsPackage(models.Model):
     def all_counts_saled_in_dates(self, year, month, request):
 
         initial_date, final_date = dates_init_finish(year, month)
-
         sales = self.objects.filter(owner=request.user, saled=1).filter(date_sale__range=[initial_date, final_date])
+        return sales
+
+    @classmethod
+    def vendedor_all_counts_saled_for_date(self, date):
+
+        sales = self.objects.filter(saled=1).filter(date_sale__startswith=date)
+        return sales
+
+    @classmethod
+    def staff_all_counts_saled_for_date(self, date):
+
+
+        subproduct = SubProduct.objects.filter(creater=user)
+        counts_package = CountsPackage.objects.filter(subproduct__in=subproduct)
+        reports = self.objects.filter(state=0,  count__in=counts_package).order_by('-date')
+        return reports
+
+        sales = self.objects.filter(saled=1).filter(date_sale__startswith=date)
         return sales
 
     def SetPayStaffSale(cls):
@@ -248,13 +266,20 @@ class MoneysSaler(models.Model):
 class IssuesReport(models.Model):
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    email = models.CharField(max_length=100, verbose_name="Correo")
-    platform = models.CharField(max_length=30, default="")
+    count = models.ForeignKey(CountsPackage, on_delete=models.CASCADE)
     state = models.BooleanField(default=0, verbose_name="Resuelto?:")
     issue = models.CharField(max_length=1000, verbose_name="Problema", default="")
     date = models.DateTimeField(auto_now_add=True)
     response = models.CharField(max_length=1000, verbose_name="Respuesta", default="")
 
+
+    @classmethod
+    def get_reports_of_mys_counts_created(self, user):
+
+        subproduct = SubProduct.objects.filter(creater=user)
+        counts_package = CountsPackage.objects.filter(subproduct__in=subproduct)
+        reports = self.objects.filter(state=0,  count__in=counts_package).order_by('-date')
+        return reports
 
 
 class UserStart(models.Model):

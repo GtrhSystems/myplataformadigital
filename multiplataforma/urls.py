@@ -47,7 +47,7 @@ urlpatterns = [
     path('platform/list/<str:name>', views.SalePlatformsView, name='platforms'),
     path('package/buy/<int:id>', views.BuyPackageView, name='buy-platform'),
 
-    path('platform/report-issue/<str:platform>/<int:id>', views.ReportIssuePlatformView, name='report-issue-platform'),
+    path('platform/report-issue/<int:id>', views.ReportIssuePlatformView, name='report-issue-platform'),
     path('platform/issues-reported', views.ReportedIssuesView, name='reported-issues-platform'),
     path('platform/reported-issue/<int:id>', views.ReportedIssue, name='reported-issue'),
     #ventas

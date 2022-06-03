@@ -73,7 +73,7 @@
                     </div>
                 </div>
                 {% if  user_type == "vendedor"  %}
-                <a href="#" class="sale" id="{{ package.id }}" name_product="{{ package.name }}"  type="{{ package.individual_sale }}">
+                <a href="#" class="sale" id="{{ package.id }}" name_product="{{ package.product.name }}" name_subproduct="{{ package.name }}"  type="{{ package.individual_sale }}">
                     <div class="card-footer bg-c-purple sale_{{ package.id }}">
                         <div class="row align-items-center">
                                 <div class="col-9">

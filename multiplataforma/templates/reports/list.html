@@ -32,8 +32,8 @@
 							<tr>
 								<th>#</th>
 								<th>Usuario</th>
+								<th>Plan</th>
 								<th>Email</th>
-								<th>Plataforma</th>
 								<th>Estado</th>
 								<th>Fecha</th>
 								<th>Reporte</th>
@@ -47,8 +47,8 @@
 							<tr class="gradeA odd" role="row">
 								<td >{{forloop.counter}}</td>
 								<td >{{ report.user.username }}</td>
-								<td>{{ report.email }}</td>
-								<td>{{ report.platform }}</td>
+								<td>{{ report.count.subproduct.product.name }} {{ report.count.subproduct.name }}</td>
+								<td>{{ report.count.email }}</td>
 								<td>
 								{% if report.state == True %}
 									Respondido
@@ -82,12 +82,6 @@
 </div>
 
 <script type="text/javascript">
-$(document).ready( function () {
-    $('#sales-report-table').DataTable( {
-        responsive: true
-    });
-
-} );
 
 $('body').on("click", ".delete" , function(event){
     	event.preventDefault()
