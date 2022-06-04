@@ -1,5 +1,5 @@
 /* web socket with channels */
-const MultiplataformaSocket = new WebSocket('ws://' + window.location.host+ '/marketplace/get-packages-socket' );
+const MultiplataformaSocket = new WebSocket('wss://' + window.location.host+ '/marketplace/get-packages-socket' );
 
 MultiplataformaSocket.onclose = function(e) {
     console.error('message socket closed unexpectedly');
