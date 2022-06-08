@@ -4,7 +4,7 @@ class Mail:
         self.port = 465
         self.smtp_server_domain_name = "smtp.gmail.com"
         self.sender_mail = "myplataformadigital@gmail.com"
-        self.password = "calidad+2022"
+        self.password = "yoxhfwnzvhcpdtgb"
 
     def send(self, emails, subject, content):
         import smtplib
