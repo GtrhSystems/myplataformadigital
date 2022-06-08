@@ -2,6 +2,11 @@
           <div class="main-menu-header">
                   <div class="user-details">
                       <span id="more-details">{{ user.username }} <i class="fa fa-caret-down"></i></span>
+                          {% load humanize %}
+              <span> {% if user_type == "vendedor" %}
+                        Saldo: <strong>${{ money|intcomma }}</strong>
+                     {% endif %}
+              </span>
                      {% if user_type == "staff" %}
                      <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css">
                      <link rel="stylesheet" href="/static/css/fontawesome-stars.css">
