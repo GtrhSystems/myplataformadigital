@@ -32,7 +32,7 @@
 			</div>
 			<div class="card-block table-border-style">
 				<div class="table-responsive">
-                    <table id="pendding-table" class="table ">
+                    <table id="pendding-table" class="table table-no-pagin">
                         <thead>
                             <tr>
                                 <th>Fecha</th>
@@ -48,27 +48,32 @@
                            {% for sale in sales %}
                             <tr class="gradeA odd" role="row">
                                  <td>{{ sale.date_buy|date:"d/M/Y P" }}</td>
-                                    <td>{{ sale.subproduct.name }}</td>
-                                    <td>{{ sale.subproduct.creater }}</td>
-                                    <td>$ {{ sale.price_buy|intcomma }}</td>
-                                    <td>$ {{ sale.price_buy|sub:sale.commission|intcomma }}</td>
-                                    <td>$ {{ sale.commission|intcomma }}</td>
-                                <td>
+                                 <td>{{ sale.subproduct.name }}</td>
+                                 <td>{{ sale.subproduct.creater }}</td>
+                                 <td>$ {{ sale.price_buy|intcomma }}</td>
+                                 <td>$ {{ sale.price_buy|sub:sale.commission|intcomma }}</td>
+                                 <td>$ {{ sale.commission|intcomma }}</td>
+                                 <td>
                                     <button id="{{ sale.id }}" class="btn btn-mat waves-effect waves-light btn-inverse pay">Generar Pago</button>
-                                </td>
+                                 </td>
                             </tr>
                         {% endfor %}
+                        </tbody>
                         {% if sales %}
+                        <tfoot>
                             <tr class="gradeA odd" role="row">
                                 <td></td>
                                 <td></td>
+                                 <td></td>
                                 <td><strong>Totales</strong></td>
                                 <td>$ {{ sales_sum.total_sales|intcomma }}</td>
                                 <td>$ {{ comission|intcomma }}</td>
-                            </tr>
+                                <td></td>
 
-                         {% endif %}
-                        </tbody>
+                            </tr>
+                        </tfoot>
+                        {% endif %}
+
                     </table>
                 </div>
 			</div>
