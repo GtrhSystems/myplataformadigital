@@ -779,7 +779,6 @@ def DeleteRegister(request, model, id):
     else:
         return redirect('index')
     if model in models:
-
         try:
             if model == "User":
                 if user_type == "staff":
@@ -806,7 +805,7 @@ def DeleteRegister(request, model, id):
                     exist_id = eval(model + ".objects.filter(id=" + id + ").first() ")
                 elif model == "CountsPackage":
                     exist_id = eval(model + ".objects.filter(id=" + id + ").select_related('subproduct').first() ")
-                    if exist_id.subproduct.owner_id != request.user.id:
+                    if exist_id.subproduct.creater != request.user:
                         exist_id = None
                 elif model == "PlanPlatformSales":
                     exist_id = eval(model + ".objects.filter(id=" + id + ", saler_id=request.user.id)")
