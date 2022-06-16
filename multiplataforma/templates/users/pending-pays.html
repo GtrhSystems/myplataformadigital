@@ -1,0 +1,60 @@
+{% extends 'layout.html' %}
+
+{% load widget_tweaks %}
+{% block menu %}
+    {% include 'menu.html' %}
+{% endblock %}
+
+{% block header %}
+ <div class="page-header">
+	  <div class="page-block">
+		  <div class="row align-items-center">
+			  <div class="col-md-8">
+				  <div class="page-header-title">
+					  <h5 class="m-b-10">Pago de comisiones</h5>
+				  </div>
+			  </div>
+
+		  </div>
+	  </div>
+  </div>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+	<div class="col-md-12">
+		<div class="card">
+			<div class="card-header">
+				<h5>Filtro por usuario</h5>
+				<span>Seleccione el usuario</span>
+			</div>
+			<div class="card-block">
+
+					<div class="form-group">
+						<label>Mes de consulta:</label>
+							<select id="select_user" class="form-control">
+								<option value="" selected>---------------------</option>
+							{% for user in users %}
+							  <option value="{{ user.username}}" >{{ user.first_name}} {{ user.last_name}}</option>
+							{% endfor %}
+							</select>
+					</div>
+
+			</div>
+			<!-- /.col-lg-6 (nested) -->
+		</div>
+		<!-- /.row (nested) -->
+	</div>
+	<!-- /.panel-body -->
+</div>
+<div id="sales"></div>
+<script>
+	$('#select_user').change(function(event){
+		username = $(this ).val();
+		$.get('/platform/sales/pay-pending/'+username ,function(data){
+			$('#sales').html(data)
+		})
+    });
+</script>
+
+{% endblock %}

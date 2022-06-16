@@ -39,6 +39,7 @@ def check_user_type(request):
 def context_app(request):
 
     user_type = check_user_type(request)
+    carrousel_images = ImagesCarrousel.get_carrousel_images()
     stars = money = 0
     products_actives = None
     year =  date =datetime.date.today().strftime('%Y')
@@ -55,6 +56,7 @@ def context_app(request):
         'user_type': user_type,
         'products_actives': products_actives,
         'money': money,
+        'carrousel_images':carrousel_images,
     }
     return context
 
@@ -389,6 +391,21 @@ def SubProductCreateView(request, id):
 
     return render(request, 'platforms/add_subproduct.html', {'form': form, 'product': product, 'subproducts': subproducts })
 
+@usertype_in_view
+@login_required
+def CommissionsPendingView(request):
+
+    sales = CountsPackage.objects.filter(subproduct__creater=request.user, commission_payed=False, commission_collect=False, saled=True)
+    if request.method == 'POST':
+        for item in request.POST:
+            if item.isnumeric():
+                is_mine = sales.filter(id=item).first()
+                if is_mine:
+                    is_mine.commission_collect =True
+                    is_mine.save()
+        return redirect('commission-collect')
+
+    return render(request, 'sales/sales_collect.html',  {'sales': sales })
 
 
 @usertype_in_view
@@ -657,30 +674,41 @@ def BuysMonthView(request, year=None, month= None):
 
 
 
+@usertype_in_view
+@login_required
+def UserCommissionPendingView(request):
+
+    users = CountsPackage.UserPendingCommission()
+    return render(request, 'users/pending-pays.html',  {'users': users })
 
 
 @usertype_in_view
 @login_required
-def CommissionPendingView(request):
+def CommissionPendingView(request, username):
 
-    sales = CountsPackage.SalesPendingCommission()
+    user = User.objects.filter(username=username).first()
+    sales = CountsPackage.SalesPendingCommission(user)
     sales_sum = comission = 0
     if sales:
         sales_sum = sales.aggregate(total_sales=Sum('price_buy'))
         comission = int(sales_sum['total_sales']) * (PERCENT_COMISSION*0.01)
 
-    return render(request, 'sales/sales_comission_pending.html',  {'sales': sales, 'sales_sum': sales_sum, 'comission': comission})
+    return render(request, 'sales/sales_comission_pending.html',  {'user':user, 'sales': sales, 'sales_sum': sales_sum, 'comission': comission})
 
 @usertype_in_view
 @login_required
-def PayStaffSaleView(request, id):
+def PayStaffSaleView(request, username):
 
-    sale = CountsPackage.objects.filter(id=id, commission_payed=0).first()
-
-    if sale:
-        user_data = UserData.objects.filter(user=sale.subproduct.creater).first()
-        sale_pay = sale.SetPayStaffSale()
-        return render(request, 'platforms/pay_staff_sale.html',  {'sale_pay': sale_pay, 'user_data':user_data})
+    user = User.objects.filter(username=username).first()
+    user_data =UserData.objects.filter(user=user).first()
+    sales = CountsPackage.SalesPendingCommission(user)
+    sales_sum = comission = 0
+    if sales:
+        sales_sum = sales.aggregate(total_sales=Sum('price_buy'))
+        comission = int(sales_sum['total_sales']) * (PERCENT_COMISSION * 0.01)
+        for sale in sales:
+            sale.SetPayStaffSale()
+        return render(request, 'platforms/pay_staff_sale.html',  {'user': user, 'user_data':user_data, 'comission': comission})
     else:
 
         return HttpResponse("Este pago ya fue generado anteriormente o no existe")
@@ -692,15 +720,16 @@ def ReportIssuePlatformView(request,  id):
 
     sale = CountsPackage.objects.filter(id=id).first()
     if sale.owner == request.user:
-        form = ReportIssueForm()
+        form = ReportIssueForm(request.POST or None, request.FILES or None)
         if request.method == 'POST':
-            form = ReportIssueForm(request.POST)
-            report = form.save(commit=False)
-            report.user = request.user
-            report.count = sale
-            report.is_active = 1
-            report.save()
-            return redirect('reported-issues-platform')
+            print(request.POST)
+            if form.is_valid():
+                report = form.save(commit=False)
+                report.user = request.user
+                report.count = sale
+                report.is_active = 1
+                report.save()
+                return redirect('reported-issues-platform')
         return render(request, 'reports/plataform.html', {"form": form, 'sale': sale})
     else:
         return redirect('index')

@@ -105,7 +105,7 @@
                       </a>
                   </li>
                    <li class=" ">
-                      <a href="{% url 'commision-pending' %}" class="waves-effect waves-dark">
+                      <a href="{% url 'user-pay-pending' %}" class="waves-effect waves-dark">
                           <span class="pcoded-micon"><i class="ti-angle-right"></i></span>
                           <span class="pcoded-mtext" data-i18n="nav.basic-components.breadcrumbs">Cobrar comisiones</span>
                           <span class="pcoded-mcaret"></span>
@@ -219,6 +219,13 @@
                           <span class="pcoded-mcaret"></span>
                       </a>
                   </li>
+                   <li class=" ">
+                      <a href="{% url 'commission-collect' %}" class="waves-effect waves-dark">
+                          <span class="pcoded-micon"><i class="ti-angle-right"></i></span>
+                          <span class="pcoded-mtext" data-i18n="nav.basic-components.alert">Comisiones pendientes</span>
+                          <span class="pcoded-mcaret"></span>
+                      </a>
+                  </li>
               </ul>
           </li>
       {% endif %}
@@ -293,6 +300,10 @@
 
         </ul>
 
-
+    {% block carrousel %}
+        {% include 'carrousel.html' %}
+    {% endblock %}
   </div>
+
 </nav>
+

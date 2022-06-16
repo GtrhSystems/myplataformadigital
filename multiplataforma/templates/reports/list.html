@@ -37,6 +37,7 @@
 								<th>Estado</th>
 								<th>Fecha</th>
 								<th>Reporte</th>
+								<th>Imagen</th>
 								<th>Respuesta</th>
 								<th>Accion</th>
 							</tr>
@@ -58,6 +59,12 @@
 								</td>
 								<td>{{ report.date|date:"Y/M/d P" }}</td>
 								<td>{{ report.issue }}</td>
+								<td>
+									{% if report.image != "" %}
+									<a class="image-zoom" href="#" link="/media/{{ report.image }} ">
+										<i class="ti-eye"></i></td>
+									</a>
+									{% endif %}
 								<td>{{ report.response }}</td>
 								{% if user_type == "superuser" or  user_type == "staff" %}
 								<td>
@@ -72,6 +79,9 @@
 							{% endfor %}
 						</tbody>
 					</table>
+					<a href="https://api.whatsapp.com/send?phone=522226839721" target="_blank">
+						<img src="/static/icon/whatsapp.png" style="width:26px;">
+					</a>
 				</div>
 			</div>
 
@@ -88,11 +98,30 @@ $('body').on("click", ".delete" , function(event){
      	var id = $(this).attr('id');
      	var mensaje = confirm("Desea eliminar este reporte?");
 		if (mensaje) {
-			$.get('/delete/IssuesReport/'+id ,function(data){
+				$.get('/delete/IssuesReport/'+id ,function(data){
 	    		alert(data)
 	    		location.reload();
 	    	})
 		}
 });
+
+
+
+$('.image-zoom').click(function(e){
+
+        e.preventDefault()
+        image= $(this).attr("link")
+        {% if extention == "pdf"%}
+			 $('.modal-body').html('<embed src="'+image+'" width="450" height="375">')
+        {% else %}
+        	 $('.modal-body').html('<img src="'+image+'"  width="410">')
+        {% endif %}
+
+        $('#Modal').modal()
+        $('#Modal').removeClass('fade')
+        $('#Modal').show()
+
+
+	})
 </script>
 {% endblock %}

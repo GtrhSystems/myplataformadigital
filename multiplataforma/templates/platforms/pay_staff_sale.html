@@ -1,16 +1,25 @@
 {% load humanize %}
 <div class="modal-header">
     <h2>Información para pago manual</h2>
-
 </div>
 
 <div class="modal-body">
     <h4>Se desconto la comision asignada</h4>
         <div class="form-group form-default">
-
-            <p class="form-bar">Pago a usuario: {{ sale_pay.subproduct.creater.username|upper }}</p>
-            <p class="form-bar">La cantidad de : {{ sale_pay.pay_value|intcomma}}</p>
-            <p class="form-bar">{{ user_data.bank_info }}</p>
+            <p class="form-bar">Pago a usuario: {{ user.username|upper }}</p>
+            <p class="form-bar">La cantidad de : {{ comission|intcomma}}</p>
+            {% if user_data.paypal %}
+            <p class="form-bar">Paypal: {{ user_data.paypal }}</p>
+              {% endif %}
+             {% if user_data.aritms %}
+            <p class="form-bar">Aritms: {{ user_data.aritms }}</p>
+              {% endif %}
+             {% if user_data.binance %}
+            <p class="form-bar">Binance: {{ user_data.binance }}</p>
+              {% endif %}
+             {% if user_data.banco %}
+            <p class="form-bar">Banco: {{ user_data.banco }}</p>
+             {% endif %}
         </div>
     <button type="submit" id="pay" class="btn btn-primary btn-md btn-block waves-effect text-center m-b-20">Hecho</button>
 

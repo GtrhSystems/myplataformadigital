@@ -32,7 +32,8 @@ def usertype_in_view(function):
                  'my-packages-in-market-place',
                  'multiplatforms-sales-month',
                  'sales-inter-dates',
-                 'general-sales'
+                 'general-sales',
+                 'commission-collect'
                  ]
         vendedor = ['platforms',
                     'sale-count-package',
@@ -62,7 +63,8 @@ def usertype_in_view(function):
                      'commision-pending',
                      'pay-staff-sale',
                      'multiplatforms-sales-month',
-                     'sales-inter-dates'
+                     'sales-inter-dates',
+                     'user-pay-pending'
                      ]
         request_url = request.__dict__['path_info'] #captura todo el request en un dict      
         match = resolve(request_url) #devuelve el name de la vista

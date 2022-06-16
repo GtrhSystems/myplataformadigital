@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.db.models import Avg, Count, Min, Sum
-from .validators import valid_extension
+from .validators import valid_extension, valid_image_extension
 
 import datetime
 
@@ -41,7 +41,7 @@ class UserData(models.Model):
     state = models.CharField(max_length=50, verbose_name="Estado", default="")
     city = models.CharField(max_length=50, verbose_name="Ciudad", default="")
     observations = models.CharField(default="", max_length=255, verbose_name="Observaciones")
-    image = models.ImageField(upload_to='photos')
+    image = models.ImageField(upload_to='photos', validators=[valid_extension])
     #bank_info = models.CharField(max_length=300, verbose_name="Información Bancaria", default="")
     paypal = models.CharField(blank=True, null=True, max_length=100, verbose_name="PayPal", default="")
     aritms = models.CharField(blank=True, null=True, max_length=100, verbose_name="Aritms", default="")
@@ -70,6 +70,18 @@ class PercentCommission(models.Model):
 
     percent = models.FloatField(verbose_name="Porcentaje" )
     date = models.DateTimeField(auto_now_add=True)
+
+
+class ImagesCarrousel(models.Model):
+
+    image = models.FileField(default="", upload_to='carrousel', validators=[valid_image_extension])
+    date = models.DateTimeField(auto_now_add=True)
+
+    @classmethod
+    def get_carrousel_images(cls):
+
+        images = cls.objects.all().order_by('-date')[0:3]
+        return images
 
 
 class SubProduct(models.Model):
@@ -107,6 +119,7 @@ class CountsPackage(models.Model):
     pay_value = models.IntegerField(default=0, verbose_name="Comision")
     commission = models.IntegerField(default=0, verbose_name="Comision")
     commission_payed = models.BooleanField(default=False, verbose_name="Comision pagada?")
+    commission_collect = models.BooleanField(default=False, verbose_name="Comision cobrada?")
     date_pay = models.DateTimeField(auto_now_add=False, null=True)
     date_finish = models.DateTimeField(auto_now_add=False, null=True)
 
@@ -115,9 +128,19 @@ class CountsPackage(models.Model):
         return str(self.email)
 
     @classmethod
-    def SalesPendingCommission(self):
-        sales = self.objects.filter(commission_payed=False)
+    def SalesPendingCommission(self, user):
+
+        sales = CountsPackage.objects.filter(subproduct__creater=user, commission_payed=False, commission_collect=True, saled=True)
         return sales
+
+    @classmethod
+    def UserPendingCommission(self):
+
+        sales = list(CountsPackage.objects.filter(commission_payed=False, commission_collect=True, saled=True).values_list('subproduct_id', flat=True))
+        subproducts = list(SubProduct.objects.filter(id__in=sales).values_list('creater_id', flat=True))
+        users = User.objects.filter(id__in=subproducts).order_by('pk').distinct()
+        print(users)
+        return users
 
     @classmethod
     def SalesByStaffbyDate(self, user, year, month):
@@ -269,6 +292,7 @@ class IssuesReport(models.Model):
     count = models.ForeignKey(CountsPackage, on_delete=models.CASCADE)
     state = models.BooleanField(default=0, verbose_name="Resuelto?:")
     issue = models.CharField(max_length=1000, verbose_name="Problema", default="")
+    image = models.FileField(blank=True, null=True, upload_to='errors', validators=[valid_extension])
     date = models.DateTimeField(auto_now_add=True)
     response = models.CharField(max_length=1000, verbose_name="Respuesta", default="")
 

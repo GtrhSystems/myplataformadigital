@@ -337,15 +337,14 @@ function resale_package(){
     $temp.remove();
 }
 
-function set_pay_to_staff(){
+function set_pay_to_staff(username){
 
-    $('#pendding-table tbody').on("click", ".pay" , function(event){
+    $('.pay').click(function(event){
+
         event.preventDefault()
-        id = $(this).attr('id')
         $("#Modal").modal({show: true})
-        $.get('/platform/sales/pay-staff-sale/'+ id ,function(data){
+        $.get('/platform/sales/pay-staff-sale/'+username ,function(data){
               $('.modal-content').html(data)
-
          })
     })
 

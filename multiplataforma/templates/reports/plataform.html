@@ -8,15 +8,17 @@
 				<span>Digite los datos solicitados</span>
 			</div>
 			<div class="card-block">
-						<form id="issue-form" method="post" action="/platform/report-issue/{{  sale.id }}">
+						<form id="issue-form" method="post" action="{% url 'report-issue-platform'  sale.id %}"  enctype="multipart/form-data">
 							{% csrf_token %}
 							<fieldset>										
 								<div class="form-group">
 									<label>{{ form.issue.label_tag }}</label>
 									<td>{{ form.issue|add_class:'form-control' }}</td>
 									<p class="help-block">Describe el problema.</p>
+
+									<label>Imagen descriptiva</label>
+									<td>{{ form.image }}</td>
 								</div>
-								
 								<input  class="btn btn-primary btn-md btn-block waves-effect text-center m-b-20" id="send_report" type="submit" value="Enviar reporte de error" />
 							 	
 							</fieldset>
@@ -32,15 +34,3 @@
 		<!-- /.panel -->
 
 
-<script>
-
-$('#send_report').click(function(event){
-	event.preventDefault()
-	$('#issue-form').hide()
-	$('.help-block').html("Reporte enviado con éxito, nos pondremos en contacto contigo cuando se tenga una respuesta")
-	setTimeout(function(){ $('#issue-form').submit(); }, 3000);
-})
-
-
- 	
-</script>

@@ -95,11 +95,12 @@ class PlanProductForm(forms.ModelForm):
 
 
 class ReportIssueForm(forms.ModelForm):
+
     issue = forms.CharField(widget=forms.Textarea, label="Detalle")
 
     class Meta:
         model = IssuesReport
-        fields = ['issue']
+        fields = ['issue','image']
 
 
 class ReportForm(forms.ModelForm):
