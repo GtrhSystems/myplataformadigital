@@ -59,7 +59,7 @@ urlpatterns = [
     path('users/pay-pending', views.UserCommissionPendingView, name='user-pay-pending'),
 
     path('platform/sales/pay-pending/<str:username>', views.CommissionPendingView, name='commision-pending'),
-    path('platform/sales/pay-staff-sale/<str:username>', views.PayStaffSaleView, name='pay-staff-sale'),
+    path('platform/sales/pay-staff-sale/<str:username>/<str:payment>', views.PayStaffSaleView, name='pay-staff-sale'),
     path('platform/sales/inter-dates', views.InterDatesSalesView, name='sales-inter-dates'),
 
     path('buys/inter-dates', views.BuysInterDatesView, name='buys-inter-dates'),

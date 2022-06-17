@@ -14,6 +14,22 @@
 				<div class="table-responsive">
                <form  method="POST">
                     {% csrf_token %}
+                   	<div class="form-group">
+						<label>Seleccione el medio de pago:</label>
+						 <select name="payment" class="form-control form-control-lg">
+                             {% if user_data.paypal %}
+                                 <option value="paypal">Paypal</option>
+                             {% endif %}
+                              {% if user_data.aritms %}
+                                 <option value="aritms">Aritms</option>
+                             {% endif %}
+                              {% if user_data.binance %}
+                                 <option value="binance">Binance</option>
+                             {% endif %}
+                              {% if user_data.banco %}
+                                 <option value="banco">Banco</option>
+                             {% endif %}
+                    </select>
                     <table id="sales-table" class="table table-no-pagin">
                         <thead>
                             <tr>
@@ -52,7 +68,13 @@
                          </tfoot>
                         {% endif %}
                         </tbody>
+
+
                     </table>
+
+
+					</div>
+
                     <div class="col-md-12">
                         <button  id="login" type="submit" class="btn btn-primary btn-md btn-block waves-effect waves-light text-center m-b-20">Enviar cobro</button>
                     </div>
@@ -80,10 +102,7 @@ $('#sales-table tbody').on("click", ".check" , function(event){
         money_all = money_all - parseFloat(money)
     }
    $('#total').html("$"+ dollarUSLocale.format(money_all))
-})  
-
-
-
+})
      
 </script>
 

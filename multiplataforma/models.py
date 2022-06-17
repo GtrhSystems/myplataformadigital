@@ -120,7 +120,8 @@ class CountsPackage(models.Model):
     commission = models.IntegerField(default=0, verbose_name="Comision")
     commission_payed = models.BooleanField(default=False, verbose_name="Comision pagada?")
     commission_collect = models.BooleanField(default=False, verbose_name="Comision cobrada?")
-    date_pay = models.DateTimeField(auto_now_add=False, null=True)
+    commission_collect_payment = models.CharField(default="", max_length=10, verbose_name="Método de pago")
+    date_pay = models.DateTimeField(blank=True, null=True, auto_now_add=False)
     date_finish = models.DateTimeField(auto_now_add=False, null=True)
 
 
@@ -130,13 +131,19 @@ class CountsPackage(models.Model):
     @classmethod
     def SalesPendingCommission(self, user):
 
-        sales = CountsPackage.objects.filter(subproduct__creater=user, commission_payed=False, commission_collect=True, saled=True)
+        sales = CountsPackage.objects.filter(subproduct__creater=user, commission_payed=False, commission_collect=True)
+        return sales
+
+    @classmethod
+    def SalesPendingCommissionByPayment(self, user, payment):
+
+        sales = CountsPackage.objects.filter(subproduct__creater=user, commission_payed=False, commission_collect=True, commission_collect_payment=payment )
         return sales
 
     @classmethod
     def UserPendingCommission(self):
 
-        sales = list(CountsPackage.objects.filter(commission_payed=False, commission_collect=True, saled=True).values_list('subproduct_id', flat=True))
+        sales = list(CountsPackage.objects.filter(commission_payed=False, commission_collect=True).values_list('subproduct_id', flat=True))
         subproducts = list(SubProduct.objects.filter(id__in=sales).values_list('creater_id', flat=True))
         users = User.objects.filter(id__in=subproducts).order_by('pk').distinct()
         print(users)

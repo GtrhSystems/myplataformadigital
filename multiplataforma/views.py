@@ -395,17 +395,19 @@ def SubProductCreateView(request, id):
 @login_required
 def CommissionsPendingView(request):
 
-    sales = CountsPackage.objects.filter(subproduct__creater=request.user, commission_payed=False, commission_collect=False, saled=True)
+    sales = CountsPackage.objects.filter(subproduct__creater=request.user, commission_payed=False, commission_collect=False)
+    user_data = UserData.objects.filter(user=request.user).first()
     if request.method == 'POST':
         for item in request.POST:
             if item.isnumeric():
                 is_mine = sales.filter(id=item).first()
                 if is_mine:
                     is_mine.commission_collect =True
+                    is_mine.commission_collect_payment = request.POST['payment']
                     is_mine.save()
         return redirect('commission-collect')
 
-    return render(request, 'sales/sales_collect.html',  {'sales': sales })
+    return render(request, 'sales/sales_collect.html',  {'sales': sales, 'user_data':user_data })
 
 
 @usertype_in_view
@@ -687,28 +689,56 @@ def UserCommissionPendingView(request):
 def CommissionPendingView(request, username):
 
     user = User.objects.filter(username=username).first()
+    user_data = UserData.objects.filter(user = user).first()
     sales = CountsPackage.SalesPendingCommission(user)
-    sales_sum = comission = 0
-    if sales:
-        sales_sum = sales.aggregate(total_sales=Sum('price_buy'))
-        comission = int(sales_sum['total_sales']) * (PERCENT_COMISSION*0.01)
 
-    return render(request, 'sales/sales_comission_pending.html',  {'user':user, 'sales': sales, 'sales_sum': sales_sum, 'comission': comission})
+    paypal_sales_sum = paypal_comission = binance_sales_sum = binance_comission = aritms_sales_sum = aritms_comission = banco_sales_sum = banco_comission = 0
+    paypal_pay = binance_pay = aritms_pay = banco_pay = 0
+    paypal = sales.filter(commission_collect_payment="paypal")
+    binance = sales.filter(commission_collect_payment="binance")
+    aritms = sales.filter(commission_collect_payment="aritms")
+    banco = sales.filter(commission_collect_payment="banco")
+    if paypal:
+        paypal_sales_sum = paypal.aggregate(total_sales=Sum('price_buy'))
+        paypal_comission = (int(paypal_sales_sum['total_sales']) * (PERCENT_COMISSION*0.01))
+        paypal_pay = int(paypal_sales_sum['total_sales']) - paypal_comission
+    if binance:
+        binance_sales_sum = binance.aggregate(total_sales=Sum('price_buy'))
+        binance_comission = int(binance_sales_sum['total_sales']) * (PERCENT_COMISSION * 0.01)
+        binance_pay = int(binance_sales_sum['total_sales']) - binance_comission
+    if aritms:
+        aritms_sales_sum = aritms.aggregate(total_sales=Sum('price_buy'))
+        aritms_comission = int(aritms_sales_sum['total_sales']) * (PERCENT_COMISSION * 0.01)
+        aritms_pay = int(aritms_sales_sum['total_sales']) - aritms_comission
+    if banco:
+        banco_sales_sum = banco.aggregate(total_sales=Sum('price_buy'))
+        banco_comission = int(banco_sales_sum['total_sales']) * (PERCENT_COMISSION * 0.01)
+        banco_pay = int(banco_sales_sum['total_sales']) - banco_comission
+        print(banco_sales_sum)
+        print(banco_comission)
+
+    return render(request, 'sales/sales_comission_pending.html',  {
+        'user':user, 'user_data':user_data,
+        'paypals': paypal, 'paypal_sales_sum': paypal_sales_sum,'paypal_comission': paypal_comission, 'paypal_pay':paypal_pay,
+        'binances': binance, 'binance_sales_sum': binance_sales_sum,'binance_comission': binance_comission,'binance_pay': binance_pay,
+        'aritms': aritms, 'aritms_sales_sum': aritms_sales_sum,  'aritms_comission': aritms_comission, 'aritms_pay':aritms_pay,
+        'bancos': banco, 'banco_sales_sum': banco_sales_sum, 'banco_comission': banco_comission,'banco_pay':banco_pay })
 
 @usertype_in_view
 @login_required
-def PayStaffSaleView(request, username):
+def PayStaffSaleView(request, username, payment):
 
     user = User.objects.filter(username=username).first()
     user_data =UserData.objects.filter(user=user).first()
-    sales = CountsPackage.SalesPendingCommission(user)
+    sales = CountsPackage.SalesPendingCommissionByPayment(user, payment)
     sales_sum = comission = 0
     if sales:
         sales_sum = sales.aggregate(total_sales=Sum('price_buy'))
         comission = int(sales_sum['total_sales']) * (PERCENT_COMISSION * 0.01)
+        pay = int(sales_sum['total_sales']) - comission
         for sale in sales:
             sale.SetPayStaffSale()
-        return render(request, 'platforms/pay_staff_sale.html',  {'user': user, 'user_data':user_data, 'comission': comission})
+        return render(request, 'platforms/pay_staff_sale.html',  {'user': user, 'user_data':user_data, 'pay': pay})
     else:
 
         return HttpResponse("Este pago ya fue generado anteriormente o no existe")

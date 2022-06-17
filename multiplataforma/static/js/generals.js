@@ -337,13 +337,13 @@ function resale_package(){
     $temp.remove();
 }
 
-function set_pay_to_staff(username){
+function set_pay_to_staff(username, payment){
 
     $('.pay').click(function(event){
-
+        payment = $(this).attr('payment')
         event.preventDefault()
         $("#Modal").modal({show: true})
-        $.get('/platform/sales/pay-staff-sale/'+username ,function(data){
+        $.get('/platform/sales/pay-staff-sale/'+username+'/'+payment ,function(data){
               $('.modal-content').html(data)
          })
     })
