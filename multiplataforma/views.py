@@ -21,7 +21,7 @@ from django.template.loader import render_to_string
 
 
 PERCENT_COMISSION = 0
-if PercentCommission.objects.all():
+if PercentCommission and PercentCommission.objects.all():
    PERCENT_COMISSION = PercentCommission.objects.all().first().percent
 
 
@@ -795,7 +795,8 @@ def ReportedIssuesView(request):
 
     context = context_app(request)
     if context['user_type']== "superuser":
-        reports = IssuesReport.objects.filter(state=0).order_by('state')
+        #reports = IssuesReport.objects.filter(state=0).order_by('state')
+        reports = IssuesReport.objects.all().order_by('state')
     elif context['user_type']== "staff":
         reports = IssuesReport.get_reports_of_mys_counts_created(request.user)
     elif context['user_type'] == "vendedor":

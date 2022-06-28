@@ -28,21 +28,21 @@ function listenig_socket(){
 
 
 $(document).ready(function() {
-    $('.js-example-basic-single').select2();
+     $('.js-example-basic-single').select2();
+
      $('.table-normal').DataTable( {
 		  scrollX: false,
 		  responsive: true,
-    });
+     });
      $('.table-no-pagin').DataTable( {
 		  scrollX: false,
 		  responsive: true,
 		  paging: false
-    });
+     });
      $('.table-no-order').DataTable( {
 		  responsive: true,
 		  ordering: false,
 		  paging: false,
-
     });
 
 
