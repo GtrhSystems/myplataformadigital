@@ -30,9 +30,11 @@
 							<tr>
 								<th>#</th>
 								<th>Fecha</th>
+								<th>Distribuidor</th>
+								<th>Saldo</th>
 								<th>Detalle</th>
-								<th>Recarga</th>
-								<th>Vendedor</th>
+								<th>Monto</th>
+
 							</tr>
 						</thead>
 					   <tbody>
@@ -40,9 +42,11 @@
 								<tr class="gradeA odd" role="row">
 									<td>{{forloop.counter}}</td>
 									<td>{{ money.date }}</td>
+									<td>{{ money.saler.first_name|title }} {{ money.saler.last_name|title }} ({{ money.saler.username|title }})</td>
+									<td>${{ money.money|intcomma }}</td>
 									<td>{{ money.detail }}</td>
 									<td>${{ money.transaction_money|intcomma }}</td>
-									<td>{{ money.saler.first_name }} {{ money.saler.last_name }} ({{ money.saler.username }})</td>
+
 								</tr>
 							{% endfor %}
 					</tbody>

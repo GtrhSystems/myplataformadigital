@@ -357,7 +357,7 @@ def AddMoneySalerView(request, pk):
 @login_required
 def MoneySalerListView(request):
 
-    money_saler = MoneysSaler.Get_mys_money_saler()
+    money_saler = MoneysSaler.Get_mys_money_saler().order_by('date')
     return render(request, 'money/moneys-list.html', {'money_saler': money_saler})
 
 
