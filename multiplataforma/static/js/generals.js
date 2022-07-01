@@ -260,12 +260,12 @@ function buy_package(){
                     $.get('/package/buy/'+id ,function(data){
                         if(type_attr == "True"){
                             MultiplataformaSocket.send(id +'_'+ type_attr +'_reload');
-                            alert(data)
-                            window.location.href = "/platform/list/"+name_product;
-                            /*location.reload();*/
+
                         }else{
                             MultiplataformaSocket.send(id +'_'+ type_attr +'_remove');
                         }
+                        alert(data)
+                        window.location.href = "/platform/list/"+name_product;
                     })
                 })
             });
