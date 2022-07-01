@@ -199,7 +199,7 @@ class CountsPackage(models.Model):
     def all_counts_buy_in_dates(self, user, year, month):
 
         initial_date, final_date = dates_init_finish(year, month)
-        sales = self.objects.filter(owner=user).filter(date_buy__range=[initial_date, final_date]).order_by('-date_buy')
+        sales = self.objects.filter(owner=user).filter(date_sale__range=[initial_date, final_date]).order_by('-date_buy')
         return sales
 
 
