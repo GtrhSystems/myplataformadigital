@@ -11,7 +11,9 @@ def dates_init_finish(year, month):
     import calendar
     lastday = calendar.monthrange(year, int(month))[1]
     initial_date = datetime.datetime.strptime(str(year) + "-" + str(month) + "-01", '%Y-%m-%d')
+    initial_date = initial_date - datetime.timedelta(hours=5)
     final_date = datetime.datetime.strptime(str(year) + "-" + str(month) + "-" + str(lastday), '%Y-%m-%d')
+    final_date = final_date - datetime.timedelta(hours=5)
     return [initial_date, final_date]
 
 
@@ -198,7 +200,7 @@ class CountsPackage(models.Model):
     def all_counts_buy_in_dates(self, user, year, month):
 
         initial_date, final_date = dates_init_finish(year, month)
-        sales = self.objects.filter(owner=user).filter(date_sale__range=[initial_date, final_date]).order_by('-date_buy')
+        sales = self.objects.filter(owner=user).filter(date_buy__range=[initial_date, final_date]).order_by('-date_buy')
         return sales
 
 
