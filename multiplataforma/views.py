@@ -513,8 +513,10 @@ def MyPackageMerketPlaceView(request):
 @login_required
 def SalePlatformsView(request, name):
 
+    print(name)
     product = Product.objects.filter(name=name, active=True).first()
     my_subproducts = request.user.get_my_buy_subproducts_actives_by_product(product)
+    print(my_subproducts)
     data = []
     for subproduct in my_subproducts:
         packages = CountsPackage.get_mys_counts_package_no_sales(subproduct, request.user)
@@ -557,10 +559,11 @@ def BuyPackageView(request, id):
                     count = None
                 request.user.subtract_money(money_user, subproduct.price , "Compra: " + str(subproduct.name) + " a " + subproduct.creater.username)
                 if subproduct.individual_sale:
-                    return redirect('platforms', subproduct.name)
+                    return HttpResponse("Cuenta adquirida, ahora esta aparecerá en su inventario")
+                    #return redirect('platforms', subproduct.name)
                     #return render(request, 'platforms/sale_plan.html',  { 'subproduct': subproduct, 'count':count })
                 else:
-                    return HttpResponse("Paquete adquirido, todo el paquete aparecera a su nombre")
+                    return HttpResponse("Paquete adquirido, todo el paquete aparecerá a su nombre")
 
         return HttpResponse("No tienes suficiente saldo para esta transacción")
     else:

@@ -146,7 +146,6 @@ class CountsPackage(models.Model):
         sales = list(CountsPackage.objects.filter(commission_payed=False, commission_collect=True).values_list('subproduct_id', flat=True))
         subproducts = list(SubProduct.objects.filter(id__in=sales).values_list('creater_id', flat=True))
         users = User.objects.filter(id__in=subproducts).order_by('pk').distinct()
-        print(users)
         return users
 
     @classmethod
@@ -349,6 +348,7 @@ def get_mys_products_actives(cls):
 def get_my_buy_subproducts_actives_by_product(cls, product):
 
     mys_subproducts =  list(CountsPackage.objects.filter(owner=cls, saled=False).values_list('subproduct_id', flat=True))
+
     my_sub_products_actives = SubProduct.objects.filter(product=product, active=True, id__in=mys_subproducts)
     return my_sub_products_actives
 
