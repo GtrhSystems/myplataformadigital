@@ -588,6 +588,10 @@ def ResaleCountView(request, id):
     count_package = CountsPackage.objects.filter(id=id, owner=request.user).last()
     if request.method == 'POST':
         count_package.resale_count(request.POST['months'])
+        money_user = request.user.get_my_money()
+        money_to_discount = float(count_package.subproduct.price) * int(request.POST['months'])
+        print(money_to_discount)
+        request.user.subtract_money(money_user, money_to_discount, "Renovar cuenta: " + str(count_package.subproduct.name) + " a " + count_package.subproduct.creater.username + "por " + request.POST['months'] + " meses")
         return redirect('index')
     return render(request, 'sales/resale_count_box.html',{ 'id':id, 'count':count_package})
 
