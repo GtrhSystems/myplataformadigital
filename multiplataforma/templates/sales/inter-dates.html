@@ -6,6 +6,7 @@
 {% endblock %}
 
 {% block header %}
+
  <div class="page-header">
 	  <div class="page-block">
 		  <div class="row align-items-center">
@@ -60,6 +61,10 @@
 			month = $('#id_month_year_month').val()
 			$.get('/platform/sales/month/'+year+'/'+month ,function(data){
 				$('#sales').html(data)
+				$('#sales-table').DataTable( {
+					  paging: false
+				 });
+
 			})
 
     });

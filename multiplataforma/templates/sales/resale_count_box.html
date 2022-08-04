@@ -30,13 +30,28 @@
 	{% csrf_token %}
         <div class="form-group form-default">
 			<label class="float-label">Dias adquiridos</label>
-			<select name="months" class="form-control">
-			  <option value="1" selected>30 dias</option>
-			  <option value="2" >60 dias</option>
-			  <option value="3">90 dias</option>
+			<select id="months" name="months" class="form-control">
+				<option value="" selected>---------</option>
+			  	<option value="1" >30 dias</option>
+			  	<option value="2" >60 dias</option>
+			  	<option value="3">90 dias</option>
 			</select>
 			<span>Precio por mes: $ {{ count.price_buy|intcomma }}</span>
 		</div>
-    <button type="submit" id="sale" class="btn btn-primary btn-md btn-block waves-effect text-center m-b-20">Aceptar</button>
+    <button type="submit" id="sale" class="btn btn-primary btn-md btn-block waves-effect text-center m-b-20" disabled >Aceptar</button>
     </form>
 </div>
+<script>
+
+	$('body').on('change', '#months', function(){
+		total =  $(this).val()* {{ count.price_buy }}
+		if({{ money_user }} > total){
+			$('#sale').prop( "disabled", false );
+		}else{
+			alert('No tienes suficiente saldo para esta transacción');
+			$('#sale').prop( "disabled", true );
+		}
+	});
+
+
+</script>

@@ -1,0 +1,82 @@
+{% extends 'layout.html' %}
+{% load mathfilters %}
+{% load humanize %}
+{% block content %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+
+<div class="row">
+	<div class="col-lg-12">
+		<div class="card">
+			<div class="card-header">
+				<h5>Listado de comisiones pagadas</h5>
+			</div>
+			<div class="card-block table-border-style">
+				<div class="table-responsive">
+
+                    <table id="sales-table" class="table table-no-pagin">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Producto</th>
+                                <th>Comprador</th>
+                                <th>Precio</th>
+                                <th>Venta</th>
+                                <th>Comision</th>
+                                <th>Fecha de pago</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                           {% for sale in sales %}
+                            <tr class="gradeA odd" role="row">
+                               <td>{{ sale.date_buy|date:"d/M/Y P" }}</td>
+                                    <td>{{ sale.subproduct.name }}</td>
+                                    <td>{{ sale.owner }}</td>
+                                    <td>$ {{ sale.price_buy|intcomma }}</td>
+                                    <td>$ {{ sale.price_buy|sub:sale.commission|intcomma }}</td>
+                                    <td>$ {{ sale.commission|intcomma }}</td>
+                                   <td> {{ sale.date_pay|date:"d/M/Y P" }}</td>
+                            </tr>
+                        {% endfor %}
+                        {% if sales %}
+                        <tfoot>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                             <td></td>
+                            <td><strong>Totales</strong></td>
+                            <td id="total"></td>
+                        </tr>
+                         </tfoot>
+                        {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+			</div>
+		</div>
+
+	</div>
+	<!-- /.col-lg-12 -->
+</div>
+
+
+<script>
+money_all=0
+let dollarUSLocale = Intl.NumberFormat('en-US');
+$('#sales-table tbody').on("click", ".check" , function(event){
+    money = $(this).attr('money')
+    console.log($(this).prop("checked"))
+    if($(this).prop("checked") == true){
+        console.log('suma')
+        money_all = money_all + parseFloat(money)
+    }else{
+        console.log('resta')
+        money_all = money_all - parseFloat(money)
+    }
+   $('#total').html("$"+ dollarUSLocale.format(money_all))
+})
+     
+</script>
+
+{% endblock %}

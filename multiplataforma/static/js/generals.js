@@ -30,17 +30,13 @@ function listenig_socket(){
 $(document).ready(function() {
      $('.js-example-basic-single').select2();
 
-     $('.table-normal').DataTable( {
-		  scrollX: false,
-		  responsive: true,
-     });
+     $('.table-normal').DataTable();
+
      $('.table-no-pagin').DataTable( {
 		  scrollX: false,
-		  responsive: true,
 		  paging: false
      });
      $('.table-no-order').DataTable( {
-		  responsive: true,
 		  ordering: false,
 		  paging: false,
     });
@@ -313,6 +309,7 @@ function resale_package(){
 
 
         $('#sales-table tbody').on("click", ".report" , function(event){
+            alert('tesr')
             event.preventDefault()
             id = $(this).attr('id')
             $("#myModal").modal({show: true})

@@ -3,7 +3,8 @@ from django.contrib.auth.models import User
 from django.db.models import Q
 from django.db.models import Avg, Count, Min, Sum
 from .validators import valid_extension, valid_image_extension
-
+import pytz
+from django.forms import model_to_dict
 import datetime
 
 
@@ -137,6 +138,12 @@ class CountsPackage(models.Model):
         return sales
 
     @classmethod
+    def AllSalesPendingCommission(self):
+
+        sales = CountsPackage.objects.filter(commission_payed=False, commission_collect=True)
+        return sales
+
+    @classmethod
     def SalesPendingCommissionByPayment(self, user, payment):
 
         sales = CountsPackage.objects.filter(subproduct__creater=user, commission_payed=False, commission_collect=True, commission_collect_payment=payment )
@@ -170,6 +177,7 @@ class CountsPackage(models.Model):
         CountsPackage = self.objects.filter(subproduct=subproduct, owner=me,saled=False)
         return CountsPackage
 
+
     def sale_count(cls, months):
 
         days =  int(months) * 30
@@ -179,20 +187,30 @@ class CountsPackage(models.Model):
         cls.date_sale = datetime.datetime.now()
         cls.save()
 
-    def resale_count(cls, months):
 
+    def resale_count(self,  months):
+
+        now = datetime.datetime.now()
+        utc = pytz.UTC
+        now = now.replace(tzinfo=utc)
         days = int(months) * 30
-        if cls.date_finish is None:
-            initial_date = datetime.datetime.now()
-        else:
-            initial_date = cls.date_finish
-        cls.date_finish =  initial_date + datetime.timedelta(days=days)
-        cls.save()
+        if self.date_finish.replace(tzinfo=utc) < now:
+            initial_date = self.date_finish + datetime.timedelta(days=1)
+            date_finish =  initial_date + datetime.timedelta(days=days)
+            kwargs = model_to_dict(self, exclude=['id'])
+            kwargs['subproduct'] = SubProduct.objects.filter(id= kwargs['subproduct']).first()
+            kwargs['owner'] = User.objects.filter(id=kwargs['owner']).first()
+            kwargs['date_buy'] = datetime.datetime.now()
+            kwargs['date_finish'] = date_finish
+            CountsPackage.objects.create(**kwargs)
 
     @classmethod
-    def sales_to_expire(self, user):
+    def sales_to_expire(self, user, days):
 
-        date = datetime.date.today() + datetime.timedelta(days=3)
+        if days == 0:
+            date = datetime.date.today()
+        else:
+            date = datetime.date.today() + datetime.timedelta(days=days)
         sales_to_expire = self.objects.filter(owner = user).filter(date_finish__range=[datetime.date.today(), date ]).order_by('-date_finish')
         return sales_to_expire
 
@@ -211,8 +229,9 @@ class CountsPackage(models.Model):
         sales = self.objects.filter(owner=request.user, saled=1).filter(date_sale__range=[initial_date, final_date])
         return sales
 
+
     @classmethod
-    def vendedor_all_counts_saled_for_date(self, date):
+    def all_counts_saled_for_date(self, date):
 
         sales = self.objects.filter(saled=1).filter(date_sale__startswith=date)
         return sales
@@ -311,6 +330,18 @@ class IssuesReport(models.Model):
         subproduct = SubProduct.objects.filter(creater=user)
         counts_package = CountsPackage.objects.filter(subproduct__in=subproduct)
         reports = self.objects.filter(state=0,  count__in=counts_package).order_by('-date')
+        return reports
+
+    @classmethod
+    def get_mys_reports_pendding(self, user):
+
+        reports = self.objects.filter(state=0, user=user).order_by('-date')
+        return reports
+
+    @classmethod
+    def get_reports_pendding(self):
+
+        reports = self.objects.filter(state=0 ).order_by('-date')
         return reports
 
 

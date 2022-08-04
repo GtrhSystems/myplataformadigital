@@ -95,6 +95,75 @@
             </div>
         </div>
     </div>
+      <div class="col-xl-3 col-md-6">
+        <div class="card">
+            <div class="card-block">
+                <div class="row align-items-center">
+                    <div class="col-8">
+                        <h4 class="text-c-blue">{{ sales_pendding }}</h4>
+                        <h6 class="text-muted m-b-0">Facturas pendientes en pagar</h6>
+                    </div>
+                    <div class="col-4 text-right">
+
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-c-blue">
+                <div class="row align-items-center">
+                    <div class="col-9">
+                        <a href="{% url 'user-pay-pending' %}"><p class="text-white m-b-0">Ver</p></a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+      <div class="col-xl-3 col-md-6">
+        <div class="card">
+            <div class="card-block">
+                <div class="row align-items-center">
+                    <div class="col-8">
+                        <h4 class="text-c-blue">{{ reports }}</h4>
+                        <h6 class="text-muted m-b-0">Reporte de Errores pendientes </h6>
+                    </div>
+                    <div class="col-4 text-right">
+
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-c-blue">
+                <div class="row align-items-center">
+                    <div class="col-9">
+                        <a href="{% url 'reported-issues-platform' %}"><p class="text-white m-b-0">Ver</p></a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card">
+            <div class="card-block">
+                <div class="row align-items-center">
+                    <div class="col-8">
+                        <h4 class="text-c-blue">{{ sales_today }}</h4>
+                        <h6 class="text-muted m-b-0">Ventas del dia de hoy  </h6>
+                    </div>
+                    <div class="col-4 text-right">
+
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-c-blue">
+                <div class="row align-items-center">
+                    <div class="col-9">
+                        <a href="javascript:void(0)"><p class="text-white m-b-0">Ver</p></a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- task, page, download counter  end -->
 
     <!--  sale analytics start -->
@@ -114,20 +183,21 @@
                     <table id="sales-table" class="table table-normal">
                         <thead>
                             <tr>
+                                <th>Fecha</th>
                                 <th>Proveedor</th>
                                 <th>Distribuidor</th>
-                                <th>Fecha</th>
-                                <th>Subproducto</th>
+                                <th>Producto</th>
                                 <th>Precio</th>
                             </tr>
                         </thead>
                         <tbody>
                            {% for sale in vendedor_sales %}
                             <tr class="gradeA odd" role="row">
+                                <td>{{ sale.date_buy|date:"d/M/Y P" }}</td>
                                 <td>{{ sale.subproduct.creater.username|title }}</td>
                                  <td>{{ sale.owner|title }}</td>
 
-                                <td>{{ sale.date_buy|date:"d/M/Y P" }}</td>
+
                                 <td>{{ sale.subproduct.product.name }} {{ sale.subproduct.name }}</td>
 
                                 <td>$ {{ sale.price_buy|intcomma }}</td>

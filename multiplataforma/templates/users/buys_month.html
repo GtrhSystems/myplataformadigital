@@ -19,14 +19,16 @@
                     <table id="sales-table" class="table table-no-order">
                         <thead>
                             <tr>
-                                <th>Fecha</th>
+                                <th>Fecha compra</th>
+                                <th>Proveedor</th>
                                 <th>Producto</th>
-                                <th>Expira</th>
-                                <th>Precio</th>
+                                <th>Fecha de expiración</th>
+
                                 <th>Email</th>
                                 <th>Paswword</th>
                                 <th>Perfil</th>
                                 <th>Pin</th>
+                                 <th>Precio</th>
                                 <th>Accion</th>
                             </tr>
                         </thead>
@@ -34,13 +36,15 @@
                            {% for buy in buys %}
                                 <tr class="gradeA odd" role="row">
                                     <td>{{ buy.date_buy|date:"d/M/Y P" }}</td>
+                                    <td>{{ buy.subproduct.creater.first_name }} {{ buy.subproduct.creater.last_name }}</td>
                                     <td>{{ buy.subproduct.product.name }} {{ buy.subproduct.name }}</td>
                                     <td>{{ buy.date_finish|date:"d/M/Y P" }}</td>
-                                    <td>${{ buy.price_buy|intcomma   }}</td>
+
                                     <td>{{ buy.email  }}</td>
                                     <td>{{ buy.password }}</td>
                                     <td>{{ buy.profile  }}</td>
                                     <td>{{ buy.pin }}</td>
+                                      <td>${{ buy.price_buy|intcomma   }}</td>
                                     <td>
                                         <a href="#" class="sale"  name_product="{{ buy.subproduct.name }}" id="{{ buy.id}}">
                                             <i class="ti-loop" title="Renovar cuenta"></i>
@@ -70,7 +74,7 @@
 	</div>
 </div>
 <script>
- $('.table-no-order').DataTable( {
+ $('#sales-table').DataTable( {
 		  responsive: true,
 		  ordering: false,
 		  paging: false,

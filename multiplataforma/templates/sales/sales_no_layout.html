@@ -1,5 +1,6 @@
 {% load mathfilters %}
 {% load humanize %}
+
 {% block content %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
 
@@ -11,11 +12,12 @@
 			</div>
 			<div class="card-block table-border-style">
 				<div class="table-responsive">
-                    <table id="sales-table" class="table table-normal">
+                    <table id="sales-table"  class="table table-striped table-bordered dt-responsive nowrap"  style="width:100%">
+
                         <thead>
                             <tr>
                                 <th>Fecha</th>
-                                <th>Subproducto</th>
+                                <th>Producto</th>
                                  <th>Email</th>
                                  <th>Contraseña</th>
                                  <th>Perfil</th>
@@ -41,14 +43,17 @@
                             </tr>
                         {% endfor %}
                         {% if sales %}
-                        <tr class="gradeA odd" role="row">
-                            <td></td>
-                            <td></td>
-                            <td><strong>Totales</strong></td>
-                            <td>$ {{ sales_sum.total_sales|intcomma }}</td>
-                            <td>$ {{ comission|intcomma }} </td>
-                              <td>$ {{ sales_sum.total_sales|sub:comission|intcomma }}</td>
-                        </tr>
+                            <tr >
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td><strong>Totales</strong></td>
+                                <td>$ {{ sales_sum.total_sales|intcomma }}</td>
+                                <td>$ {{ comission|intcomma }} </td>
+                                 <td>$ {{ sales_sum.total_sales|sub:comission|intcomma }}</td>
+                            </tr>
                         {% endif %}
                         </tbody>
                     </table>

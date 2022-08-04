@@ -1,0 +1,85 @@
+{% extends 'layout.html' %}
+{% load humanize %}
+{% block menu %}
+	{% include 'menu.html' %}
+{% endblock %}
+{% load widget_tweaks %}
+{% block header %}
+ <div class="page-header">
+	  <div class="page-block">
+		  <div class="row align-items-center">
+			  <div class="col-md-8">
+				  <div class="page-header-title">
+					  <h5 class="m-b-10">VER VENTA</h5>
+					  <p class="m-b-0">Id de venta : {{ sale.id }}</p>
+				  </div>
+			  </div>
+
+		  </div>
+	  </div>
+  </div>
+{% endblock %}
+{% block content %}
+<div class="row">
+	<div class="col-md-12">
+		<div class="card">
+			<div class="card-header">
+				<h5>Datos detallados</h5>
+			</div>
+			<div class="card-block">
+					<div class="form-group">
+						<label><strong>Fecha de pago:</strong></label>
+						<td>{{ sale.date_pay|date:"d/M/Y P" }}</td>
+					</div>
+					<div class="form-group">
+						<label><strong>Proveedor:</strong></label>
+						<td>{{ sale.owner.first_name }} {{ sale.owner.last_name }}</td>
+					</div>
+					<div class="form-group">
+						<label><strong>Producto:</strong></label>
+						<td>{{ sale.subproduct.name }}</td>
+					</div>
+					<div class="form-group">
+						<label><strong>Precio:</strong></label>
+						<td>$ {{ sale.price_buy|intcomma }}</td>
+					</div>
+					<div class="form-group">
+						<label><strong>Comision:</strong></label>
+						<td>$ {{ sale.commission|intcomma }}</td>
+					</div>
+			</div>
+			<!-- /.col-lg-6 (nested) -->
+		</div>
+		<!-- /.row (nested) -->
+	</div>
+	<!-- /.panel-body -->
+</div>
+
+
+<script type="text/javascript">
+$(document).ready( function () {
+    $('#planes-table').DataTable({
+    	paging: false
+	});
+} );
+
+$( ".check" ).each(function(index) {
+    $(this).on("change", function(){
+     	var id_plan = $(this).attr('id');
+    	check_value = $(this).prop("checked")
+    	if (check_value == true){
+    		action = "add"
+    	}else{
+    		action = "delete"
+    	}
+    	$.get('/plan/'+action+'/{{ id }}/'+id_plan,function(data){
+    		$('.modal-content').html(data)
+    		$("#myModal").modal({show: true})
+   		})
+
+    });
+});
+
+</script>
+
+{% endblock %}

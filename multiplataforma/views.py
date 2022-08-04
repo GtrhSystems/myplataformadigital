@@ -126,24 +126,46 @@ def IndexView(request):
         salers_requests = len(User.objects.filter(is_active=False).filter(groups__name = "vendedor"))
         len_staff_actives  = len(staff_actives)
         staff_requests = len(User.objects.filter(is_active=False).filter(groups__name="staff"))
-
-        vendedor_sales = CountsPackage.vendedor_all_counts_saled_for_date(date)
-
-
-        return render(request, 'dashboard_'+user_type+'.html', {'len_salers_actives':len_salers_actives, 'salers_requests':salers_requests, 'len_staff_actives':len_staff_actives, 'staff_requests':staff_requests ,'vendedor_sales':vendedor_sales})
+        vendedor_sales = CountsPackage.all_counts_saled_for_date(date)
+        sales_pendding = len(CountsPackage.AllSalesPendingCommission())
+        reports = len(IssuesReport.get_reports_pendding())
+        sales_today = len(vendedor_sales)
+        return render(request, 'dashboard_'+user_type+'.html', {
+            'len_salers_actives':len_salers_actives,
+            'salers_requests':salers_requests,
+            'len_staff_actives':len_staff_actives,
+            'staff_requests':staff_requests ,
+            'vendedor_sales':vendedor_sales,
+            'sales_pendding':sales_pendding,
+            'reports':reports,
+            'sales_today':sales_today
+        })
     elif user_type == "staff":
 
         sales = CountsPackage.SalesByStaffbyDate(request.user, int(date.strftime("%Y")), int(date.strftime("%m")))
         if sales:
             sales_sum = sales.aggregate(total_sales=Sum('price_buy'))
             comission = int(sales_sum['total_sales']) * (PERCENT_COMISSION * 0.01)
-            return render(request, 'sales/sales.html', {'sales': sales, 'sales_sum': sales_sum, 'comission': comission, 'layout': True})
+            reports = len(IssuesReport.get_reports_of_mys_counts_created(request.user))
+            return render(request, 'sales/sales.html', {
+                'sales': sales,
+                'sales_sum': sales_sum,
+                'comission': comission,
+                'reports':reports,
+                'layout': True
+            })
         return render(request, 'sales/sales.html', { 'layout': True})
 
     elif user_type == "vendedor":
 
-        sales_to_expire = CountsPackage.sales_to_expire(request.user )
-        return render(request, 'sales/sales_to_expire.html',  {'sales': sales_to_expire })
+        sales_to_expire = CountsPackage.sales_to_expire(request.user, 3 )
+        len_sales_to_expire = len(sales_to_expire)
+        len_sales_to_expire_today = len(CountsPackage.sales_to_expire(request.user, 0))
+        return render(request, 'sales/sales_to_expire.html',  {
+            'sales': sales_to_expire,
+            'len_sales_to_expire': len_sales_to_expire,
+            'len_sales_to_expire_today':len_sales_to_expire_today
+        })
 
 
 
@@ -412,6 +434,14 @@ def CommissionsPendingView(request):
 
 @usertype_in_view
 @login_required
+def CommissionsPayedView(request):
+
+    sales = CountsPackage.objects.filter(subproduct__creater=request.user, commission_payed=True, commission_collect=True)
+
+    return render(request, 'sales/sales_payed.html',  {'sales': sales })
+
+@usertype_in_view
+@login_required
 def PackageEditView(request, id):
 
     subproduct = SubProduct.objects.filter(creater=request.user, id=id, active=True).select_related('product').first()
@@ -586,14 +616,14 @@ def SaleCountView(request, id):
 def ResaleCountView(request, id):
 
     count_package = CountsPackage.objects.filter(id=id, owner=request.user).last()
+    money_user = request.user.get_my_money()
     if request.method == 'POST':
-        count_package.resale_count(request.POST['months'])
-        money_user = request.user.get_my_money()
         money_to_discount = float(count_package.subproduct.price) * int(request.POST['months'])
-        print(money_to_discount)
-        request.user.subtract_money(money_user, money_to_discount, "Renovar cuenta: " + str(count_package.subproduct.name) + " a " + count_package.subproduct.creater.username + "por " + request.POST['months'] + " meses")
-        return redirect('index')
-    return render(request, 'sales/resale_count_box.html',{ 'id':id, 'count':count_package})
+        transaction = request.user.subtract_money(money_user, money_to_discount, "Renovar cuenta: " + str(count_package.subproduct.name) + " a " + count_package.subproduct.creater.username + "por " + request.POST['months'] + " meses")
+        if transaction:
+            count_package.resale_count(request.POST['months'])
+        return redirect('buys-inter-dates')
+    return render(request, 'sales/resale_count_box.html',{ 'id':id, 'count':count_package, 'money_user':money_user})
 
 @usertype_in_view
 @login_required
@@ -627,6 +657,15 @@ def SalesMonthPlatformsView(request, year=None, month= None):
             return render(request, template, {'sales': sales, 'sales_sum': sales_sum, 'buy_sum':buy_sum })
 
     return render(request, template)
+
+
+@usertype_in_view
+@login_required
+def SeeSalePlatformsView(request, id):
+
+    sale = CountsPackage.objects.get(id=id)
+    return render(request, "sales/see_sale.html", {'sale': sale })
+
 
 @usertype_in_view
 @login_required

@@ -16,34 +16,34 @@
                         <thead>
                             <tr>
                                 <th>Fecha de pago</th>
-                                <th>Subproducto</th>
-                                <th>Comprador</th>
-                                <th>Precio</th>
+                                 <th>Proveedor</th>
+                                <!--<th>Producto</th>-->
+                                <!--<th>Precio</th>-->
                                 <th>Pago</th>
                                 <th>Comision</th>
-
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
                            {% for sale in sales %}
                             <tr class="gradeA odd" role="row">
                                <td>{{ sale.date_pay|date:"d/M/Y P" }}</td>
-                                    <td>{{ sale.subproduct.name }}</td>
-                                    <td>{{ sale.owner }}</td>
-                                    <td>$ {{ sale.price_buy|intcomma }}</td>
-                                    <td>$ {{ sale.price_buy|sub:sale.commission|intcomma }}</td>
-                                    <td>$ {{ sale.commission|intcomma }}</td>
+                               <td>{{ sale.owner }}</td>
+                               <!--<td>{{ sale.subproduct.name }}</td>
+                               <td>$ {{ sale.price_buy|intcomma }}</td>-->
+                               <td>$ {{ sale.price_buy|sub:sale.commission|intcomma }}</td>
+                               <td>$ {{ sale.commission|intcomma }}</td>
 
+                                <td><a href="{% url 'see-sale' sale.id %}"> Ver</a></td>
                             </tr>
                         {% endfor %}
                         {% if sales %}
                         <tr class="gradeA odd" role="row">
                             <td></td>
-                            <td></td>
-                            <td></td>
                             <td><strong>Totales</strong></td>
                             <td>$ {{ sales_sum.total_sales|intcomma }}</td>
                             <td>$ {{ comission|intcomma }} </td>
+                            <td></td>
                         </tr>
                         {% endif %}
                         </tbody>

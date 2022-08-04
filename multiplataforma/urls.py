@@ -41,6 +41,7 @@ urlpatterns = [
     path('add-count-package/<int:id>', views.AddCountToPackageView, name='add-count-package'),
     path('send-package-to-markeplace/<int:id>', views.SendPackageToMarketPlaceView, name='send-package-to-markeplace'),
     path('user/commission_collect', views.CommissionsPendingView, name='commission-collect'),
+    path('user/commission_payed', views.CommissionsPayedView, name='commission-payed'),
 
     #multiplataformas-vendedor
     path('platform/market-place', views.MarketPlaceView, name='market-place'),
@@ -61,6 +62,7 @@ urlpatterns = [
     path('platform/sales/pay-pending/<str:username>', views.CommissionPendingView, name='commision-pending'),
     path('platform/sales/pay-staff-sale/<str:username>/<str:payment>', views.PayStaffSaleView, name='pay-staff-sale'),
     path('platform/sales/inter-dates', views.InterDatesSalesView, name='sales-inter-dates'),
+    path('platform/sale/<int:id>', views.SeeSalePlatformsView, name='see-sale'),
 
     path('buys/inter-dates', views.BuysInterDatesView, name='buys-inter-dates'),
     path('buys/month/<int:year>/<int:month>', views.BuysMonthView, name='multiplatforms-sales-month'),
