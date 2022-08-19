@@ -417,7 +417,7 @@ def SubProductCreateView(request, id):
 @login_required
 def CommissionsPendingView(request):
 
-    sales = CountsPackage.objects.filter(subproduct__creater=request.user, commission_payed=False, commission_collect=False)
+    sales = CountsPackage.SalesPendingCommission(request.user)
     user_data = UserData.objects.filter(user=request.user).first()
     if request.method == 'POST':
         for item in request.POST:
@@ -616,6 +616,8 @@ def SaleCountView(request, id):
 def ResaleCountView(request, id):
 
     count_package = CountsPackage.objects.filter(id=id, owner=request.user).last()
+    if not count_package.subproduct.renewable:
+        return redirect('buys-inter-dates')
     money_user = request.user.get_my_money()
     if request.method == 'POST':
         money_to_discount = float(count_package.subproduct.price) * int(request.POST['months'])
@@ -799,6 +801,7 @@ def ReportIssuePlatformView(request,  id):
         form = ReportIssueForm(request.POST or None, request.FILES or None)
         if request.method == 'POST':
             print(request.POST)
+            print(request.FILES)
             if form.is_valid():
                 report = form.save(commit=False)
                 report.user = request.user

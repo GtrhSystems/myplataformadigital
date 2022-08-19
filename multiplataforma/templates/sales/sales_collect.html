@@ -30,22 +30,23 @@
                                  <option value="banco">Banco</option>
                              {% endif %}
                     </select>
+                        <div class="card-header">
+                            Seleccione las cuentas que desea cobrar
+                        </div>
                     <table id="sales-table" class="table table-no-pagin">
                         <thead>
                             <tr>
-                                <th>Fecha</th>
                                 <th>Subproducto</th>
                                 <th>Comprador</th>
                                 <th>Precio</th>
                                 <th>Venta</th>
                                 <th>Comision</th>
-                                <th>Cobrar</th>
+                                <th><input id="select_all" type="checkbox" ></th>
                             </tr>
                         </thead>
                         <tbody>
                            {% for sale in sales %}
                             <tr class="gradeA odd" role="row">
-                               <td>{{ sale.date_buy|date:"d/M/Y P" }}</td>
                                     <td>{{ sale.subproduct.name }}</td>
                                     <td>{{ sale.owner }}</td>
                                     <td>$ {{ sale.price_buy|intcomma }}</td>
@@ -57,13 +58,15 @@
                         {% if sales %}
                         <tfoot>
                         <tr>
-                            <td></td>
-                            <td></td>
+
+
                             <td></td>
                             <td></td>
                              <td></td>
                             <td><strong>Totales</strong></td>
                             <td id="total"></td>
+                             <td></td>
+                             <td></td>
                         </tr>
                          </tfoot>
                         {% endif %}
@@ -89,6 +92,14 @@
 
 
 <script>
+
+$('body').on("click", "#select_all" , function(event){
+    checked = $(this).prop("checked")
+    $(".check").trigger("click")
+})
+
+
+
 money_all=0
 let dollarUSLocale = Intl.NumberFormat('en-US');
 $('#sales-table tbody').on("click", ".check" , function(event){

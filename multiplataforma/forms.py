@@ -78,7 +78,7 @@ class SubProductForm(forms.ModelForm):
 
     class Meta:
         model = SubProduct
-        fields = ['name', 'price', 'instructions', 'individual_sale']
+        fields = ['name', 'price', 'renewable','instructions', 'individual_sale']
 
 
 class PlanProductForm(forms.ModelForm):

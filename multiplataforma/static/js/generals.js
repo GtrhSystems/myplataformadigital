@@ -295,8 +295,8 @@ function sale_package(){
 
 function resale_package(){
 
-        $( ".sale" ).each(function() {
-            $(this).on("click", function(event){
+
+         $('body').on("click", ".sale", function(event){
                 event.preventDefault()
                 var id = $(this).attr('id');
                 name_product = $(this).attr('name_product')
@@ -304,12 +304,11 @@ function resale_package(){
                         $('.modal-content').html(data)
                 })
                 $("#myModal").modal({show: true})
-            });
+
         });
 
 
         $('#sales-table tbody').on("click", ".report" , function(event){
-            alert('tesr')
             event.preventDefault()
             id = $(this).attr('id')
             $("#myModal").modal({show: true})

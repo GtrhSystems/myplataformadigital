@@ -92,7 +92,7 @@ class SubProduct(models.Model):
     product = models.ForeignKey(Product, default=1, verbose_name="Plataforma", on_delete=models.CASCADE)
     name = models.CharField(max_length=150, verbose_name="Nombre", default="")
     price = models.IntegerField(default=0, verbose_name="Precio general", )
-    #renewable = models.BooleanField(default=0, verbose_name="Renovable?")
+    renewable = models.BooleanField(default=0, verbose_name="Renovable?")
     instructions = models.CharField(max_length=1000, verbose_name="Instrucciones", default="")
     active = models.BooleanField(default=1, verbose_name="Activo?")
     date = models.DateTimeField(auto_now_add=True)

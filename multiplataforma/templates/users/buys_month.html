@@ -46,9 +46,11 @@
                                     <td>{{ buy.pin }}</td>
                                       <td>${{ buy.price_buy|intcomma   }}</td>
                                     <td>
+                                        {% if buy.subproduct.renewable %}
                                         <a href="#" class="sale"  name_product="{{ buy.subproduct.name }}" id="{{ buy.id}}">
                                             <i class="ti-loop" title="Renovar cuenta"></i>
                                         </a>
+                                        {% endif %}
                                         <a href="#" class="report"  id="{{ buy.id}}">
                                             <i class="ti-comment" title="Reportar error en la cuenta"></i>
                                         </a>
