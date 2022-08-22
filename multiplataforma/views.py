@@ -118,7 +118,7 @@ def IndexView(request):
 
     user_type = check_user_type(request)
     date = datetime.date.today()
-
+    print(user_type)
     if user_type == "superuser":
         staff_actives = User.objects.filter(is_active=True).filter(groups__name="staff")
         salers_actives = User.objects.filter(is_active=True).filter(groups__name="vendedor")
@@ -142,29 +142,40 @@ def IndexView(request):
         })
     elif user_type == "staff":
 
+        sales_sum = comission = 0
         sales = CountsPackage.SalesByStaffbyDate(request.user, int(date.strftime("%Y")), int(date.strftime("%m")))
+        commission_pending = CountsPackage.SalesPendingCommissionByPayment(request.user, False).aggregate(total=Sum('commission'))
+        commission_payed = CountsPackage.SalesPendingCommissionByPayment(request.user, True).aggregate(total=Sum('commission'))
         if sales:
             sales_sum = sales.aggregate(total_sales=Sum('price_buy'))
             comission = int(sales_sum['total_sales']) * (PERCENT_COMISSION * 0.01)
-            reports = len(IssuesReport.get_reports_of_mys_counts_created(request.user))
-            return render(request, 'sales/sales.html', {
-                'sales': sales,
-                'sales_sum': sales_sum,
-                'comission': comission,
-                'reports':reports,
-                'layout': True
-            })
-        return render(request, 'sales/sales.html', { 'layout': True})
+        reports = len(IssuesReport.get_reports_of_mys_counts_created(request.user))
+
+        return render(request, 'sales/sales.html', {
+            'sales': sales,
+            'sales_sum': sales_sum,
+            'comission': comission,
+            'reports':reports,
+            'commission_pending': commission_pending,
+            'commission_payed': commission_payed,
+            'layout': True
+        })
+
 
     elif user_type == "vendedor":
 
         sales_to_expire = CountsPackage.sales_to_expire(request.user, 3 )
         len_sales_to_expire = len(sales_to_expire)
         len_sales_to_expire_today = len(CountsPackage.sales_to_expire(request.user, 0))
+        len_reports_pendding = len(IssuesReport.get_mys_reports_pendding(request.user))
+        len_reports_solucionated = len(IssuesReport.get_mys_reports_solucionated(request.user))
+
         return render(request, 'sales/sales_to_expire.html',  {
             'sales': sales_to_expire,
             'len_sales_to_expire': len_sales_to_expire,
-            'len_sales_to_expire_today':len_sales_to_expire_today
+            'len_sales_to_expire_today':len_sales_to_expire_today,
+            'len_reports_pendding': len_reports_pendding,
+            'len_reports_solucionated': len_reports_solucionated
         })
 
 
@@ -616,6 +627,7 @@ def SaleCountView(request, id):
 def ResaleCountView(request, id):
 
     count_package = CountsPackage.objects.filter(id=id, owner=request.user).last()
+    print(count_package.subproduct.renewable)
     if not count_package.subproduct.renewable:
         return redirect('buys-inter-dates')
     money_user = request.user.get_my_money()

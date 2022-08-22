@@ -150,7 +150,7 @@ class CountsPackage(models.Model):
         return sales
 
     @classmethod
-    def UserPendingCommission(self):
+    def UserPendingCommission(cls):
 
         sales = list(CountsPackage.objects.filter(commission_payed=False, commission_collect=True).values_list('subproduct_id', flat=True))
         subproducts = list(SubProduct.objects.filter(id__in=sales).values_list('creater_id', flat=True))
@@ -158,7 +158,7 @@ class CountsPackage(models.Model):
         return users
 
     @classmethod
-    def SalesByStaffbyDate(self, user, year, month):
+    def SalesByStaffbyDate(cls, user, year, month):
 
         initial_date, final_date = dates_init_finish(year, month)
         subproducts = SubProduct.objects.filter(creater=user)
@@ -336,6 +336,11 @@ class IssuesReport(models.Model):
     def get_mys_reports_pendding(self, user):
 
         reports = self.objects.filter(state=0, user=user).order_by('-date')
+        return reports
+
+    @classmethod
+    def get_mys_reports_solucionated(self, user):
+        reports = self.objects.filter(state=1, user=user).order_by('-date')
         return reports
 
     @classmethod

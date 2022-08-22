@@ -30,13 +30,17 @@ function listenig_socket(){
 $(document).ready(function() {
      $('.js-example-basic-single').select2();
 
-     $('.table-normal').DataTable();
+     $('.table-normal').DataTable( {
+          responsive: true
+     });
 
      $('.table-no-pagin').DataTable( {
+          responsive: true,
 		  scrollX: false,
 		  paging: false
      });
      $('.table-no-order').DataTable( {
+          responsive: true,
 		  ordering: false,
 		  paging: false,
     });

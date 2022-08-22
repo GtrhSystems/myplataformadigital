@@ -39,7 +39,7 @@
             <div class="card-footer bg-c-purple">
                 <div class="row align-items-center">
                     <div class="col-9">
-                        <a href="{% url 'staff-list' 'staff' 1 %}"><p class="text-white m-b-0">Ver</p></a>
+                        <a href="#tabla"><p class="text-white m-b-0">Ver</p></a>
                     </div>
 
                 </div>
@@ -63,7 +63,51 @@
             <div class="card-footer bg-c-green">
                 <div class="row align-items-center">
                     <div class="col-9">
-                         <a href="{% url 'staff-list' 'staff' 0 %}"><p class="text-white m-b-0">Ver</p></a>
+                         <a href="#tabla"><p class="text-white m-b-0">Ver</p></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card">
+            <div class="card-block">
+                <div class="row align-items-center">
+                    <div class="col-8">
+                        <h4 class="text-c-red">{{ len_reports_pendding }}</h4>
+                        <h6 class="text-muted m-b-0">Reportes pendientes</h6>
+                    </div>
+                    <div class="col-4 text-right">
+                        <i class="fa fa-file-text-o f-28"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-c-red">
+                <div class="row align-items-center">
+                    <div class="col-9">
+                         <a href="{% url 'reported-issues-platform' %}"><p class="text-white m-b-0">Ver</p></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+     <div class="col-xl-3 col-md-6">
+        <div class="card">
+            <div class="card-block">
+                <div class="row align-items-center">
+                    <div class="col-8">
+                        <h4 class="text-c-blue">{{ len_reports_solucionated }}</h4>
+                        <h6 class="text-muted m-b-0">Reportes solucionados</h6>
+                    </div>
+                    <div class="col-4 text-right">
+                        <i class="fa fa-file-text-o f-28"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-c-blue">
+                <div class="row align-items-center">
+                    <div class="col-9">
+                         <a href="{% url 'reported-issues-platform' %}"><p class="text-white m-b-0">Ver</p></a>
                     </div>
                 </div>
             </div>
@@ -85,7 +129,8 @@
 				<h5>Listado de cuentas </h5>
 			</div>
 			<div class="card-block table-border-style">
-				<div class="table-responsive">
+				<div>
+                     <a name="tabla"></a>
                     <table  class="table table-normal">
                         <thead>
                             <tr>
@@ -107,9 +152,12 @@
                                     <td>{{ sale.password }}</td>
                                     <td>{{ sale.profile }}</td>
                                     <td>$ {{ sale.price_buy|intcomma }}</td>
-                                    <th><a href="#" class="sale"  name_product="{{ sale.subproduct.name }}" id="{{ sale.id}}">
+                                    <th>
+                                          {% if sale.subproduct.renewable %}
+                                        <a href="#" class="sale"  name_product="{{ sale.subproduct.name }}" id="{{ sale.id}}">
                                         <i class="ti-loop" title="Renovar cuenta"></i>
                                         </a>
+                                        {% endif %}
                                     </th>
                                 </tr>
                             {% endfor %}
