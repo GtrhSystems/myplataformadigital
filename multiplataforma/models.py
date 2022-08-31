@@ -134,7 +134,7 @@ class CountsPackage(models.Model):
     @classmethod
     def SalesPendingCommission(self, user):
 
-        sales = CountsPackage.objects.filter(subproduct__creater=user, commission_payed=False, commission_collect=True)
+        sales = CountsPackage.objects.filter(subproduct__creater=user, commission_payed=False, commission_collect=False)
         return sales
 
     @classmethod
