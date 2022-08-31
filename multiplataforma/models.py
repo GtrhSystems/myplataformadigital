@@ -152,10 +152,17 @@ class CountsPackage(models.Model):
     @classmethod
     def UserPendingCommission(cls):
 
-        sales = list(CountsPackage.objects.filter(commission_payed=False, commission_collect=True).values_list('subproduct_id', flat=True))
-        subproducts = list(SubProduct.objects.filter(id__in=sales).values_list('creater_id', flat=True))
-        users = User.objects.filter(id__in=subproducts).order_by('pk').distinct()
-        return users
+        sales_pendding =[]
+        users = User.objects.filter(is_active = 1)
+        for user in users:
+            sales = True if len(cls.SalesPendingCommission(user))>0 else False
+            if sales:
+                sales_pendding.append(user)
+
+        #sales = list(CountsPackage.objects.filter(commission_payed=False, commission_collect=False).values_list('subproduct_id', flat=True))
+        #subproducts = list(SubProduct.objects.filter(id__in=sales).values_list('creater_id', flat=True))
+        #users = User.objects.filter(id__in=subproducts).order_by('pk').distinct()
+        return sales_pendding
 
     @classmethod
     def SalesByStaffbyDate(cls, user, year, month):
