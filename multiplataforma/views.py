@@ -750,8 +750,7 @@ def CommissionPendingView(request, username):
 
     user = User.objects.filter(username=username).first()
     user_data = UserData.objects.filter(user = user).first()
-    sales = CountsPackage.SalesPendingCommission(user)
-
+    sales = CountsPackage.SalesPendingPayCommission(user)
     paypal_sales_sum = paypal_comission = binance_sales_sum = binance_comission = aritms_sales_sum = aritms_comission = banco_sales_sum = banco_comission = 0
     paypal_pay = binance_pay = aritms_pay = banco_pay = 0
     paypal = sales.filter(commission_collect_payment="paypal")
