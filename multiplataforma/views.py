@@ -616,6 +616,7 @@ def SaleCountView(request, id):
 
     subproduct = SubProduct.objects.filter(id=id, active=True).first()
     last_count_package = CountsPackage.get_mys_counts_package_no_sales(subproduct, request.user).last()
+    print(last_count_package.id)
     if request.method == 'POST':
         last_count_package.sale_count(request.POST['months'])
         return redirect('platforms', subproduct.product.name)

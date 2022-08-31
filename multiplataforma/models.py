@@ -14,7 +14,7 @@ def dates_init_finish(year, month):
     initial_date = datetime.datetime.strptime(str(year) + "-" + str(month) + "-01", '%Y-%m-%d')
     initial_date = initial_date - datetime.timedelta(hours=5)
     final_date = datetime.datetime.strptime(str(year) + "-" + str(month) + "-" + str(lastday), '%Y-%m-%d')
-    final_date = final_date - datetime.timedelta(hours=5)
+    final_date = final_date + datetime.timedelta(hours=19)
     return [initial_date, final_date]
 
 
@@ -159,13 +159,6 @@ class CountsPackage(models.Model):
     @classmethod
     def UserPendingCommission(cls):
 
-        #sales_pendding =[]
-        #users = User.objects.filter(is_active = 1)
-        #for user in users:
-        #    sales = True if len(cls.SalesPendingCommission(user))>0 else False
-        #    if sales:
-        #        sales_pendding.append(user)
-
         sales = list(CountsPackage.objects.filter(commission_payed=False, commission_collect=False).values_list('subproduct_id', flat=True))
         subproducts = list(SubProduct.objects.filter(id__in=sales).values_list('creater_id', flat=True))
         users = User.objects.filter(id__in=subproducts).order_by('pk').distinct()
@@ -232,6 +225,7 @@ class CountsPackage(models.Model):
     def all_counts_buy_in_dates(self, user, year, month):
 
         initial_date, final_date = dates_init_finish(year, month)
+
         sales = self.objects.filter(owner=user).filter(date_buy__range=[initial_date, final_date]).order_by('-date_buy')
         return sales
 
