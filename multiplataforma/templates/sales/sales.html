@@ -10,18 +10,18 @@
             <div class="card-block">
                 <div class="row align-items-center">
                     <div class="col-8">
-                        <h4 class="text-c-purple">{{ len_staff_actives }}</h4>
+                        <h4 class="text-c-purple">{{ request_renewal }}</h4>
                         <h6 class="text-muted m-b-0">Cuentas pendientes por renovación</h6>
                     </div>
                     <div class="col-4 text-right">
-                        <i class="fa fa-handshake-o f-28"></i>
+                        <i class="ti-loop f-28"></i>
                     </div>
                 </div>
             </div>
             <div class="card-footer bg-c-purple">
                 <div class="row align-items-center">
                     <div class="col-9">
-                        <a href="{% url 'staff-list' 'staff' 1 %}"><p class="text-white m-b-0">Ver</p></a>
+                        <a href="{% url 'renew-count-package-list' %}"><p class="text-white m-b-0">Ver</p></a>
                     </div>
 
                 </div>

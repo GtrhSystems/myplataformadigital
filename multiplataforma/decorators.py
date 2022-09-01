@@ -34,7 +34,9 @@ def usertype_in_view(function):
                  'sales-inter-dates',
                  'general-sales',
                  'commission-collect',
-                 'commission-payed'
+                 'commission-payed',
+                 'renew-count-package-list',
+                 'renew-count-package'
                  ]
         vendedor = ['platforms',
                     'sale-count-package',

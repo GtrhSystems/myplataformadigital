@@ -146,6 +146,7 @@ def IndexView(request):
         sales = CountsPackage.SalesByStaffbyDate(request.user, int(date.strftime("%Y")), int(date.strftime("%m")))
         commission_pending = CountsPackage.SalesPendingCommissionByPayment(request.user, False).aggregate(total=Sum('commission'))
         commission_payed = CountsPackage.SalesPendingCommissionByPayment(request.user, True).aggregate(total=Sum('commission'))
+        request_renewal = len(CountsPackage.RenewPending(request.user ))
         if sales:
             sales_sum = sales.aggregate(total_sales=Sum('price_buy'))
             comission = int(sales_sum['total_sales']) * (PERCENT_COMISSION * 0.01)
@@ -158,6 +159,7 @@ def IndexView(request):
             'reports':reports,
             'commission_pending': commission_pending,
             'commission_payed': commission_payed,
+            'request_renewal' : request_renewal,
             'layout': True
         })
 
@@ -169,13 +171,16 @@ def IndexView(request):
         len_sales_to_expire_today = len(CountsPackage.sales_to_expire(request.user, 0))
         len_reports_pendding = len(IssuesReport.get_mys_reports_pendding(request.user))
         len_reports_solucionated = len(IssuesReport.get_mys_reports_solucionated(request.user))
-
+        request_renewal = CountsPackage.objects.filter(owner=request.user, request_renewal=0, months_renew__gt=0)
+        len_request_renewal = len(request_renewal)
         return render(request, 'sales/sales_to_expire.html',  {
             'sales': sales_to_expire,
             'len_sales_to_expire': len_sales_to_expire,
             'len_sales_to_expire_today':len_sales_to_expire_today,
             'len_reports_pendding': len_reports_pendding,
-            'len_reports_solucionated': len_reports_solucionated
+            'len_reports_solucionated': len_reports_solucionated,
+            'request_renewal':request_renewal,
+            'len_request_renewal':len_request_renewal
         })
 
 
@@ -445,11 +450,35 @@ def CommissionsPendingView(request):
 
 @usertype_in_view
 @login_required
+def RenewCountPackageListView(request):
+
+    request_renewal = CountsPackage.RenewPending(request.user)
+
+    return render(request, 'platforms/renew_sales_list.html',  {'sales': request_renewal })
+
+@usertype_in_view
+@login_required
+def RenewCountPackageView(request, id):
+
+    sale = CountsPackage.objects.filter(subproduct__creater=request.user, request_renewal=True, id= id).last()
+    money_to_discount = sale.subproduct.price * sale.months_renew
+    money_user = sale.owner.get_my_money()
+    transaction = sale.owner.subtract_money(money_user, money_to_discount, "Renovar cuenta: " + str(sale.subproduct.name) + " a " + sale.owner.username + "por " + str(sale.months_renew) + " meses")
+    if transaction:
+        sale.resale_count(sale.months_renew )
+        sale.request_renewal = 0
+        sale.save()
+        return HttpResponse(f"Cuenta renovada por { sale.months_renew } meses ")
+
+
+@usertype_in_view
+@login_required
 def CommissionsPayedView(request):
 
     sales = CountsPackage.objects.filter(subproduct__creater=request.user, commission_payed=True, commission_collect=True)
 
     return render(request, 'sales/sales_payed.html',  {'sales': sales })
+
 
 @usertype_in_view
 @login_required
@@ -628,15 +657,18 @@ def SaleCountView(request, id):
 def ResaleCountView(request, id):
 
     count_package = CountsPackage.objects.filter(id=id, owner=request.user).last()
-    print(count_package.subproduct.renewable)
     if not count_package.subproduct.renewable:
         return redirect('buys-inter-dates')
     money_user = request.user.get_my_money()
+
     if request.method == 'POST':
-        money_to_discount = float(count_package.subproduct.price) * int(request.POST['months'])
-        transaction = request.user.subtract_money(money_user, money_to_discount, "Renovar cuenta: " + str(count_package.subproduct.name) + " a " + count_package.subproduct.creater.username + "por " + request.POST['months'] + " meses")
-        if transaction:
-            count_package.resale_count(request.POST['months'])
+        count_package.request_renewal=True
+        count_package.months_renew = int(request.POST['months'])
+        count_package.save()
+        #money_to_discount = float(count_package.subproduct.price) * int(request.POST['months'])
+        #transaction = request.user.subtract_money(money_user, money_to_discount, "Renovar cuenta: " + str(count_package.subproduct.name) + " a " + count_package.subproduct.creater.username + "por " + request.POST['months'] + " meses")
+        #if transaction:
+        #    count_package.resale_count(request.POST['months'])
         return redirect('buys-inter-dates')
     return render(request, 'sales/resale_count_box.html',{ 'id':id, 'count':count_package, 'money_user':money_user})
 

@@ -126,40 +126,46 @@ class CountsPackage(models.Model):
     commission_collect_payment = models.CharField(default="", max_length=10, verbose_name="Método de pago")
     date_pay = models.DateTimeField(blank=True, null=True, auto_now_add=False)
     date_finish = models.DateTimeField(auto_now_add=False, null=True)
-
+    request_renewal = models.BooleanField(default=False, verbose_name="Solicitar renovación")
+    months_renew = models.IntegerField(default=0, verbose_name="Meses")
 
     def __str__(self):
         return str(self.email)
 
     @classmethod
-    def SalesPendingCommission(self, user):
+    def RenewPending(cls, user):
 
-        sales = CountsPackage.objects.filter(subproduct__creater=user, commission_payed=False, commission_collect=False).filter(~Q(owner=user))
+        request_renewal = cls.objects.filter(subproduct__creater=user, request_renewal=True)
+        return request_renewal
+    @classmethod
+    def SalesPendingCommission(cls, user):
+
+        sales = cls.objects.filter(subproduct__creater=user, commission_payed=False, commission_collect=False).filter(~Q(owner=user))
         return sales
 
     @classmethod
-    def SalesPendingPayCommission(self, user):
+    def SalesPendingPayCommission(cls, user):
 
-        sales = CountsPackage.objects.filter(subproduct__creater=user, commission_payed=False,
+        sales = cls.objects.filter(subproduct__creater=user, commission_payed=False,
                                              commission_collect=True)
         return sales
 
     @classmethod
-    def AllSalesPendingCommission(self):
+    def AllSalesPendingCommission(cls):
 
-        sales = CountsPackage.objects.filter(commission_payed=False, commission_collect=True)
+        sales = cls.objects.filter(commission_payed=False, commission_collect=True)
         return sales
 
     @classmethod
-    def SalesPendingCommissionByPayment(self, user, payment):
+    def SalesPendingCommissionByPayment(cls, user, payment):
 
-        sales = CountsPackage.objects.filter(subproduct__creater=user, commission_payed=False, commission_collect=True, commission_collect_payment=payment )
+        sales = cls.objects.filter(subproduct__creater=user, commission_payed=False, commission_collect=True, commission_collect_payment=payment )
         return sales
 
     @classmethod
     def UserPendingCommission(cls):
 
-        sales = list(CountsPackage.objects.filter(commission_payed=False, commission_collect=False).values_list('subproduct_id', flat=True))
+        sales = list(self.objects.filter(commission_payed=False, commission_collect=False).values_list('subproduct_id', flat=True))
         subproducts = list(SubProduct.objects.filter(id__in=sales).values_list('creater_id', flat=True))
         users = User.objects.filter(id__in=subproducts).order_by('pk').distinct()
         return users
@@ -169,19 +175,19 @@ class CountsPackage(models.Model):
 
         initial_date, final_date = dates_init_finish(year, month)
         subproducts = SubProduct.objects.filter(creater=user)
-        my_counts_sales = CountsPackage.objects.filter(subproduct__in=subproducts).filter(~Q(owner=user)).filter(date_buy__range=[initial_date, final_date])
+        my_counts_sales = cls.objects.filter(subproduct__in=subproducts).filter(~Q(owner=user)).filter(date_buy__range=[initial_date, final_date])
         return my_counts_sales
 
     @classmethod
-    def get_all_counts_package_no_sales(self, subproduct):
+    def get_all_counts_package_no_sales(cls, subproduct):
 
-        CountsPackage = self.objects.filter(subproduct=subproduct, owner=subproduct.creater)
+        CountsPackage = cls.objects.filter(subproduct=subproduct, owner=subproduct.creater)
         return CountsPackage
 
     @classmethod
-    def get_mys_counts_package_no_sales(self, subproduct, me):
+    def get_mys_counts_package_no_sales(cls, subproduct, me):
 
-        CountsPackage = self.objects.filter(subproduct=subproduct, owner=me,saled=False)
+        CountsPackage = cls.objects.filter(subproduct=subproduct, owner=me,saled=False)
         return CountsPackage
 
 
@@ -209,52 +215,52 @@ class CountsPackage(models.Model):
             kwargs['owner'] = User.objects.filter(id=kwargs['owner']).first()
             kwargs['date_buy'] = datetime.datetime.now()
             kwargs['date_finish'] = date_finish
+            kwargs['request_renewal'] = 0
+            kwargs['months_renew'] = 0
             CountsPackage.objects.create(**kwargs)
 
     @classmethod
-    def sales_to_expire(self, user, days):
+    def sales_to_expire(cls, user, days):
 
         if days == 0:
             date = datetime.date.today()
         else:
             date = datetime.date.today() + datetime.timedelta(days=days)
-        sales_to_expire = self.objects.filter(owner = user).filter(date_finish__range=[datetime.date.today(), date ]).order_by('-date_finish')
+        sales_to_expire = cls.objects.filter(owner = user).filter(date_finish__range=[datetime.date.today(), date ]).order_by('-date_finish')
         return sales_to_expire
 
     @classmethod
-    def all_counts_buy_in_dates(self, user, year, month):
+    def all_counts_buy_in_dates(cls, user, year, month):
 
         initial_date, final_date = dates_init_finish(year, month)
-
-        sales = self.objects.filter(owner=user).filter(date_buy__range=[initial_date, final_date]).order_by('-date_buy')
+        sales = cls.objects.filter(owner=user).filter(date_buy__range=[initial_date, final_date]).order_by('-date_buy')
         return sales
 
 
     @classmethod
-    def all_counts_saled_in_dates(self, year, month, request):
+    def all_counts_saled_in_dates(cls, year, month, request):
 
         initial_date, final_date = dates_init_finish(year, month)
-        sales = self.objects.filter(owner=request.user, saled=1).filter(date_sale__range=[initial_date, final_date])
+        sales = cls.objects.filter(owner=request.user, saled=1).filter(date_sale__range=[initial_date, final_date])
         return sales
 
 
     @classmethod
-    def all_counts_saled_for_date(self, date):
+    def all_counts_saled_for_date(cls, date):
 
-        sales = self.objects.filter(saled=1).filter(date_sale__startswith=date)
+        sales = cls.objects.filter(saled=1).filter(date_sale__startswith=date)
         return sales
 
     @classmethod
-    def staff_all_counts_saled_for_date(self, date):
-
+    def staff_all_counts_saled_for_date(cls, date):
 
         subproduct = SubProduct.objects.filter(creater=user)
-        counts_package = CountsPackage.objects.filter(subproduct__in=subproduct)
-        reports = self.objects.filter(state=0,  count__in=counts_package).order_by('-date')
+        counts_package = cls.objects.filter(subproduct__in=subproduct)
+        reports = cls.objects.filter(state=0,  count__in=counts_package).order_by('-date')
         return reports
 
-        sales = self.objects.filter(saled=1).filter(date_sale__startswith=date)
-        return sales
+        #sales = cls.objects.filter(saled=1).filter(date_sale__startswith=date)
+        #return sales
 
     def SetPayStaffSale(cls):
 

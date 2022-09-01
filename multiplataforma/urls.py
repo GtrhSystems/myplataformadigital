@@ -42,6 +42,8 @@ urlpatterns = [
     path('send-package-to-markeplace/<int:id>', views.SendPackageToMarketPlaceView, name='send-package-to-markeplace'),
     path('user/commission_collect', views.CommissionsPendingView, name='commission-collect'),
     path('user/commission_payed', views.CommissionsPayedView, name='commission-payed'),
+    path('platform/renew-count-package-list', views.RenewCountPackageListView, name='renew-count-package-list'),
+    path('platform/renew-count-package/<int:id>', views.RenewCountPackageView, name='renew-count-package'),
 
     #multiplataformas-vendedor
     path('platform/market-place', views.MarketPlaceView, name='market-place'),
