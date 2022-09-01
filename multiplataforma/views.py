@@ -469,8 +469,8 @@ def RenewCountPackageView(request, id):
         sale.request_renewal = 0
         sale.save()
         return HttpResponse(f"Cuenta renovada por { sale.months_renew } meses ")
-
-
+    else:
+        return HttpResponse(f"El usuario {sale.owner.username} NO cuenta con el dinero para esa transacción ")
 @usertype_in_view
 @login_required
 def CommissionsPayedView(request):
