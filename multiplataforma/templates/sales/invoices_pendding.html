@@ -1,0 +1,42 @@
+{% load humanize %}
+{% load mathfilters %}
+{% load widget_tweaks %}
+{% block content %}
+
+
+<div class="row">
+
+    <div class="col-lg-12">
+        <div class="card">
+
+            <div class="card-block table-border-style">
+                <div class="table-responsive">
+                    <h5>Facturas pendientes de pago para {{  user.username }}</h5>
+                    <table id="pendding-table" class="table table-no-pagin">
+                        <thead>
+                            <tr>
+                                <th>Número</th>
+                                <th>Fecha</th>
+                                <th>Ver</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                           {% for invoice in invoices %}
+                            <tr class="gradeA odd" role="row">
+                                 <td>{{ invoice.id }}</td>
+                                 <td>{{ invoice.date_create|date:"d/M/Y P" }}</td>
+                                 <td><a href="{% url 'pay-invoice-pendding' invoice.id %}"><i class="ti-eye"></i></a></td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

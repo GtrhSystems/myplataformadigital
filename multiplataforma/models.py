@@ -6,7 +6,7 @@ from .validators import valid_extension, valid_image_extension
 import pytz
 from django.forms import model_to_dict
 import datetime
-
+from django.db.models import OuterRef, Exists
 
 def dates_init_finish(year, month):
     import calendar
@@ -123,7 +123,7 @@ class CountsPackage(models.Model):
     commission = models.IntegerField(default=0, verbose_name="Comision")
     commission_payed = models.BooleanField(default=False, verbose_name="Comision pagada?")
     commission_collect = models.BooleanField(default=False, verbose_name="Comision cobrada?")
-    commission_collect_payment = models.CharField(default="", max_length=10, verbose_name="Método de pago")
+    #commission_collect_payment = models.CharField(default="", max_length=10, verbose_name="Método de pago")
     date_pay = models.DateTimeField(blank=True, null=True, auto_now_add=False)
     date_finish = models.DateTimeField(auto_now_add=False, null=True)
     request_renewal = models.BooleanField(default=False, verbose_name="Solicitar renovación")
@@ -162,13 +162,6 @@ class CountsPackage(models.Model):
         sales = cls.objects.filter(subproduct__creater=user, commission_payed=False, commission_collect=True, commission_collect_payment=payment )
         return sales
 
-    @classmethod
-    def UserPendingCommission(cls):
-
-        sales = list(self.objects.filter(commission_payed=False, commission_collect=False).values_list('subproduct_id', flat=True))
-        subproducts = list(SubProduct.objects.filter(id__in=sales).values_list('creater_id', flat=True))
-        users = User.objects.filter(id__in=subproducts).order_by('pk').distinct()
-        return users
 
     @classmethod
     def SalesByStaffbyDate(cls, user, year, month):
@@ -281,6 +274,45 @@ class CountsPackage(models.Model):
         return sales
 
 
+class Invoice(models.Model):
+
+    date_create = models.DateTimeField(auto_now_add=True)
+    payed = models.BooleanField(default=0, verbose_name="Pagada?:")
+    date_pay = models.DateTimeField(blank=True, null=True, auto_now_add=False)
+    due = models.ForeignKey(User, on_delete=models.CASCADE) #Usuario adeudante
+    payment_method = models.CharField(default="", max_length=10, verbose_name="Método de pago")
+
+    def __str__(self):
+        return str(self.id)
+
+    @classmethod
+    def UserPendingInvoices(cls):
+
+        users = []
+        invoices = cls.objects.filter(payed=False).values('due').annotate(count=Count('id')).order_by()
+        for invoice in invoices:
+            user = User.objects.filter(id=invoice['due'], is_superuser=False).last()
+            if user:
+                users.append(user)
+
+        return users
+
+class CountPackageInvoice(models.Model):
+
+    invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE)
+    count_package = models.ForeignKey(CountsPackage, on_delete=models.CASCADE)
+
+    @classmethod
+    def UserPendingInvoices(cls):
+
+        invoices = Invoice.objects.filter(payed=False)
+        counts_package = cls.objects.filter(invoice__in=invoices)
+        counts_package = counts_package.annotate(is_duplicate=Exists(
+            cls.objects.filter(
+                count_package__lt=OuterRef('count_package')
+                )))
+        counts_package = counts_package.filter(is_duplicate=False)
+        return counts_package
 
 
 #class CountPackageSale(models.Model):
@@ -447,6 +479,12 @@ def get_my_general_sales(cls):
     my_counts_sales = CountsPackage.objects.filter( subproduct__in=subproducts).filter(~Q(owner=cls))
     return my_counts_sales
 
+def get_mys_invoices_pendding(self):
+
+    invoices = Invoice.objects.filter(payed=False, due=self )
+    return invoices
+
+User.add_to_class("get_mys_invoices_pendding",get_mys_invoices_pendding)
 User.add_to_class("get_general_stars_saler",get_general_stars_saler)
 User.add_to_class("get_stars_saler",get_stars_saler)
 User.add_to_class("get_my_salers",get_my_salers)

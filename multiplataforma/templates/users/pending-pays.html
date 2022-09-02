@@ -34,9 +34,9 @@
 						<label>Usuarios con solicitudes de pago pendientes:</label>
 							<select id="select_user" class="form-control">
 								<option value="" selected>---------------------</option>
-							{% for user in users %}
-							  <option value="{{ user.username}}" >{{ user.first_name}} {{ user.last_name}}</option>
-							{% endfor %}
+								{% for user in users %}
+								  <option value="{{ user.username}}" >{{ user.first_name }} {{ user.last_name}}</option>
+								{% endfor %}
 							</select>
 					</div>
 			</div>

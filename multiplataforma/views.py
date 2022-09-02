@@ -16,7 +16,7 @@ from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.contrib.auth.tokens import default_token_generator
 from django.template.loader import render_to_string
-
+from django.views.decorators.csrf import csrf_exempt
 
 
 
@@ -436,13 +436,14 @@ def CommissionsPendingView(request):
     sales = CountsPackage.SalesPendingCommission(request.user)
     user_data = UserData.objects.filter(user=request.user).first()
     if request.method == 'POST':
+        invoice = Invoice.objects.create(due=request.user, payment_method= request.POST['payment'])
         for item in request.POST:
             if item.isnumeric():
                 is_mine = sales.filter(id=item).first()
                 if is_mine:
                     is_mine.commission_collect =True
-                    is_mine.commission_collect_payment = request.POST['payment']
                     is_mine.save()
+                    CountPackageInvoice.objects.create(invoice=invoice, count_package= is_mine)
         return redirect('commission-collect')
 
     return render(request, 'sales/sales_collect.html',  {'sales': sales, 'user_data':user_data })
@@ -773,7 +774,7 @@ def BuysMonthView(request, year=None, month= None):
 @login_required
 def UserCommissionPendingView(request):
 
-    users = CountsPackage.UserPendingCommission()
+    users = Invoice.UserPendingInvoices()
     return render(request, 'users/pending-pays.html',  {'users': users })
 
 
@@ -782,46 +783,45 @@ def UserCommissionPendingView(request):
 def CommissionPendingView(request, username):
 
     user = User.objects.filter(username=username).first()
-    user_data = UserData.objects.filter(user = user).first()
-    sales = CountsPackage.SalesPendingPayCommission(user)
-    paypal_sales_sum = paypal_comission = binance_sales_sum = binance_comission = aritms_sales_sum = aritms_comission = banco_sales_sum = banco_comission = 0
-    paypal_pay = binance_pay = aritms_pay = banco_pay = 0
-    paypal = sales.filter(commission_collect_payment="paypal")
-    binance = sales.filter(commission_collect_payment="binance")
-    aritms = sales.filter(commission_collect_payment="aritms")
-    banco = sales.filter(commission_collect_payment="banco")
-    if paypal:
-        paypal_sales_sum = paypal.aggregate(total_sales=Sum('price_buy'))
-        paypal_comission = (int(paypal_sales_sum['total_sales']) * (PERCENT_COMISSION*0.01))
-        paypal_pay = int(paypal_sales_sum['total_sales']) - paypal_comission
-    if binance:
-        binance_sales_sum = binance.aggregate(total_sales=Sum('price_buy'))
-        binance_comission = int(binance_sales_sum['total_sales']) * (PERCENT_COMISSION * 0.01)
-        binance_pay = int(binance_sales_sum['total_sales']) - binance_comission
-    if aritms:
-        aritms_sales_sum = aritms.aggregate(total_sales=Sum('price_buy'))
-        aritms_comission = int(aritms_sales_sum['total_sales']) * (PERCENT_COMISSION * 0.01)
-        aritms_pay = int(aritms_sales_sum['total_sales']) - aritms_comission
-    if banco:
-        banco_sales_sum = banco.aggregate(total_sales=Sum('price_buy'))
-        banco_comission = int(banco_sales_sum['total_sales']) * (PERCENT_COMISSION * 0.01)
-        banco_pay = int(banco_sales_sum['total_sales']) - banco_comission
-        print(banco_sales_sum)
-        print(banco_comission)
+    invoices = user.get_mys_invoices_pendding()
+    return render(request, 'sales/invoices_pendding.html', {
+        'invoices': invoices, 'user':user } )
+@csrf_exempt
+@usertype_in_view
+@login_required
+def PayInvoicePenddingView(request, id):
 
-    return render(request, 'sales/sales_comission_pending.html',  {
-        'user':user, 'user_data':user_data,
-        'paypals': paypal, 'paypal_sales_sum': paypal_sales_sum,'paypal_comission': paypal_comission, 'paypal_pay':paypal_pay,
-        'binances': binance, 'binance_sales_sum': binance_sales_sum,'binance_comission': binance_comission,'binance_pay': binance_pay,
-        'aritms': aritms, 'aritms_sales_sum': aritms_sales_sum,  'aritms_comission': aritms_comission, 'aritms_pay':aritms_pay,
-        'bancos': banco, 'banco_sales_sum': banco_sales_sum, 'banco_comission': banco_comission,'banco_pay':banco_pay })
+    count_package_invoice = list(CountPackageInvoice.objects.filter(invoice=id).values_list('count_package', flat=True))
+    sales = CountsPackage.objects.filter(id__in=count_package_invoice)
+    invoice = Invoice.objects.filter(id=id).first()
+    user_data = UserData.objects.filter(user=invoice.due).first()
+    sales_sum = sales.aggregate(total_sales=Sum('price_buy'))
+    comission = (int(sales_sum['total_sales']) * (PERCENT_COMISSION*0.01))
+    pay_in = eval("user_data."+ str(invoice.payment_method.lower()))
+    pay = int(sales_sum['total_sales']) - comission
+    if request.method == 'POST':
+        try:
+            invoice.payed=True
+            invoice.date_pay = datetime.datetime.now()
+            invoice.save()
+            for sale in sales:
+                sale.SetPayStaffSale()
+            return HttpResponse("Pago registrado satisfactroriamente")
+        except:
+            return HttpResponse("Hubo un error al efectuar el pago")
+
+    else:
+        return render(request, 'sales/sales_comission_pending.html', {
+            'invoice': invoice, 'user_data': user_data, 'sales': sales,
+            'sales_sum': sales_sum, 'comission': comission, 'pay': pay
+        })
+
 
 @usertype_in_view
 @login_required
-def PayStaffSaleView(request, username, payment):
+def PayStaffSaleView(request, id):
 
     user = User.objects.filter(username=username).first()
-    user_data =UserData.objects.filter(user=user).first()
     sales = CountsPackage.SalesPendingCommissionByPayment(user, payment)
     sales_sum = comission = 0
     if sales:

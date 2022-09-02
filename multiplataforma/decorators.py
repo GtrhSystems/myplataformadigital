@@ -68,7 +68,8 @@ def usertype_in_view(function):
                      'multiplatforms-sales-month',
                      'sales-inter-dates',
                      'user-pay-pending',
-                     'see-sale'
+                     'see-sale',
+                     'pay-invoice-pendding'
                      ]
         request_url = request.__dict__['path_info'] #captura todo el request en un dict      
         match = resolve(request_url) #devuelve el name de la vista

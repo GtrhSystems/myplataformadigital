@@ -1,231 +1,69 @@
+{% extends 'layout.html' %}
 {% load humanize %}
 {% load mathfilters %}
 {% load widget_tweaks %}
 {% block content %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
-{% if paypal_sales_sum.total_sales > 0%}
-    <div class="row">
 
-        <div class="col-lg-12">
-            <div class="card">
+<div class="row">
 
-                <div class="card-block table-border-style">
-                    <div class="table-responsive">
-                        <h5>Paypal</h5>
-                        <table id="pendding-table" class="table table-no-pagin">
-                            <thead>
-                                <tr>
-                                    <th>Fecha</th>
-                                    <th>Subproducto</th>
-                                    <th>Proveedor</th>
-                                    <th>Precio</th>
-                                     <th>Pago</th>
-                                    <th>Comision</th>
-                                    <th>Medio</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                               {% for paypal in paypals %}
-                                <tr class="gradeA odd" role="row">
-                                     <td>{{ paypal.date_buy|date:"d/M/Y P" }}</td>
-                                     <td>{{ paypal.subproduct.name }}</td>
-                                     <td>{{ paypal.subproduct.creater }}</td>
-                                     <td>$ {{ paypal.price_buy|intcomma }}</td>
-                                     <td>$ {{ paypal.price_buy|sub:paypal.commission|intcomma }}</td>
-                                     <td>$ {{ paypal.commission|intcomma }}</td>
-                                     <td>{{ paypal.commission_collect_payment|title }}</td>
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                            {% if paypals %}
-                            <tfoot>
-                                <tr class="gradeA odd" role="row">
-                                    <td></td>
-                                    <td></td>
-                                    <td><strong>Totales</strong></td>
-                                    <td>$ {{ paypal_sales_sum.total_sales|intcomma }}</td>
-                                    <td>$ {{ paypal_pay|intcomma }}</td>
-                                    <td>$ {{ paypal_comission|intcomma }}</td>
-                                    <td></td>
-                                </tr>
-                            </tfoot>
-                            {% endif %}
-                        </table>
-                        <button  payment="paypal" class="btn btn-mat waves-effect waves-light btn-inverse pay">Generar Pago: ${{ paypal_pay|intcomma }} Paypal: {{ user_data.paypal }}</button>
-                    </div>
+    <div class="col-lg-12">
+        <div class="card">
+
+            <div class="card-block table-border-style">
+                <div >
+                    <h5>Pagar facatura No: {{  invoice.id  }}</h5>
+                    <table id="pendding-table" class="table table-no-pagin">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Subproducto</th>
+                                <th>Proveedor</th>
+                                <th>Precio</th>
+                                 <th>Pago</th>
+                                <th>Comision</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                           {% for sale in sales %}
+                            <tr class="gradeA odd" role="row">
+                                 <td>{{ sale.date_buy|date:"d/M/Y P" }}</td>
+                                 <td>{{ sale.subproduct.name }}</td>
+                                 <td>{{ sale.subproduct.creater }}</td>
+                                 <td>$ {{ sale.price_buy|intcomma }}</td>
+                                 <td>$ {{ sale.price_buy|sub:sale.commission|intcomma }}</td>
+                                 <td>$ {{ sale.commission|intcomma }}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+
+                        <tfoot>
+                            <tr class="gradeA odd" role="row">
+                                <td></td>
+                                <td></td>
+                                <td><strong>Totales</strong></td>
+                                <td>$ {{ sales_sum.total_sales|intcomma }}</td>
+                                <td>$ {{ pay|intcomma }}</td>
+                                <td>$ {{ comission|intcomma }}</td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+
+                    </table>
+                    <button  class="btn btn-mat waves-effect waves-light btn-inverse pay">Generar Pago: ${{ pay|intcomma }} {{ invoice.payment_method }}: {{ user_data.paypal }}</button>
                 </div>
             </div>
         </div>
     </div>
-{% endif %}
-
-{% if binance_sales_sum.total_sales > 0%}
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="card">
-                <div class="card-block table-border-style">
-                    <div class="table-responsive">
-                         <h5>Binance</h5>
-                        <table id="pendding-table" class="table table-no-pagin">
-                            <thead>
-                                <tr>
-                                    <th>Fecha</th>
-                                    <th>Subproducto</th>
-                                    <th>Proveedor</th>
-                                    <th>Precio</th>
-                                     <th>Pago</th>
-                                    <th>Comision</th>
-                                    <th>Medio</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                               {% for binance in binances %}
-                                <tr class="gradeA odd" role="row">
-                                     <td>{{ binance.date_buy|date:"d/M/Y P" }}</td>
-                                     <td>{{ binance.subproduct.name }}</td>
-                                     <td>{{ binance.subproduct.creater }}</td>
-                                     <td>$ {{ binance.price_buy|intcomma }}</td>
-                                     <td>$ {{ binance.price_buy|sub:binance.commission|intcomma }}</td>
-                                     <td>$ {{ binance.commission|intcomma }}</td>
-                                     <td>{{ binance.commission_collect_payment|title }}</td>
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                            {% if binances %}
-                            <tfoot>
-                                <tr class="gradeA odd" role="row">
-                                    <td></td>
-                                    <td></td>
-
-                                    <td><strong>Totales</strong></td>
-                                    <td>$ {{ binance_sales_sum.total_sales|intcomma }}</td>
-                                    <td>$ {{ binance_pay|intcomma }}</td>
-                                    <td>$ {{ binance_comission|intcomma }}</td>
-                                    <td></td>
-                                </tr>
-                            </tfoot>
-                            {% endif %}
-                        </table>
-                        <button  payment="binance" class="btn btn-mat waves-effect waves-light btn-inverse pay">Generar Pago: ${{ binance_pay|intcomma }} Binance: {{ user_data.binance }}</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-{% endif %}
+</div>
 
 
-{% if aritms_sales_sum.total_sales > 0%}
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="card">
-                <div class="card-block table-border-style">
-                    <div class="table-responsive">
-                         <h5>Aritms</h5>
-                        <table id="pendding-table" class="table table-no-pagin">
-                            <thead>
-                                <tr>
-                                    <th>Fecha</th>
-                                    <th>Subproducto</th>
-                                    <th>Proveedor</th>
-                                    <th>Precio</th>
-                                     <th>Pago</th>
-                                    <th>Comision</th>
-                                    <th>Medio</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                               {% for aritm in aritms %}
-                                <tr class="gradeA odd" role="row">
-                                     <td>{{ aritm.date_buy|date:"d/M/Y P" }}</td>
-                                     <td>{{ aritm.subproduct.name }}</td>
-                                     <td>{{ aritm.subproduct.creater }}</td>
-                                     <td>$ {{ aritm.price_buy|intcomma }}</td>
-                                     <td>$ {{ aritm.price_buy|sub:aritm.commission|intcomma }}</td>
-                                     <td>$ {{ aritm.commission|intcomma }}</td>
-                                     <td>{{ aritm.commission_collect_payment|title }}</td>
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                            {% if aritms %}
-                            <tfoot>
-                                <tr class="gradeA odd" role="row">
-                                    <td></td>
-                                    <td></td>
-                                    <td><strong>Totales</strong></td>
-                                    <td>$ {{ aritms_sales_sum.total_sales|intcomma }}</td>
-                                     <td>$ {{ aritms_pay|intcomma }}</td>
-                                    <td>$ {{ aritms_comission|intcomma }}</td>
-                                    <td></td>
-                                </tr>
-                            </tfoot>
-                            {% endif %}
-                        </table>
-                        <button  payment="aritms" class="btn btn-mat waves-effect waves-light btn-inverse pay">Generar Pago: ${{ aritms_pay|intcomma }} Aritms: {{ user_data.aritms }}</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-{% endif %}
 
-{% if banco_sales_sum.total_sales > 0 %}
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="card">
-                <div class="card-block table-border-style">
-                    <div class="table-responsive">
-                         <h5>Banco</h5>
-                        <table id="pendding-table" class="table table-no-pagin">
-                            <thead>
-                                <tr>
-                                    <th>Fecha</th>
-                                    <th>Subproducto</th>
-                                    <th>Proveedor</th>
-                                    <th>Precio</th>
-                                     <th>Pago</th>
-                                    <th>Comision</th>
-                                    <th>Medio</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                               {% for banco in bancos %}
-                                <tr class="gradeA odd" role="row">
-                                     <td>{{ banco.date_buy|date:"d/M/Y P" }}</td>
-                                     <td>{{ banco.subproduct.name }}</td>
-                                     <td>{{ banco.subproduct.creater }}</td>
-                                     <td>$ {{ banco.price_buy|intcomma }}</td>
-                                     <td>$ {{ banco.price_buy|sub:banco.commission|intcomma }}</td>
-                                     <td>$ {{ banco.commission|intcomma }}</td>
-                                     <td>{{ banco.commission_collect_payment|title }}</td>
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                            {% if bancos %}
-                            <tfoot>
-                                <tr class="gradeA odd" role="row">
-                                    <td></td>
-                                    <td></td>
-                                    <td><strong>Totales</strong></td>
-                                    <td>$ {{ banco_sales_sum.total_sales|intcomma }}</td>
-                                    <td>$ {{ banco_pay|intcomma }}</td>
-                                    <td>$ {{ banco_comission|intcomma }}</td>
-                                    <td></td>
-                                </tr>
-                            </tfoot>
-                            {% endif %}
-                        </table>
-                        <button  payment="banco" class="btn btn-mat waves-effect waves-light btn-inverse pay">Generar Pago: ${{ banco_pay|intcomma }} Banco: {{ user_data.banco }}</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-{% endif %}
 
 
 <script>
-set_pay_to_staff('{{ user.username }}')
+set_pay_to_staff('{{ invoice.id }}')
 </script>
 
 {% endblock %}
