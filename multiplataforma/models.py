@@ -484,6 +484,13 @@ def get_mys_invoices_pendding(self):
     invoices = Invoice.objects.filter(payed=False, due=self )
     return invoices
 
+def get_mys_invoices_payed(self):
+
+    invoices = Invoice.objects.filter(payed=True, due=self )
+    return invoices
+
+
+User.add_to_class("get_mys_invoices_payed",get_mys_invoices_payed)
 User.add_to_class("get_mys_invoices_pendding",get_mys_invoices_pendding)
 User.add_to_class("get_general_stars_saler",get_general_stars_saler)
 User.add_to_class("get_stars_saler",get_stars_saler)

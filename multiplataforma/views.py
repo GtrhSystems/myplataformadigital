@@ -144,8 +144,9 @@ def IndexView(request):
 
         sales_sum = comission = 0
         sales = CountsPackage.SalesByStaffbyDate(request.user, int(date.strftime("%Y")), int(date.strftime("%m")))
-        commission_pending = CountsPackage.SalesPendingCommissionByPayment(request.user, False).aggregate(total=Sum('commission'))
-        commission_payed = CountsPackage.SalesPendingCommissionByPayment(request.user, True).aggregate(total=Sum('commission'))
+        commission_pending = len(request.user.get_mys_invoices_pendding())
+        #commission_pending = CountsPackage.SalesPendingCommissionByPayment(request.user, False).aggregate(total=Sum('commission'))
+        commission_payed = len(request.user.get_mys_invoices_payed())
         request_renewal = len(CountsPackage.RenewPending(request.user ))
         if sales:
             sales_sum = sales.aggregate(total_sales=Sum('price_buy'))
