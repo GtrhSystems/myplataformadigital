@@ -200,7 +200,7 @@ class CountsPackage(models.Model):
         utc = pytz.UTC
         now = now.replace(tzinfo=utc)
         days = int(months) * 30
-        if  now > self.date_finish.replace(tzinfo=utc) :
+        if self.date_finish.replace(tzinfo=utc) > now:
             initial_date = self.date_finish + datetime.timedelta(days=1)
             date_finish =  initial_date + datetime.timedelta(days=days)
             kwargs = model_to_dict(self, exclude=['id'])
