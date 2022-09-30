@@ -200,17 +200,17 @@ class CountsPackage(models.Model):
         utc = pytz.UTC
         now = now.replace(tzinfo=utc)
         days = int(months) * 30
-        #if self.date_finish.replace(tzinfo=utc) < now:
-        initial_date = self.date_finish + datetime.timedelta(days=1)
-        date_finish =  initial_date + datetime.timedelta(days=days)
-        kwargs = model_to_dict(self, exclude=['id'])
-        kwargs['subproduct'] = SubProduct.objects.filter(id= kwargs['subproduct']).first()
-        kwargs['owner'] = User.objects.filter(id=kwargs['owner']).first()
-        kwargs['date_buy'] = datetime.datetime.now()
-        kwargs['date_finish'] = date_finish
-        kwargs['request_renewal'] = 0
-        kwargs['months_renew'] = 0
-        CountsPackage.objects.create(**kwargs)
+        if self.date_finish.replace(tzinfo=utc) < now:
+            initial_date = self.date_finish + datetime.timedelta(days=1)
+            date_finish =  initial_date + datetime.timedelta(days=days)
+            kwargs = model_to_dict(self, exclude=['id'])
+            kwargs['subproduct'] = SubProduct.objects.filter(id= kwargs['subproduct']).first()
+            kwargs['owner'] = User.objects.filter(id=kwargs['owner']).first()
+            kwargs['date_buy'] = datetime.datetime.now()
+            kwargs['date_finish'] = date_finish
+            kwargs['request_renewal'] = 0
+            kwargs['months_renew'] = 0
+            CountsPackage.objects.create(**kwargs)
 
     @classmethod
     def sales_to_expire(cls, user, days):
@@ -219,7 +219,7 @@ class CountsPackage(models.Model):
             date = datetime.date.today()
         else:
             date = datetime.date.today() + datetime.timedelta(days=days)
-        sales_to_expire = cls.objects.filter(owner = user, request_renewal=False ).filter(date_finish__range=[datetime.date.today(), date ]).order_by('-date_finish')
+        sales_to_expire = cls.objects.filter(owner = user).filter(date_finish__range=[datetime.date.today(), date ]).order_by('-date_finish')
         return sales_to_expire
 
     @classmethod

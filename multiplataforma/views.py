@@ -468,7 +468,7 @@ def RenewCountPackageView(request, id):
     transaction = sale.owner.subtract_money(money_user, money_to_discount, "Renovar cuenta: " + str(sale.subproduct.name) + " a " + sale.owner.username + "por " + str(sale.months_renew) + " meses")
     if transaction:
         sale.resale_count(sale.months_renew )
-        #sale.request_renewal = 0
+        sale.request_renewal = 0
         sale.save()
         return HttpResponse(f"Cuenta renovada por { sale.months_renew } meses ")
     else:
