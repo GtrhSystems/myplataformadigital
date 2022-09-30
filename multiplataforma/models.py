@@ -219,7 +219,7 @@ class CountsPackage(models.Model):
             date = datetime.date.today()
         else:
             date = datetime.date.today() + datetime.timedelta(days=days)
-        sales_to_expire = cls.objects.filter(owner = user).filter(date_finish__range=[datetime.date.today(), date ]).order_by('-date_finish')
+        sales_to_expire = cls.objects.filter(owner = user, months_renew=0 ).filter(date_finish__range=[datetime.date.today(), date ]).order_by('-date_finish')
         return sales_to_expire
 
     @classmethod
