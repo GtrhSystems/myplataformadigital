@@ -343,14 +343,14 @@ function set_pay_to_staff(invoice_id){
         event.preventDefault()
         $.post('/invoice/pay-pendding/'+invoice_id ,function(data){
               $("#Modal").modal({show: true})
-              $('.modal-content').html(data)
+              $('.modal-body').html(data)
          })
-    })
 
-    $('body').on("click", "#pay" , function(event){
+    $("#Modal").on("hidden.bs.modal", function () {
        location.reload();
-
+    });
     })
+
 
 }
 

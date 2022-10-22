@@ -804,7 +804,9 @@ def PayInvoicePenddingView(request, id):
 
     count_package_invoice = list(CountPackageInvoice.objects.filter(invoice=id).values_list('count_package', flat=True))
     sales = CountsPackage.objects.filter(id__in=count_package_invoice)
-    invoice = Invoice.objects.filter(id=id).first()
+    invoice = Invoice.objects.filter(id=id, payed=False).first()
+    if not invoice:
+        return redirect('sales-inter-dates')
     user_data = UserData.objects.filter(user=invoice.due).first()
     sales_sum = sales.aggregate(total_sales=Sum('price_buy'))
     comission = (int(sales_sum['total_sales']) * (PERCENT_COMISSION*0.01))
