@@ -300,6 +300,14 @@ class Invoice(models.Model):
 
         return users
 
+    @classmethod
+    def InvoicesbyDatePay(self, year, month):
+
+        initial_date, final_date = dates_init_finish(year, month)
+        invoices = self.objects.filter(payed=True).filter(date_pay__range=[initial_date, final_date])
+        return invoices
+
+
 class CountPackageInvoice(models.Model):
 
     invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE)
@@ -317,7 +325,17 @@ class CountPackageInvoice(models.Model):
         counts_package = counts_package.filter(is_duplicate=False)
         return counts_package
 
+    @classmethod
+    def InvoicesPendingByPay(cls):
 
+        invices_pending = []
+        packages = CountsPackage.AllSalesPendingCommission()
+        for package in packages:
+            count_package_invoice = cls.objects.filter(count_package=package).first()
+            if not count_package_invoice.invoice.id in invices_pending:
+                invices_pending.append(count_package_invoice.invoice.id)
+
+        return invices_pending
 #class CountPackageSale(models.Model):
 
 #   saler = models.ForeignKey(User, on_delete=models.CASCADE)#

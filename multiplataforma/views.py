@@ -118,7 +118,6 @@ def IndexView(request):
 
     user_type = check_user_type(request)
     date = datetime.date.today()
-    print(user_type)
     if user_type == "superuser":
         staff_actives = User.objects.filter(is_active=True).filter(groups__name="staff")
         salers_actives = User.objects.filter(is_active=True).filter(groups__name="vendedor")
@@ -127,7 +126,9 @@ def IndexView(request):
         len_staff_actives  = len(staff_actives)
         staff_requests = len(User.objects.filter(is_active=False).filter(groups__name="staff"))
         vendedor_sales = CountsPackage.all_counts_saled_for_date(date)
-        sales_pendding = len(CountsPackage.AllSalesPendingCommission())
+
+
+        sales_pendding = len(CountPackageInvoice.InvoicesPendingByPay())
         reports = len(IssuesReport.get_reports_pendding())
         sales_today = len(vendedor_sales)
         return render(request, 'dashboard_'+user_type+'.html', {
@@ -695,11 +696,13 @@ def SalesMonthPlatformsView(request, year=None, month= None):
 
     elif context['user_type'] == "superuser":
         template = 'sales/sales_staff.html'
-        sales = CountsPackage.SalesAllbyDate( year, month)
-        if sales:
-            sales_sum = sales.aggregate(total_sales=Sum('price_buy'))
-            comission_sum =  sales.aggregate(total_commission=Sum('commission'))
-            return render(request, template, {'sales': sales, 'sales_sum': sales_sum, 'comission': comission_sum['total_commission']    })
+        invoices = Invoice.InvoicesbyDatePay( year, month)
+        if invoices:
+            for invoice in invoices:
+                count_package_invoice = CountPackageInvoice.objects.filter(invoice=invoice).aggregate(total_invoice=Sum('count_package__price_buy'))
+                invoice.total = count_package_invoice['total_invoice']
+
+            return render(request, template, {'invoices': invoices  })
 
     elif context['user_type'] == "vendedor":
         template = 'sales/sales_saler.html'
@@ -717,8 +720,10 @@ def SalesMonthPlatformsView(request, year=None, month= None):
 @login_required
 def SeeSalePlatformsView(request, id):
 
-    sale = CountsPackage.objects.get(id=id)
-    return render(request, "sales/see_sale.html", {'sale': sale })
+    count_package_invoices = CountPackageInvoice.objects.filter(invoice_id=id)
+    total_value = count_package_invoices.aggregate(total_invoice=Sum('count_package__price_buy'))
+
+    return render(request, "sales/see_sale.html", {'count_package_invoices': count_package_invoices, 'total_value':total_value['total_invoice'] })
 
 
 @usertype_in_view

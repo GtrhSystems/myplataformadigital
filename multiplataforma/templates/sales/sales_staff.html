@@ -20,21 +20,20 @@
                                 <!--<th>Producto</th>-->
                                 <!--<th>Precio</th>-->
                                 <th>Pago</th>
-                                <th>Comision</th>
                                 <th></th>
                             </tr>
                         </thead>
                         <tbody>
-                           {% for sale in sales %}
+                           {% for invoice in invoices %}
                             <tr class="gradeA odd" role="row">
-                               <td>{{ sale.date_pay|date:"d/M/Y P" }}</td>
-                               <td>{{ sale.owner }}</td>
+                               <td>{{ invoice.date_pay|date:"d/M/Y P" }}</td>
+                               <td>{{ invoice.due.first_name }} {{ invoice.due.last_name }}- {{ invoice.due.username }}</td>
                                <!--<td>{{ sale.subproduct.name }}</td>
                                <td>$ {{ sale.price_buy|intcomma }}</td>-->
-                               <td>$ {{ sale.price_buy|sub:sale.commission|intcomma }}</td>
-                               <td>$ {{ sale.commission|intcomma }}</td>
+                               <td>$ {{ invoice.total }}</td>
 
-                                <td><a href="{% url 'see-sale' sale.id %}"> Ver</a></td>
+
+                                 <td><a href="{% url 'see-sale' invoice.id %}"> Ver</a></td>
                             </tr>
                         {% endfor %}
                         {% if sales %}
