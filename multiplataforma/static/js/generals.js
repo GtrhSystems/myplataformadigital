@@ -354,4 +354,38 @@ function set_pay_to_staff(invoice_id){
 
 }
 
+function renew_counts(){
+
+
+    $('#renews-table tbody').on("click", ".renew" , function(event){
+        event.preventDefault()
+        id = $(this).attr('id')
+        var mensaje = confirm("Desea renovar esta cuenta?");
+        if (mensaje) {
+            $.get("/platform/renew-count-package/"+ id ,function(data){
+                    alert(data)
+                    location.reload();
+
+             })
+        }
+
+    })
+
+    $('#renews-table tbody').on("click", ".delete" , function(event){
+
+        event.preventDefault()
+        id = $(this).attr('delete_id')
+        var mensaje = confirm("Desea Eliminar esta solicitud?");
+        if (mensaje) {
+            $.get('/delete/renew/'+id ,function(data){
+                    alert(data)
+                    location.reload();
+
+             })
+        }
+
+    })
+
+}
+
 

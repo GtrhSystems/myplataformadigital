@@ -22,6 +22,7 @@
                                 <th>Precio</th>
                                 <th>Venta</th>
                                 <th>Comision</th>
+                                <th>Factura</th>
                                 <th>Fecha de pago</th>
                             </tr>
                         </thead>
@@ -34,6 +35,8 @@
                                     <td>$ {{ sale.price_buy|intcomma }}</td>
                                     <td>$ {{ sale.price_buy|sub:sale.commission|intcomma }}</td>
                                     <td>$ {{ sale.commission|intcomma }}</td>
+                                    <td> {{ sale.invoice }}</td>
+
                                    <td> {{ sale.date_pay|date:"d/M/Y P" }}</td>
                             </tr>
                         {% endfor %}

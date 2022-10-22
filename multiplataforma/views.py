@@ -214,13 +214,11 @@ def RegisterStaffView(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST or None)
         form2 = UserDataForm(request.POST, request.FILES or None)
-        print(request.POST)
         if form.is_valid() and form2.is_valid():
             user = form.save(commit=False)
             user.is_active = 0
             user.save()
             UserData = form2.save(commit=False)
-            print(UserData)
             UserData.user = user
             token = get_random_string(length=30)
             UserData.token_register = token
@@ -478,7 +476,14 @@ def RenewCountPackageView(request, id):
 def CommissionsPayedView(request):
 
     sales = CountsPackage.objects.filter(subproduct__creater=request.user, commission_payed=True, commission_collect=True)
-
+    for sale in sales:
+         sale_invoice =  CountPackageInvoice.objects.filter(count_package = sale).first()
+         if sale_invoice:
+            invoice = sale_invoice.invoice
+         else:
+             invoice = ""
+         sale.invoice = invoice
+        #sale.save()
     return render(request, 'sales/sales_payed.html',  {'sales': sales })
 
 
@@ -927,7 +932,7 @@ def DeleteRegister(request, model, id):
     if user_type == "superuser":
         models = ["User", "Product","DeleteUser"]
     elif user_type == "staff":
-        models = ["User", "CountsPackage", "SubProduct"]
+        models = ["User", "CountsPackage", "SubProduct", "renew"]
     elif user_type == "vendedor" :
         models = ['IssuesReport']
     else:
@@ -957,8 +962,12 @@ def DeleteRegister(request, model, id):
             else:
                 if model == "SubProduct" or model == "Product":
                     exist_id = eval(model + ".objects.filter(id=" + id + ").first() ")
-                elif model == "CountsPackage":
-                    exist_id = eval(model + ".objects.filter(id=" + id + ").select_related('subproduct').first() ")
+                elif model == "CountsPackage" or model == "renew":
+                    exist_id = CountsPackage.objects.filter(id= id).select_related('subproduct').first()
+                    if model == "renew":
+                        exist_id.request_renewal = 0
+                        exist_id.save()
+                        return  HttpResponse("Desactivado satisfactorio")
                     if exist_id.subproduct.creater != request.user:
                         exist_id = None
                 elif model == "PlanPlatformSales":

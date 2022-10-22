@@ -21,7 +21,8 @@
                                 <th>Perfil</th>
                                 <th>Distribuidor</th>
                                 <th>Precio</th>
-                                <th>Renovar</th>
+                                <th></th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -35,6 +36,7 @@
                                     <td>{{ sale.owner }}</td>
                                     <td>$ {{ sale.price_buy|intcomma }}</td>
                                    <td><a id="{{ sale.id }}" class="renew" href="#"> <i class="ti-loop f-28"></i></a></td>
+                                   <td><a delete_id="{{ sale.id }}" class="delete" href="#"> <i class="ti-trash f-28"></i></a></td>
                             </tr>
                         {% endfor %}
 
@@ -48,23 +50,9 @@
 	<!-- /.col-lg-12 -->
 </div>
 
-
 <script>
+renew_counts()
 
-$('#renews-table tbody').on("click", ".renew" , function(event){
-    event.preventDefault()
-    id = $(this).attr('id')
-    var mensaje = confirm("Desea renovar esta cuenta?");
-    if (mensaje) {
-        $.get("/platform/renew-count-package/"+ id ,function(data){
-                alert(data)
-                location.reload();
-
-         })
-    }
-
-})
-     
 </script>
 
 {% endblock %}
