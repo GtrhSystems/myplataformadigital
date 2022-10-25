@@ -45,6 +45,10 @@
                             <tr>
 								<th>#</th>
                                 <th>Producto</th>
+								 <th>Email</th>
+								 <th>Contraseña</th>
+								 <th>Perfil</th>
+								 <th>Pin</th>
                                 <th>Pago</th>
 
                             </tr>
@@ -54,6 +58,10 @@
                             <tr class="gradeA odd" role="row">
 							   <td >{{forloop.counter}}</td>
                                <td>{{ invoice.count_package.subproduct.name }}</td>
+							   <td>{{ invoice.count_package.email }}</td>
+							   <td>{{ invoice.count_package.password }}</td>
+							   <td>{{ invoice.count_package.profile }}</td>
+							   <td>{{ invoice.count_package.pin }}</td>
                                <td>$ {{ invoice.count_package.price_buy|intcomma }}</td>
                             </tr>
                         {% endfor %}
