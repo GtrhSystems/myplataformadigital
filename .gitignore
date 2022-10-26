@@ -7,6 +7,8 @@ multiplataforma_project/__init__.py
 multiplataforma/migrations/
 !multiplataforma/migrations/__init__.py
 __pycache__/*
+multiplataforma/templatetags/__pycache__/
+multiplataforma/templatetags/__pycache__/*
 db.sqlite3
 multiplataforma_project/__pycache__
 env/

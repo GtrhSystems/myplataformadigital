@@ -701,7 +701,7 @@ def SalesMonthPlatformsView(request, year=None, month= None):
             for invoice in invoices:
                 count_package_invoice = CountPackageInvoice.objects.filter(invoice=invoice).aggregate(total_invoice=Sum('count_package__price_buy'))
                 invoice.total = count_package_invoice['total_invoice']
-
+                invoice.commission = count_package_invoice['total_invoice'] * (PERCENT_COMISSION * 0.01)
             return render(request, template, {'invoices': invoices  })
 
     elif context['user_type'] == "vendedor":

@@ -211,6 +211,8 @@ class CountsPackage(models.Model):
         kwargs['date_finish'] = date_finish
         kwargs['request_renewal'] = 0
         kwargs['months_renew'] = 0
+        kwargs['commission_payed'] = 0
+        kwargs['commission_collect'] = 0
         #print(kwargs)
         #post
         CountsPackage.objects.create(**kwargs)

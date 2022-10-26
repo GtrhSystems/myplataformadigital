@@ -1,7 +1,7 @@
 {% load mathfilters %}
 {% load humanize %}
 {% block content %}
-
+{% load poll_extras %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
 
 <div class="row">
@@ -17,8 +17,8 @@
                             <tr>
                                 <th>Fecha de pago</th>
                                  <th>Proveedor</th>
-                                <!--<th>Producto</th>-->
-                                <!--<th>Precio</th>-->
+
+                                <th>Comision</th>
                                 <th>Pago</th>
                                 <th></th>
                             </tr>
@@ -28,9 +28,9 @@
                             <tr class="gradeA odd" role="row">
                                <td>{{ invoice.date_pay|date:"d/M/Y P" }}</td>
                                <td>{{ invoice.due.first_name }} {{ invoice.due.last_name }}- {{ invoice.due.username }}</td>
-                               <!--<td>{{ sale.subproduct.name }}</td>
-                               <td>$ {{ sale.price_buy|intcomma }}</td>-->
-                               <td>$ {{ invoice.total }}</td>
+
+                               <td>$ {{ invoice.commission|two_decimal:2|intcomma }}</td>
+                               <td>$ {{ invoice.total|two_decimal:2|intcomma  }}</td>
 
 
                                  <td><a href="{% url 'see-sale' invoice.id %}"> Ver</a></td>
