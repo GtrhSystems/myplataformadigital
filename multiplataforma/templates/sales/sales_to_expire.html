@@ -135,7 +135,7 @@
             <div class="card-footer bg-c-blue">
                 <div class="row align-items-center">
                     <div class="col-9">
-                         <a href="{% url 'reported-issues-platform' %}"><p class="text-white m-b-0">Ver</p></a>
+                         <a href="#renovated"><p class="text-white m-b-0">Ver</p></a>
                     </div>
                 </div>
             </div>
@@ -200,7 +200,7 @@
 	<!-- /.col-lg-12 -->
 </div>
 
-<div class="row">
+<div class="row" id="renovated">
 	<div class="col-lg-12">
 		<div class="card">
 			<div class="card-header">
@@ -225,7 +225,7 @@
                             <tr class="gradeA odd" role="row">
                                     <td>{{ sale.date_buy|date:"d/M/Y P" }}</td>
                                     <td>{{ sale.subproduct.name }}</td>
-                                    <td>{{ sale.email }}</td>
+                                    <td>{{ sale.id }}</td>
                                     <td>{{ sale.password }}</td>
                                     <td>{{ sale.profile }}</td>
                                     <td>{{ sale.owner }}</td>

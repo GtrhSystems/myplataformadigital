@@ -173,7 +173,7 @@ def IndexView(request):
         len_sales_to_expire_today = len(CountsPackage.sales_to_expire(request.user, 0))
         len_reports_pendding = len(IssuesReport.get_mys_reports_pendding(request.user))
         len_reports_solucionated = len(IssuesReport.get_mys_reports_solucionated(request.user))
-        request_renewal = CountsPackage.objects.filter(owner=request.user, request_renewal=0, months_renew__gt=0)
+        request_renewal = CountsPackage.objects.filter(owner=request.user, request_renewal=0, is_renew=True)
         len_request_renewal = len(request_renewal)
         return render(request, 'sales/sales_to_expire.html',  {
             'sales': sales_to_expire,

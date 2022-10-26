@@ -128,6 +128,7 @@ class CountsPackage(models.Model):
     date_finish = models.DateTimeField(auto_now_add=False, null=True)
     request_renewal = models.BooleanField(default=False, verbose_name="Solicitar renovación")
     months_renew = models.IntegerField(default=0, verbose_name="Meses")
+    is_renew = models.BooleanField(default=False, verbose_name="Es renovación")
 
     def __str__(self):
         return str(self.email)
@@ -213,6 +214,7 @@ class CountsPackage(models.Model):
         kwargs['months_renew'] = 0
         kwargs['commission_payed'] = 0
         kwargs['commission_collect'] = 0
+        kwargs['is_renew'] = 1
         #print(kwargs)
         #post
         CountsPackage.objects.create(**kwargs)
