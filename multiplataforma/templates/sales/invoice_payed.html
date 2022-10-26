@@ -1,0 +1,97 @@
+{% load mathfilters %}
+{% load humanize %}
+{% block content %}
+{% load poll_extras %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+
+<div class="row">
+	<div class="col-lg-12">
+		<div class="card">
+			<div class="card-header">
+				<h5>Listado de comisiones pagadas a proveedores</h5>
+			</div>
+			<div class="card-block table-border-style">
+				<div class="table-responsive">
+                    <table id="sales-table" class="table table-normal">
+                        <thead>
+                            <tr>
+                                <th>Fecha de pago</th>
+                                 <th>Proveedor</th>
+
+                                <th>Comision</th>
+                                <th>Pago</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                           {% for invoice in invoices %}
+                            <tr class="gradeA odd" role="row">
+                               <td>{{ invoice.date_pay|date:"d/M/Y P" }}</td>
+                               <td>{{ invoice.due.first_name }} {{ invoice.due.last_name }}- {{ invoice.due.username }}</td>
+
+                               <td>$ {{ invoice.commission|two_decimal:2|intcomma }}</td>
+                               <td>$ {{ invoice.total|two_decimal:2|intcomma  }}</td>
+
+
+                                 <td><a href="{% url 'see-sale' invoice.id %}"> Ver</a></td>
+                            </tr>
+                        {% endfor %}
+                        {% if sales %}
+                        <tr class="gradeA odd" role="row">
+                            <td></td>
+                            <td><strong>Totales</strong></td>
+                            <td>$ {{ sales_sum.total_sales|intcomma }}</td>
+                            <td>$ {{ comission|intcomma }} </td>
+                            <td></td>
+                        </tr>
+                        {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+			</div>
+		</div>
+
+	</div>
+	<!-- /.col-lg-12 -->
+</div>
+
+
+<!-- Modal -->
+<div id="myModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    
+    <!-- Modal content-->
+    <div class="modal-content">
+    
+  </div>
+ 
+</div>
+
+<script>
+
+
+$('#packages-table tbody').on("click", ".report" , function(event){       
+    event.preventDefault()
+    id = $(this).attr('id')    
+    $("#myModal").modal({show: true})
+    $.get('/platform/report-issue/Multiplataforma/'+ id ,function(data){
+          $('.modal-content').html(data)
+          
+     }) 
+})  
+
+$('#packages-table tbody').on("click", ".renew" , function(event){       
+    event.preventDefault()
+    email = $(this).attr('email')    
+    $("#myModal").modal({show: true})
+    $.get('/multiplatform/renew/'+ email ,function(data){            
+          $('.modal-content').html(data)
+          
+     }) 
+})  
+
+
+     
+</script>
+
+{% endblock %}
