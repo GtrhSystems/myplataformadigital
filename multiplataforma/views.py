@@ -476,6 +476,19 @@ def RenewCountPackageView(request, id):
 @login_required
 def CommissionsPayedView(request):
 
+    template = 'sales/invoice_payed.html'
+    invoices = Invoice.objects.filter(payed=True, due= request.user )
+    print(invoices)
+    if invoices:
+        for invoice in invoices:
+            print(invoice)
+            count_package_invoice = CountPackageInvoice.objects.filter(invoice=invoice).aggregate(
+                total_invoice=Sum('count_package__price_buy'))
+            invoice.total = count_package_invoice['total_invoice']
+            invoice.commission = count_package_invoice['total_invoice'] * (PERCENT_COMISSION * 0.01)
+        return render(request, template, {'invoices': invoices})
+
+
     sales = CountsPackage.objects.filter(subproduct__creater=request.user, commission_payed=True, commission_collect=True)
     for sale in sales:
          sale_invoice =  CountPackageInvoice.objects.filter(count_package = sale).first()
@@ -720,7 +733,12 @@ def SalesMonthPlatformsView(request, year=None, month= None):
 @login_required
 def SeeSalePlatformsView(request, id):
 
-    count_package_invoices = CountPackageInvoice.objects.filter(invoice_id=id)
+    context = context_app(request)
+
+    if context['user_type'] == "staff":
+        count_package_invoices = CountPackageInvoice.objects.filter(invoice_id=id).filter(invoice__due=request.user)
+    else:
+        count_package_invoices = CountPackageInvoice.objects.filter(invoice_id=id)
     total_value = count_package_invoices.aggregate(total_invoice=Sum('count_package__price_buy'))
 
     return render(request, "sales/see_sale.html", {'count_package_invoices': count_package_invoices, 'total_value':total_value['total_invoice'] })
