@@ -19,7 +19,6 @@
                                 <th>Comision</th>
                                 <th>Pago</th>
                                 <th></th>
-
                             </tr>
                         </thead>
                         <tbody>
@@ -39,8 +38,8 @@
                                     <td></td>
                                     <td><strong>Totales</strong></td>
 
-                                    <td>$ {{ commissions|intcomma }} </td>
-                                    <td>$ {{ total|intcomma|intcomma }}</td>
+                                    <td>$ {{ commissions|two_decimal:2|intcomma }} </td>
+                                    <td>$ {{ total|intcomma|two_decimal:2|intcomma }}</td>
                                     <td></td>
                                 </tr>
                             {% endif %}
