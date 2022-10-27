@@ -41,7 +41,7 @@
                                     <td><strong>Totales</strong></td>
 
                                     <td>$ {{ commissions|two_decimal:2|intcomma }} </td>
-                                    <td>$ {{ total|intcomma|two_decimal:2|intcomma }}</td>
+                                    <td>$ {{ total|two_decimal:2|intcomma }}</td>
                                     <td></td>
                                 </tr>
                             {% endif %}
