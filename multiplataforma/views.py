@@ -478,15 +478,18 @@ def CommissionsPayedView(request):
 
     template = 'sales/invoice_payed.html'
     invoices = Invoice.objects.filter(payed=True, due= request.user )
-    print(invoices)
+    total = commissions = 0
     if invoices:
         for invoice in invoices:
-            print(invoice)
-            count_package_invoice = CountPackageInvoice.objects.filter(invoice=invoice).aggregate(
-                total_invoice=Sum('count_package__price_buy'))
-            invoice.total = count_package_invoice['total_invoice']
-            invoice.commission = count_package_invoice['total_invoice'] * (PERCENT_COMISSION * 0.01)
-        return render(request, template, {'invoices': invoices})
+            count_package_invoice = CountPackageInvoice.objects.filter(invoice=invoice)
+            price_buy = count_package_invoice.aggregate(total_invoice=Sum('count_package__price_buy'))
+            total = total + price_buy['total_invoice']
+            commissions = commissions + (price_buy['total_invoice'] * (PERCENT_COMISSION * 0.01))
+            invoice.total = price_buy['total_invoice']
+            invoice.commission = price_buy['total_invoice'] * (PERCENT_COMISSION * 0.01)
+            invoice.saler = count_package_invoice[0].count_package.owner
+
+        return render(request, template, {'invoices': invoices, 'total':total, 'commissions':commissions })
 
 
     sales = CountsPackage.objects.filter(subproduct__creater=request.user, commission_payed=True, commission_collect=True)
@@ -710,12 +713,17 @@ def SalesMonthPlatformsView(request, year=None, month= None):
     elif context['user_type'] == "superuser":
         template = 'sales/sales_staff.html'
         invoices = Invoice.InvoicesbyDatePay( year, month)
+        total = commissions = 0
         if invoices:
             for invoice in invoices:
-                count_package_invoice = CountPackageInvoice.objects.filter(invoice=invoice).aggregate(total_invoice=Sum('count_package__price_buy'))
-                invoice.total = count_package_invoice['total_invoice']
-                invoice.commission = count_package_invoice['total_invoice'] * (PERCENT_COMISSION * 0.01)
-            return render(request, template, {'invoices': invoices  })
+                count_package_invoice = CountPackageInvoice.objects.filter(invoice=invoice)
+                price_buy = count_package_invoice.aggregate(total_invoice=Sum('count_package__price_buy'))
+                total = total + price_buy['total_invoice']
+                commissions = commissions + (price_buy['total_invoice'] * (PERCENT_COMISSION * 0.01))
+                invoice.total = price_buy['total_invoice']
+                invoice.commission = price_buy['total_invoice'] * (PERCENT_COMISSION * 0.01)
+                invoice.saler = count_package_invoice[0].count_package.owner
+            return render(request, template, {'invoices': invoices, 'total':total, 'commissions':commissions  })
 
     elif context['user_type'] == "vendedor":
         template = 'sales/sales_saler.html'

@@ -12,13 +12,13 @@
 
             <div class="card-block table-border-style">
                 <div >
-                    <h5>Pagar facatura No: {{  invoice.id  }}</h5>
+                    <h5>Pagar facatura No: {{  invoice.id  }} Proveedor {{ sales.0.subproduct.creater }}</h5>
                     <table id="pendding-table" class="table table-no-pagin">
                         <thead>
                             <tr>
                                 <th>Fecha</th>
                                 <th>Subproducto</th>
-                                <th>Proveedor</th>
+                                <th>Distribuidor</th>
                                 <th>Precio</th>
                                  <th>Pago</th>
                                 <th>Comision</th>
@@ -30,7 +30,7 @@
                             <tr class="gradeA odd" role="row">
                                  <td>{{ sale.date_buy|date:"d/M/Y P" }}</td>
                                  <td>{{ sale.subproduct.name }}</td>
-                                 <td>{{ sale.subproduct.creater }}</td>
+                                 <td>{{ sale.owner|title }}</td>
                                  <td>$ {{ sale.price_buy|intcomma }}</td>
                                  <td>$ {{ sale.price_buy|sub:sale.commission|intcomma }}</td>
                                  <td>$ {{ sale.commission|intcomma }}</td>
