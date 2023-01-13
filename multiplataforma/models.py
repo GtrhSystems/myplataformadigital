@@ -127,6 +127,8 @@ class CountsPackage(models.Model):
     date_pay = models.DateTimeField(blank=True, null=True, auto_now_add=False)
     date_finish = models.DateTimeField(auto_now_add=False, null=True)
     request_renewal = models.BooleanField(default=False, verbose_name="Solicitar renovación")
+    deny_renewal = models.BooleanField(default=False, verbose_name="Renovación denegada")
+    deny_renewal_response = models.CharField(max_length=250, default="", verbose_name="Respuesta a renovacion")
     months_renew = models.IntegerField(default=0, verbose_name="Meses")
     is_renew = models.BooleanField(default=False, verbose_name="Es renovación")
 
@@ -136,7 +138,7 @@ class CountsPackage(models.Model):
     @classmethod
     def RenewPending(cls, user):
 
-        request_renewal = cls.objects.filter(subproduct__creater=user, request_renewal=True)
+        request_renewal = cls.objects.filter(subproduct__creater=user, request_renewal=True, deny_renewal=False)
         return request_renewal
     @classmethod
     def SalesPendingCommission(cls, user):
@@ -472,14 +474,15 @@ def subtract_money(cls, money_user, money_to_discount, detail):
             return remains
     return False
 
-def add_money_user(cls, money_saler, transaction_money, detail):
+def add_money_user(cls, money_saler, transaction_money, detail, admin_username):
 
-    money = int(money_saler)
-    transaction_money = int(transaction_money)
-    if transaction_money > 0:
-        remains = money + transaction_money
-        MoneysSaler.objects.create(money=remains, saler_id=cls.id, detail=detail,  transaction_money=transaction_money)
-        return remains
+    money = float(money_saler)
+    transaction_money = float(transaction_money)
+    if transaction_money < 0:
+        detail = "Reversa de saldo hecha por " + str(admin_username)
+    remains = money + transaction_money
+    MoneysSaler.objects.create(money=remains, saler_id=cls.id, detail=detail,  transaction_money=transaction_money)
+    return remains
 
 
 def get_my_money(cls):

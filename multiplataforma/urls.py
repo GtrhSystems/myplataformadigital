@@ -44,6 +44,7 @@ urlpatterns = [
     path('user/commission_payed', views.CommissionsPayedView, name='commission-payed'),
     path('platform/renew-count-package-list', views.RenewCountPackageListView, name='renew-count-package-list'),
     path('platform/renew-count-package/<int:id>', views.RenewCountPackageView, name='renew-count-package'),
+    path('platform/deny-renew-count-package/<int:id>', views.DenyRenewCountPackageView, name='deny-renew-count-package'),
 
     #multiplataformas-vendedor
     path('platform/market-place', views.MarketPlaceView, name='market-place'),

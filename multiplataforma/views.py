@@ -175,6 +175,8 @@ def IndexView(request):
         len_reports_solucionated = len(IssuesReport.get_mys_reports_solucionated(request.user))
         request_renewal = CountsPackage.objects.filter(owner=request.user, request_renewal=0, is_renew=True)
         len_request_renewal = len(request_renewal)
+        deny_renewal = CountsPackage.objects.filter(owner=request.user, request_renewal=True, deny_renewal=True)
+        len_deny_renewal = len(deny_renewal)
         return render(request, 'sales/sales_to_expire.html',  {
             'sales': sales_to_expire,
             'len_sales_to_expire': len_sales_to_expire,
@@ -182,7 +184,9 @@ def IndexView(request):
             'len_reports_pendding': len_reports_pendding,
             'len_reports_solucionated': len_reports_solucionated,
             'request_renewal':request_renewal,
-            'len_request_renewal':len_request_renewal
+            'len_request_renewal':len_request_renewal,
+            'deny_renewal': deny_renewal,
+            'len_deny_renewal': len_deny_renewal
         })
 
 
@@ -381,12 +385,13 @@ def SalerListView(request):
 @login_required
 def AddMoneySalerView(request, pk):
 
-    form = AddMoneyForm(request.POST or None)
+
     saler = User.objects.filter(id = pk).filter(groups__name = 'vendedor').first()
     money = saler.get_my_money()
+    form = AddMoneyForm(request.POST or None, money)
     if request.method == 'POST':
         if form.is_valid():
-            saler.add_money_user(money, request.POST['money'], "Recarga de saldo")
+            saler.add_money_user(money, request.POST['money'], "Recarga de saldo", request.user.username)
             return redirect('staff-list','vendedor', 1)
 
     return render(request, 'money/add-money-saler.html', {'form': form, 'saler': saler, 'money':money })
@@ -472,6 +477,26 @@ def RenewCountPackageView(request, id):
         return HttpResponse(f"Cuenta renovada por { sale.months_renew } meses ")
     else:
         return HttpResponse(f"El usuario {sale.owner.username} NO cuenta con el dinero para esa transacción ")
+
+
+@usertype_in_view
+@login_required
+def DenyRenewCountPackageView(request, id):
+
+    sale = CountsPackage.objects.filter(subproduct__creater=request.user, request_renewal=True, id= id).last()
+    if sale:
+        form = DenyRenewForm(request.POST or None,instance=sale)
+        if request.method == 'POST':
+            if form.is_valid():
+                deny = form.save(commit=False)
+                deny.deny_renewal = True
+                deny.save()
+                return redirect('renew-count-package-list')
+    else:
+        return redirect('index')
+    return render(request, 'platforms/deny_renew_sale.html', {'form': form , "sale": sale})
+
+
 @usertype_in_view
 @login_required
 def CommissionsPayedView(request):
@@ -828,14 +853,18 @@ def CommissionPendingView(request, username):
 @login_required
 def PayInvoicePenddingView(request, id):
 
-    count_package_invoice = list(CountPackageInvoice.objects.filter(invoice=id).values_list('count_package', flat=True))
+    count_package_invoice = CountPackageInvoice.objects.filter(invoice=id)
+    print(count_package_invoice)
     sales = CountsPackage.objects.filter(id__in=count_package_invoice)
+    print(sales)
     invoice = Invoice.objects.filter(id=id, payed=False).first()
     if not invoice:
         return redirect('sales-inter-dates')
     user_data = UserData.objects.filter(user=invoice.due).first()
     sales_sum = sales.aggregate(total_sales=Sum('price_buy'))
-    comission = (int(sales_sum['total_sales']) * (PERCENT_COMISSION*0.01))
+    print(sales_sum['total_sales'])
+    print(type(sales_sum['total_sales']))
+    comission = sales_sum['total_sales'] * PERCENT_COMISSION*0.01
     pay_in = eval("user_data."+ str(invoice.payment_method.lower()))
     pay = int(sales_sum['total_sales']) - comission
     if request.method == 'POST':

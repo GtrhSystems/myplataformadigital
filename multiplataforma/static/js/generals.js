@@ -371,6 +371,24 @@ function renew_counts(){
 
     })
 
+
+     $('#renews-table tbody').on("click", ".deny" , function(event){
+        event.preventDefault()
+        id = $(this).attr('id')
+        var mensaje = confirm("Desea denegar esta renovacion?");
+        if (mensaje) {
+            $.get("/platform/deny-renew-count-package/"+ id ,function(data){
+                $("#Modal").modal({show: true})
+                $('.modal-body').html(data)
+
+            })
+            $("#Modal").on("hidden.bs.modal", function () {
+                //location.reload();
+            });
+        }
+
+    })
+
     $('#renews-table tbody').on("click", ".delete" , function(event){
 
         event.preventDefault()

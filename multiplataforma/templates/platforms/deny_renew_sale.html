@@ -1,0 +1,35 @@
+{% extends 'layout.html' %}
+{% load widget_tweaks %}
+{% block content %}
+<!-- /.row -->
+<div class="row">
+	<div class="col-md-12">
+		<div class="card">
+			<div class="card-header">
+				<h5>Denegar renovación a cuenta {{ sale.email }}</h5>
+			</div>
+			<div class="card-block">
+						<form id="deny-form" method="post" >
+							{% csrf_token %}
+							<fieldset>
+								<div class="form-group">
+									<label>{{ form.deny_renewal_response.label_tag }}</label>
+									<td>{{ form.deny_renewal_response|add_class:'form-control' }}</td>
+									<p class="help-block">Motivo.</p>
+
+								</div>
+								<input  class="btn btn-primary btn-md btn-block waves-effect text-center m-b-20" id="send_report" type="submit" value="Enviar" />
+
+							</fieldset>
+						</form>
+						<p style="color:red" class="help-block">{{ form.errors }}.</p>
+					</div>
+					<!-- /.col-lg-6 (nested) -->
+				</div>
+				<!-- /.row (nested) -->
+			</div>
+			<!-- /.panel-body -->
+		</div>
+		<!-- /.panel -->
+
+{% endblock %}

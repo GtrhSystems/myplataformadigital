@@ -21,8 +21,9 @@
                                 <th>Perfil</th>
                                 <th>Distribuidor</th>
                                 <th>Precio</th>
-                                <th></th>
-                                <th></th>
+                                <th>Renovar</th>
+                                <th>Negar</th>
+                                <th>Borrar</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -36,6 +37,7 @@
                                     <td>{{ sale.owner }}</td>
                                     <td>$ {{ sale.price_buy|intcomma }}</td>
                                    <td><a id="{{ sale.id }}" class="renew" href="#"> <i class="ti-loop f-28"></i></a></td>
+                                    <td><a href="{% url 'deny-renew-count-package'  sale.id %}"> <i class="ti-na f-28"></i></a></td>
                                    <td><a delete_id="{{ sale.id }}" class="delete" href="#"> <i class="ti-trash f-28"></i></a></td>
                             </tr>
                         {% endfor %}
@@ -52,7 +54,6 @@
 
 <script>
 renew_counts()
-
 </script>
 
 {% endblock %}

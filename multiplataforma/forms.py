@@ -29,9 +29,15 @@ class SignUpForm(UserCreationForm):
 
 
 class AddMoneyForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        money = args[1]
+        super(AddMoneyForm, self).__init__(*args, **kwargs)
+        self.fields['money'] = forms.CharField(required=True, widget=forms.TextInput(
+            attrs={'type': 'number', 'min': -money, 'inputmode': 'numeric' }))
+
     class Meta:
         model = MoneysSaler
-        fields = [ 'money']
+        fields = ('money',)
 
 
 class EditUserForm(UserCreationForm):
@@ -102,6 +108,14 @@ class ReportIssueForm(forms.ModelForm):
         model = IssuesReport
         fields = ['issue','image']
 
+
+class DenyRenewForm(forms.ModelForm):
+
+    deny_renewal_response = forms.CharField(widget=forms.Textarea, label="Motivo de rechazo de la renovación")
+
+    class Meta:
+        model = CountsPackage
+        fields = ['deny_renewal_response']
 
 class ReportForm(forms.ModelForm):
     response = forms.CharField(widget=forms.Textarea, label="Detalle")
