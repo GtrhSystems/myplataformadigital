@@ -56,30 +56,23 @@
                             </tr>
                         {% endfor %}
                         {% if sales %}
-                        <tfoot>
-                        <tr>
-
-
-                            <td></td>
-                            <td></td>
-                             <td></td>
-                            <td><strong>Totales</strong></td>
-                            <td id="total"></td>
-                             <td></td>
-                             <td></td>
-                        </tr>
-                         </tfoot>
+                            <tfoot>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td><strong>Totales</strong></td>
+                                    <td id="total"></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
                         {% endif %}
                         </tbody>
-
-
                     </table>
-
-
 					</div>
-
                     <div class="col-md-12">
-                        <button  id="login" type="submit" class="btn btn-primary btn-md btn-block waves-effect waves-light text-center m-b-20">Enviar cobro</button>
+                        <button  type="submit" class="btn btn-primary btn-md btn-block waves-effect waves-light text-center m-b-20">Enviar cobro</button>
                     </div>
                    </form>
                 </div>
@@ -104,12 +97,9 @@ money_all=0
 let dollarUSLocale = Intl.NumberFormat('en-US');
 $('#sales-table tbody').on("click", ".check" , function(event){
     money = $(this).attr('money')
-    console.log($(this).prop("checked"))
     if($(this).prop("checked") == true){
-        console.log('suma')
         money_all = money_all + parseFloat(money)
     }else{
-        console.log('resta')
         money_all = money_all - parseFloat(money)
     }
    $('#total').html("$"+ dollarUSLocale.format(money_all))

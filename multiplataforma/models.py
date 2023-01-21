@@ -371,7 +371,7 @@ class MoneysSaler(models.Model):
     @classmethod
     def Get_mys_money_saler(self):
 
-        money_saler = self.objects.all().order_by('-date')
+        money_saler = self.objects.all().order_by('date')
         return money_saler
 
     @classmethod
