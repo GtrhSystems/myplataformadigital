@@ -313,6 +313,12 @@ class Invoice(models.Model):
         invoices = self.objects.filter(payed=True).filter(date_pay__range=[initial_date, final_date])
         return invoices
 
+    @classmethod
+    def InvoicesPending(cls):
+
+        invoices = cls.objects.filter(payed=False)
+        return invoices
+
 
 class CountPackageInvoice(models.Model):
 

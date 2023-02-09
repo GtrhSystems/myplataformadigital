@@ -128,7 +128,7 @@ def IndexView(request):
         vendedor_sales = CountsPackage.all_counts_saled_for_date(date)
 
 
-        sales_pendding = len(CountPackageInvoice.InvoicesPendingByPay())
+        sales_pendding = len(Invoice.InvoicesPending())
         reports = len(IssuesReport.get_reports_pendding())
         sales_today = len(vendedor_sales)
         return render(request, 'dashboard_'+user_type+'.html', {

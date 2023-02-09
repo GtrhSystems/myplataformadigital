@@ -16,19 +16,19 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-X_FRAME_OPTIONS = 'ALLOWALL'
+X_FRAME_OPTIONS = ''
 
 XS_SHARING_ALLOWED_METHODS = ['POST', 'GET', 'OPTIONS', 'PUT', 'DELETE']
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-qpo-vcmamu+(%i8b!(3ejhqd#%+rhb#2$#xjy!&yy^dsq0qix&'
+SECRET_KEY = ''
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['194.163.128.187', 'myplataformadigital.com']
+ALLOWED_HOSTS = ['127.0.0.1']
 
 # Application definition
 
@@ -59,7 +59,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'multiplataforma_project.urls'
 
-EMPLATES = [
+TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS':  ['./templates'],
@@ -84,18 +84,18 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],
+            "hosts": [],
         },
     },
 }
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'l',
         'NAME': '',
         'USER': '',
         'PASSWORD': '',
-        'HOST': '127.0.0.1',
-        'PORT': '3306',
+        'HOST': '',
+        'PORT': '',
     }
 }
 
@@ -133,7 +133,6 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
-
 
 
 STATIC_URL = 'static/'
