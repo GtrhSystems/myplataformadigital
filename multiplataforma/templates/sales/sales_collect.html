@@ -36,6 +36,8 @@
                     <table id="sales-table" class="table table-no-pagin">
                         <thead>
                             <tr>
+                                <th>Id</th>
+                                <th>Email</th>
                                 <th>Subproducto</th>
                                 <th>Comprador</th>
                                 <th>Precio</th>
@@ -47,6 +49,8 @@
                         <tbody>
                            {% for sale in sales %}
                             <tr class="gradeA odd" role="row">
+                                    <td>{{ sale.id }}</td>
+                                    <td>{{ sale.email }}</td>
                                     <td>{{ sale.subproduct.name }}</td>
                                     <td>{{ sale.owner }}</td>
                                     <td>$ {{ sale.price_buy|intcomma }}</td>

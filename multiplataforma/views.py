@@ -853,7 +853,8 @@ def CommissionPendingView(request, username):
 @login_required
 def PayInvoicePenddingView(request, id):
 
-    count_package_invoice = CountPackageInvoice.objects.filter(invoice=id)
+    count_package_invoice = CountPackageInvoice.objects.filter(invoice=id).values_list('count_package_id', flat=True)
+    print(count_package_invoice)
     print(count_package_invoice)
     sales = CountsPackage.objects.filter(id__in=count_package_invoice)
     print(sales)
