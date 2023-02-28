@@ -12,7 +12,7 @@
 			</div>
 			<div class="card-block table-border-style">
 				<div class="table-responsive">
-               <form  method="POST">
+               <form  id="collect_form" method="POST">
                     {% csrf_token %}
                    	<div class="form-group">
 						<label>Seleccione el medio de pago:</label>
@@ -76,7 +76,7 @@
                     </table>
 					</div>
                     <div class="col-md-12">
-                        <button  type="submit" class="btn btn-primary btn-md btn-block waves-effect waves-light text-center m-b-20">Enviar cobro</button>
+                        <button  type="submit" class="btn collect btn-primary btn-md btn-block waves-effect waves-light text-center m-b-20">Enviar cobro</button>
                     </div>
                    </form>
                 </div>
@@ -95,7 +95,11 @@ $('body').on("click", "#select_all" , function(event){
     $(".check").trigger("click")
 })
 
-
+$('body').on("click", ".collect" , function(event){
+    event.preventDefault()
+    $(this).prop("disable")
+    $("#collect_form").submit()
+})
 
 money_all=0
 let dollarUSLocale = Intl.NumberFormat('en-US');
