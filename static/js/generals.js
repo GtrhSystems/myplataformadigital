@@ -28,21 +28,21 @@ function listenig_socket(){
 
 
 $(document).ready(function() {
-    $('.js-example-basic-single').select2();
+     $('.js-example-basic-single').select2();
+
      $('.table-normal').DataTable( {
-		  scrollX: false,
-		  responsive: true,
-    });
+          responsive: true
+     });
+
      $('.table-no-pagin').DataTable( {
+          responsive: true,
 		  scrollX: false,
-		  responsive: true,
 		  paging: false
-    });
+     });
      $('.table-no-order').DataTable( {
-		  responsive: true,
+          responsive: true,
 		  ordering: false,
 		  paging: false,
-
     });
 
 
@@ -260,12 +260,12 @@ function buy_package(){
                     $.get('/package/buy/'+id ,function(data){
                         if(type_attr == "True"){
                             MultiplataformaSocket.send(id +'_'+ type_attr +'_reload');
-                            console.log("redireccionando")
-                            window.location.href = "/platform/list/"+name_product;
-                            /*location.reload();*/
+
                         }else{
                             MultiplataformaSocket.send(id +'_'+ type_attr +'_remove');
                         }
+                        alert(data)
+                        window.location.href = "/platform/list/"+name_product;
                     })
                 })
             });
@@ -299,8 +299,8 @@ function sale_package(){
 
 function resale_package(){
 
-        $( ".sale" ).each(function() {
-            $(this).on("click", function(event){
+
+         $('body').on("click", ".sale", function(event){
                 event.preventDefault()
                 var id = $(this).attr('id');
                 name_product = $(this).attr('name_product')
@@ -308,7 +308,7 @@ function resale_package(){
                         $('.modal-content').html(data)
                 })
                 $("#myModal").modal({show: true})
-            });
+
         });
 
 
@@ -337,20 +337,52 @@ function resale_package(){
     $temp.remove();
 }
 
-function set_pay_to_staff(){
+function set_pay_to_staff(invoice_id){
 
-    $('#pendding-table tbody').on("click", ".pay" , function(event){
+    $('.pay').click(function(event){
         event.preventDefault()
-        id = $(this).attr('id')
-        $("#Modal").modal({show: true})
-        $.get('/platform/sales/pay-staff-sale/'+ id ,function(data){
-              $('.modal-content').html(data)
-
+        $.post('/invoice/pay-pendding/'+invoice_id ,function(data){
+              $("#Modal").modal({show: true})
+              $('.modal-body').html(data)
          })
+
+    $("#Modal").on("hidden.bs.modal", function () {
+       location.reload();
+    });
     })
 
-    $('body').on("click", "#pay" , function(event){
-       location.reload();
+
+}
+
+function renew_counts(){
+
+
+    $('#renews-table tbody').on("click", ".renew" , function(event){
+        event.preventDefault()
+        id = $(this).attr('id')
+        var mensaje = confirm("Desea renovar esta cuenta?");
+        if (mensaje) {
+            $.get("/platform/renew-count-package/"+ id ,function(data){
+                    alert(data)
+                    location.reload();
+
+             })
+        }
+
+    })
+
+    $('#renews-table tbody').on("click", ".delete" , function(event){
+
+        event.preventDefault()
+        id = $(this).attr('delete_id')
+        var mensaje = confirm("Desea Eliminar esta solicitud?");
+        if (mensaje) {
+            $.get('/delete/renew/'+id ,function(data){
+                    alert(data)
+                    location.reload();
+
+             })
+        }
 
     })
 

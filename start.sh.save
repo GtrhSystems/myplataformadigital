@@ -1,0 +1,13 @@
+es#!/bin/bash
+NAME="Multiplataforma-admin"                                  # Name of the application
+DJANGODIR=/home/multiplataforma            # Django project directory
+DJANGOENVDIR=/home/multiplataforma/env  # Django project env
+#NUM_WORKERS=3
+DJANGO_SETTINGS_MODULE=multiplataforma_project.settings             # which settings file should Django use
+echo "Starting $NAME as `whoami`"
+# Activate the virtual environment
+source $DJANGODIR/env/bin/activate
+export PYTHONPATH=$DJANGODIR:$PYTHONPATH
+#exec python $DJANGODIR/manage.py runserver 0.0.0.0:8000 
+exec ${DJANGOENVDIR}/bin/daphne -u /home/multiplataforma/run/daphne.sock --access-log - --proxy-headers  multiplataforma_project.asgi:application -b 0.0.0.0 -p 8000
+
